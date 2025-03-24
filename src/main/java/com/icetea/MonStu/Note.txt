@@ -1,0 +1,12 @@
+
+/*-------------API Document--------------*/
+@Api(tags = "User API")
+@RestController
+public class UserController {
+
+    @ApiOperation(value = "Get all users", notes = "Returns a list of all users")
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+}
