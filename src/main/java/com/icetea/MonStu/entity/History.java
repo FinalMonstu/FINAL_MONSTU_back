@@ -1,0 +1,34 @@
+package com.icetea.MonStu.entity;
+
+import com.icetea.MonStu.entity.link.MemberHistory;
+import com.icetea.MonStu.enums.Genre;
+import com.icetea.MonStu.enums.Language;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString(exclude = {"memberHistories"})
+@Table(name="history")
+public class History {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @Column
+    private String target;      // 단어 또는 문장
+
+    @Column
+    private Genre genre;        //장르
+
+    @Column
+    private Language language;
+
+    @OneToMany(mappedBy = "history", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MemberHistory> memberHistories;
+}

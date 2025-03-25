@@ -1,4 +1,4 @@
-package com.icetea.MonStu.Config;
+package com.icetea.MonStu.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

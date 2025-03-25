@@ -1,4 +1,4 @@
-package com.icetea.MonStu.Config;
+package com.icetea.MonStu.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.yourapp.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.icetea.MonStu.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
