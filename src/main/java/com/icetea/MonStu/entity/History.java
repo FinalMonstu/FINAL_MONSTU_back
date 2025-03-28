@@ -2,7 +2,7 @@ package com.icetea.MonStu.entity;
 
 import com.icetea.MonStu.entity.link.MemberHistory;
 import com.icetea.MonStu.enums.Genre;
-import com.icetea.MonStu.enums.Language;
+import com.icetea.MonStu.enums.LanguageCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +27,7 @@ public class History {
     private Genre genre;        //장르
 
     @Column
-    private Language language;
+    private LanguageCode languageCode;
 
     @OneToMany(mappedBy = "history", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MemberHistory> memberHistories;

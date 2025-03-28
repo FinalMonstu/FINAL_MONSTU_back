@@ -6,6 +6,7 @@ import com.icetea.MonStu.entity.log.MemberLog;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,10 +32,10 @@ public class Nouncement {
     private String content;
 
     @Column
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column
-    private OffsetDateTime modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @Column(nullable = false)
     private Boolean isPublic;   // 공개여부

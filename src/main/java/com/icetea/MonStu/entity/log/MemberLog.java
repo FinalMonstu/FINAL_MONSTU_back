@@ -4,6 +4,7 @@ import com.icetea.MonStu.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Date;
 
@@ -23,7 +24,7 @@ public class MemberLog {
     private Byte FailedLLoginCount;     // -128 ~ 127
 
     @Column
-    private OffsetDateTime failedLoginTime;
+    private LocalDateTime failedLoginTime;
 
     @Column
     private Date lastLogin;

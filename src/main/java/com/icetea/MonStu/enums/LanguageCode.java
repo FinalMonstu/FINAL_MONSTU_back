@@ -3,7 +3,7 @@ package com.icetea.MonStu.enums;
 /*
     국가 언어 코드 (ISO 639-1)
 */
-public enum Language {
+public enum LanguageCode {
     KO("Korean"),
     EN("English"),
     JA("Japanese"),
@@ -13,7 +13,7 @@ public enum Language {
 
     private final String languageName;
 
-    Language(String languageName) {
+    LanguageCode(String languageName) {
         this.languageName = languageName;
     }
 
@@ -23,8 +23,8 @@ public enum Language {
     }
 
     // 코드(ES 등)를 반환
-    public static Language getCode(String code) {
-        for (Language lang : values()) {
+    public static LanguageCode getCode(String code) {
+        for (LanguageCode lang : values()) {
             if (lang.name().equals(code)) {
                 return lang;
             }

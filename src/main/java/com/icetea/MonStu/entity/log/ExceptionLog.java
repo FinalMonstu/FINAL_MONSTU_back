@@ -4,6 +4,7 @@ import com.icetea.MonStu.enums.Level;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Getter
@@ -18,7 +19,7 @@ public class ExceptionLog {
     private Long id;
 
     @Column(nullable = false)
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private Level level;

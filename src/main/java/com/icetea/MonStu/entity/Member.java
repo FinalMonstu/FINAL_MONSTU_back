@@ -3,6 +3,7 @@ package com.icetea.MonStu.entity;
 import com.icetea.MonStu.entity.link.MemberHistory;
 import com.icetea.MonStu.entity.log.MemberLog;
 import com.icetea.MonStu.entity.log.PostLog;
+import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
 import jakarta.persistence.*;
@@ -28,10 +29,13 @@ public class Member {
     private String email;
 
     @Column(nullable = false)
-    private String pw;
+    private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String nickName;
+
+    @Column(nullable = false)
+    private String phoneNumber;
 
     @Column
     private Date createdAt;
@@ -44,6 +48,9 @@ public class Member {
 
     @Column(nullable = false)
     private MemberRole role;
+
+    @Column(nullable = false)
+    private CountryCode countryCode;
 
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)

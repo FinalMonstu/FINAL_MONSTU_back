@@ -5,6 +5,7 @@ import com.icetea.MonStu.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Getter
@@ -23,6 +24,6 @@ public class PostLog {
     private Long viewCount;
 
     @Column
-    private OffsetDateTime lastViewedAt;
+    private LocalDateTime lastViewedAt;
 
 }
