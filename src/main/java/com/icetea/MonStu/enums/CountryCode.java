@@ -1,5 +1,8 @@
 package com.icetea.MonStu.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum CountryCode {
     AUS("Australia", "AUS"),
     AUT("Austria", "AUT"),
@@ -34,13 +37,18 @@ public enum CountryCode {
         return alpha3Code;
     }
 
-    public static CountryCode getAlpha3Code(String code) {
+    public static CountryCode fromAlpha3Code(String code) {
         for (CountryCode country : values()) {
             if (country.getAlpha3Code().equalsIgnoreCase(code)) {
                 return country;
             }
         }
         throw new IllegalArgumentException("Invalid country code: " + code);
+    }
 
+    public static List<String> getCountryNames(){
+        return Arrays.stream(CountryCode.values())
+                .map(CountryCode::getCountryName)
+                .toList();
     }
 }

@@ -7,11 +7,12 @@ import java.util.Date;
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class PostDTO {
+public class PostDTO{
     private Long id;
     private String title;
     private String content;
@@ -25,5 +26,5 @@ public class PostDTO {
     private String nickName;
 
     //Tag Info
-    private List<TagDTO> tagDTOs;
+    private List<TagDTO> tags;
 }
