@@ -13,10 +13,12 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"post"})
+@Entity
 @Table(name="post_log")
 public class PostLog {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @MapsId  // Post의 ID를 그대로 사용
     @JoinColumn(name = "post_id")
     private Post post;
 

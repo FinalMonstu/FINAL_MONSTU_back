@@ -29,14 +29,14 @@ public class AiController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("/trans")
-    public ResponseEntity<String> transTarget(@RequestBody TransDTO transDTO){
-        if(transDTO.getTarget() == null) return ResponseEntity.badRequest().body("Invalid request: TransDTO cannot be null");
+    public ResponseEntity<TransDTO> transTarget(@RequestBody TransDTO transDTO){
+        if(transDTO.getTarget() == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         log.info("transDTO : {}", transDTO.toString());
 
-        String result = aiSvc.transTarget(transDTO);
-        return  result != null ?
+        TransDTO result = aiSvc.transTarget(transDTO);
+        return  result.getTransed() != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
-                new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
+                new ResponseEntity<>(transDTO, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 

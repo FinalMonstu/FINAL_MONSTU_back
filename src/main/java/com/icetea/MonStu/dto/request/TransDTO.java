@@ -15,5 +15,5 @@ public class TransDTO {
     private String oriLang; // 원본 언어
     private String transLang;   // 번역된 언어
 
-    private String type;    // "word" 또는 "sentence"
+    private String type;    // "WORD" 또는 "SENTENCE"
 }

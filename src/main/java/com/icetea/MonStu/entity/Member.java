@@ -1,6 +1,6 @@
 package com.icetea.MonStu.entity;
 
-import com.icetea.MonStu.entity.link.MemberHistory;
+import com.icetea.MonStu.entity.link.MemberPostHistory;
 import com.icetea.MonStu.entity.log.MemberLog;
 import com.icetea.MonStu.entity.log.PostLog;
 import com.icetea.MonStu.enums.CountryCode;
@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"memberLogs","posts","postLog","memberHistories"})
+@Entity
 @Table(name= "member")
 public class Member {
 
@@ -64,7 +65,7 @@ public class Member {
 
     // 다대다 연관관계
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MemberHistory> memberHistories = new ArrayList<>();
+    private List<MemberPostHistory> memberPostHistories = new ArrayList<>();
 
 
 

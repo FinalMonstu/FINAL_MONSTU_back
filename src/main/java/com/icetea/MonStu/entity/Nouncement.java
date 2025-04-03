@@ -1,15 +1,11 @@
 package com.icetea.MonStu.entity;
 
-import com.icetea.MonStu.entity.link.MemberHistory;
 import com.icetea.MonStu.entity.link.NouncementImage;
-import com.icetea.MonStu.entity.log.MemberLog;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -17,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"nouncementImages"})
+@Entity
 @Table(name="nouncement")
 public class Nouncement {
 

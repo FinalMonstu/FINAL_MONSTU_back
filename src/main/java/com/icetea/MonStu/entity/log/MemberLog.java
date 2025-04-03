@@ -13,6 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"member"})
+@Entity
 @Table(name="member_log")
 public class MemberLog {
 

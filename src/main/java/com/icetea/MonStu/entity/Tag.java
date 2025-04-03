@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"postTags"})
+@Entity
 @Table(name="tag")
 public class Tag {
 

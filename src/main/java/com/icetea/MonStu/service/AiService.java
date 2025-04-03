@@ -15,17 +15,20 @@ public class AiService {
         this.chatClient = chatClient.build();
     }
 
-    public String transTarget(TransDTO transDTO) {
-        String prompt = String.format(
-                "Please answer the form only as \"word before transformation - transformed word\"\n" +
-                        "I don't need to know how to read it\n" +
-                        "Please translate \"%s\" into korean.",
-                transDTO.getTarget()
-        );
-        log.info("prompt : {}", prompt);
-        return chatClient.prompt()
-                .user(prompt)
-                .call()
-                .content();
+    public TransDTO transTarget(TransDTO transDTO) {
+//        String prompt = String.format(
+//                "Please answer the form only as \"word before transformation - transformed word\"\n" +
+//                        "I don't need to know how to read it\n" +
+//                        "Please translate \"%s\" into korean." +
+//                        "If you don't know, just answer \"X\"",
+//                transDTO.getTarget()
+//        );
+//        log.info("prompt : {}", prompt);
+//        return chatClient.prompt()
+//                .user(prompt)
+//                .call()
+//                .content();
+        transDTO.setTransed("Hello World");
+        return transDTO;
     }
 }

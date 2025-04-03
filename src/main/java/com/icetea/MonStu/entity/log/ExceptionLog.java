@@ -11,6 +11,7 @@ import java.time.OffsetDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name= "exception_log")
 public class ExceptionLog {
 

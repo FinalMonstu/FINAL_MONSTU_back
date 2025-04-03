@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"post","tag"})
+@Entity
 @Table(name= "post_tag")
 public class PostTag {
 

@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"nouncement","image"})
+@Entity
 @Table(name="nouncement_image")
 public class NouncementImage {
 

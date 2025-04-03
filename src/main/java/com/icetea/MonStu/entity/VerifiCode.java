@@ -11,6 +11,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name="verifi_code")
 public class VerifiCode {
 

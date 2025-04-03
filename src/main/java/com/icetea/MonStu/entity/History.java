@@ -1,11 +1,12 @@
 package com.icetea.MonStu.entity;
 
-import com.icetea.MonStu.entity.link.MemberHistory;
+import com.icetea.MonStu.entity.link.MemberPostHistory;
 import com.icetea.MonStu.enums.Genre;
 import com.icetea.MonStu.enums.LanguageCode;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"memberHistories"})
+@Entity
 @Table(name="history")
 public class History {
 
@@ -30,5 +32,5 @@ public class History {
     private LanguageCode languageCode;
 
     @OneToMany(mappedBy = "history", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MemberHistory> memberHistories;
+    private List<MemberPostHistory> memberPostHistories = new ArrayList<>();;
 }

@@ -1,6 +1,6 @@
 package com.icetea.MonStu.entity;
 
-import com.icetea.MonStu.entity.link.MemberHistory;
+import com.icetea.MonStu.entity.link.MemberPostHistory;
 import com.icetea.MonStu.entity.link.PostTag;
 import com.icetea.MonStu.enums.PostStatus;
 import jakarta.persistence.*;
@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"member","image","postTags"})
+@Entity
 @Table(name="post")
 public class Post {
 
@@ -53,6 +54,9 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PostTag> postTags = new ArrayList<>();
 
+    // 다대다 연관관계
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MemberPostHistory> memberPostHistories = new ArrayList<>();
 
     public void setMember(Member member) {
         this.member = member;
