@@ -1,12 +1,10 @@
 package com.icetea.MonStu.entity.log;
 
-import com.icetea.MonStu.entity.Image;
 import com.icetea.MonStu.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Getter
 @Builder
@@ -16,6 +14,9 @@ import java.time.OffsetDateTime;
 @Entity
 @Table(name="post_log")
 public class PostLog {
+
+    @Id  //post_id
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId  // Post의 ID를 그대로 사용

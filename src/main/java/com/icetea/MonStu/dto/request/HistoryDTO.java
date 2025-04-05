@@ -11,8 +11,10 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class HistoryDTO {
-    private Long id;
+    private Long id;    //단어 ID
+    private Long memberId;  // 회원 ID
+    private Long postId;    //게시물 ID
     private String target;  //단어,문장
     private Genre genre;    //WORD,SENTENCE
-    private LanguageCode languageCode;
+    private String language; //언어  (Korean,English)
 }

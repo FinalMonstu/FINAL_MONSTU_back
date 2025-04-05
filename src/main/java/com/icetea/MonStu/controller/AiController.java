@@ -33,7 +33,8 @@ public class AiController {
         if(transDTO.getTarget() == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         log.info("transDTO : {}", transDTO.toString());
 
-        TransDTO result = aiSvc.transTarget(transDTO);
+//        TransDTO result = aiSvc.transTarget(transDTO);
+        TransDTO result = aiSvc.forTestingCode(transDTO);
         return  result.getTransed() != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(transDTO, HttpStatus.INTERNAL_SERVER_ERROR);

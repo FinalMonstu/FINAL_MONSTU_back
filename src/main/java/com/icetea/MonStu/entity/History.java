@@ -26,9 +26,11 @@ public class History {
     private String target;      // 단어 또는 문장
 
     @Column
+    @Enumerated(EnumType.STRING)
     private Genre genre;        //장르
 
     @Column
+    @Enumerated(EnumType.STRING)
     private LanguageCode languageCode;
 
     @OneToMany(mappedBy = "history", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

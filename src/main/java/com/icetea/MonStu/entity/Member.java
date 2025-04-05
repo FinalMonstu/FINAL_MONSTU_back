@@ -44,12 +44,15 @@ public class Member {
     @Column
     private Date updatedAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemberStatus status;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemberRole role;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CountryCode countryCode;
 
@@ -60,8 +63,8 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToOne(mappedBy = "post", fetch = FetchType.EAGER)
-    private PostLog postLog;
+//    @OneToOne(mappedBy = "post", fetch = FetchType.EAGER)
+//    private PostLog postLog;
 
     // 다대다 연관관계
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

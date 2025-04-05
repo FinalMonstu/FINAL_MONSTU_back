@@ -15,6 +15,10 @@ import lombok.*;
 @Table(name="nouncement_image")
 public class NouncementImage {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @JoinColumn(name = "nouncement_id")
     private Nouncement nouncement;

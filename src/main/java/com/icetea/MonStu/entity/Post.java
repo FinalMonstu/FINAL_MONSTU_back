@@ -36,6 +36,7 @@ public class Post {
     private Date modifiedAt;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private PostStatus status;
 
     @Column(nullable = false)

@@ -22,7 +22,7 @@ public class MemberLog {
     private Long id;
 
     @Column
-    private Byte FailedLLoginCount;     // -128 ~ 127
+    private Byte failedLoginCount;     // -128 ~ 127
 
     @Column
     private LocalDateTime failedLoginTime;
