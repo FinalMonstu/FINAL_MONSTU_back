@@ -1,5 +1,8 @@
 package com.icetea.MonStu.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,21 +32,23 @@ public enum CountryCode {
         this.alpha3Code = alpha3Code;
     }
 
-    public String getCountryName() {
-        return countryName;
-    }
-
     public String getAlpha3Code() {
         return alpha3Code;
     }
 
-    public static CountryCode fromAlpha3Code(String code) {
+    @JsonValue  //Java 객체를 → JSON으로 변환할 때 어떤 값을 사용할지를 지정.
+    public String getCountryName() {
+        return countryName;
+    }
+
+    @JsonCreator    //문자열을 enum이나 객체로 바꿔줄 때, JSON 값을 → Java 객체로 변환할 때 어떤 생성자나 메서드를 사용할지를 지정.
+    public static CountryCode fromCountryName(String name) {
         for (CountryCode country : values()) {
-            if (country.getAlpha3Code().equalsIgnoreCase(code)) {
+            if (country.getCountryName().equalsIgnoreCase(name)) {
                 return country;
             }
         }
-        throw new IllegalArgumentException("Invalid country code: " + code);
+        throw new IllegalArgumentException("Invalid country name: " + name);
     }
 
     public static List<String> getCountryNames(){

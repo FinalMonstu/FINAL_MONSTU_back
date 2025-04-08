@@ -62,6 +62,10 @@ dependencies {
 	// AI
 	implementation 'org.springframework.ai:spring-ai-ollama-spring-boot-starter'//
 
+	// Email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+
 }
 
 dependencyManagement {

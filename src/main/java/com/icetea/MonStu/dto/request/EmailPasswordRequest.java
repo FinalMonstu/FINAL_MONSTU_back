@@ -1,6 +1,6 @@
 package com.icetea.MonStu.dto.request;
 
-public record LoginRequest(
+public record EmailPasswordRequest(
         String email,
         String password
 ) {}

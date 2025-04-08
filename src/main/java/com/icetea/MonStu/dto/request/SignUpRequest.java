@@ -6,6 +6,6 @@ public record SignUpRequest(
         String email,
         String password,
         String nickName,
-        CountryCode countryCode,
+        CountryCode country,
         String phoneNumber
 ) {}

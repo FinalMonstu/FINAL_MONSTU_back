@@ -11,7 +11,6 @@ import java.util.List;
 @Service
 public class PresetService {
 
-
     public List<String> getLanguageList() {
         return LanguageCode.getLanguageList();
     }

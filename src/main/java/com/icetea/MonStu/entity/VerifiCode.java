@@ -4,9 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.Date;
 
+@Setter
 @Getter
 @Builder
 @AllArgsConstructor
@@ -35,6 +34,8 @@ public class VerifiCode {
     private Boolean verified;
 
     @Column
-    private Byte FailedCount;     // -128 ~ 127
+    private Byte failedCount;     // -128 ~ 127
 
+    @Column
+    private LocalDateTime failedAt;
 }
