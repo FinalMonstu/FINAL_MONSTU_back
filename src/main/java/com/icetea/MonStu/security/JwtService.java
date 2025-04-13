@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,16 @@ public class JwtService {
     public boolean isTokenValid(String token, UserDetails userDetails) {    // 토큰이 유효한지 확인 (username 일치 && 만료되지 않았는지)
         final String username = extractUsername(token);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    public void setOption(HttpServletResponse response,String jwtToken){
+        Cookie cookie = new Cookie("jwtToken", jwtToken);
+        cookie.setHttpOnly(true); // 자바스크립트에서 접근 불가능
+        cookie.setSecure(true);   // HTTPS 환경에서만 전송 (개발 중에는 false로 설정 가능)
+//        cookie.setAttribute("SameSite", "Strict"); // 혹은 "Lax" 옵션 사용
+        cookie.setPath("/");      // 도메인 내 모든 경로에서 사용 가능
+        cookie.setMaxAge(24 * 60 * 60); // 1일 (초 단위)
+        response.addCookie(cookie);
     }
 
     // 토큰 만료 여부 확인

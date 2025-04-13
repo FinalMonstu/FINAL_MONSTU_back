@@ -15,6 +15,8 @@ import com.icetea.MonStu.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,11 +39,13 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody EmailPasswordRequest request) {
+    public ResponseEntity<?> login(@RequestBody EmailPasswordRequest request, HttpServletResponse response) {
         authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(request.email(), request.password()) );  //DB에서 가져온 비밀번호와 입력한 비밀번호 비교
         final UserDetails user = userDetailsService.loadUserByUsername(request.email()); //인증 성공 시, 사용자 정보를 가져옴
-        final String jwt = jwtService.generateToken(user);
-        return ResponseEntity.ok(new JwtResponse(jwt));
+        final String jwtToken = jwtService.generateToken(user);
+        jwtService.setOption(response,jwtToken);
+
+        return ResponseEntity.ok(new MessageResponse("로그인 성공"));
     }
 
     @PostMapping("/signup")
