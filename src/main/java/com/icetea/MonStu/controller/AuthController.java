@@ -1,17 +1,14 @@
 package com.icetea.MonStu.controller;
 
-import com.icetea.MonStu.dto.request.FindEmailRequest;
-import com.icetea.MonStu.dto.request.VerifiCodeRequest;
-import com.icetea.MonStu.dto.request.EmailPasswordRequest;
-import com.icetea.MonStu.dto.request.SignUpRequest;
-import com.icetea.MonStu.dto.response.FindEmailResponse;
-import com.icetea.MonStu.dto.response.JwtResponse;
-import com.icetea.MonStu.dto.response.MessageResponse;
-import com.icetea.MonStu.dto.response.VerifiCodeResponse;
+import com.icetea.MonStu.dto.UserInfoDTO;
+import com.icetea.MonStu.dto.request.*;
+import com.icetea.MonStu.dto.response.*;
+import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.exception.ConflictException;
 import com.icetea.MonStu.security.JwtService;
 import com.icetea.MonStu.service.AuthService;
 import com.icetea.MonStu.service.MemberService;
+import com.icetea.MonStu.util.UserInfoMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,9 +19,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,11 +42,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody EmailPasswordRequest request, HttpServletResponse response) {
         authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(request.email(), request.password()) );  //DB에서 가져온 비밀번호와 입력한 비밀번호 비교
-        final UserDetails user = userDetailsService.loadUserByUsername(request.email()); //인증 성공 시, 사용자 정보를 가져옴
-        final String jwtToken = jwtService.generateToken(user);
-        jwtService.setOption(response,jwtToken);
 
-        return ResponseEntity.ok(new MessageResponse("로그인 성공"));
+        UserDetails user = userDetailsService.loadUserByUsername(request.email());
+        UserInfoDTO userInfo = UserInfoMapper.toDto(user);
+
+        String jwtToken = jwtService.generateToken(user);
+        jwtService.setOption(response,jwtToken);
+        return ResponseEntity.status(HttpStatus.OK).body(userInfo);
     }
 
     @PostMapping("/signup")
@@ -90,6 +93,7 @@ public class AuthController {
     })
     @PostMapping("/email/verify")
     public ResponseEntity<?> verifyEmailCode(@RequestBody VerifiCodeRequest request) {
+        System.out.println("request: "+request.toString());
         authService.verifyEmailCode(request);
         return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("인증되었습니다."));
     }
@@ -114,6 +118,7 @@ public class AuthController {
     })
     @PostMapping("/email/find")
     public ResponseEntity<?> findEmail(@RequestBody FindEmailRequest request) {
+        System.out.println("request: "+request.toString());
         FindEmailResponse response = memberService.findEmail(request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -126,8 +131,10 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "탈퇴 실패")
     })
     @PostMapping("/signout")
-    public ResponseEntity<?> signOut(@RequestBody FindEmailRequest request) {
-        FindEmailResponse response = memberService.findEmail(request);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    public ResponseEntity<?> signOut(@AuthenticationPrincipal UserDetails ud) {
+        System.out.println("principal = " + ud);
+        System.out.println("qweqweqweqweqweqwe");
+        memberService.signout();
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

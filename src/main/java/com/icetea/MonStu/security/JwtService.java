@@ -8,10 +8,13 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -54,13 +57,14 @@ public class JwtService {
     }
 
     public void setOption(HttpServletResponse response,String jwtToken){
-        Cookie cookie = new Cookie("jwtToken", jwtToken);
-        cookie.setHttpOnly(true); // 자바스크립트에서 접근 불가능
-        cookie.setSecure(true);   // HTTPS 환경에서만 전송 (개발 중에는 false로 설정 가능)
-//        cookie.setAttribute("SameSite", "Strict"); // 혹은 "Lax" 옵션 사용
-        cookie.setPath("/");      // 도메인 내 모든 경로에서 사용 가능
-        cookie.setMaxAge(24 * 60 * 60); // 1일 (초 단위)
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("jwtToken", jwtToken)
+                .httpOnly(true)
+                .secure(true)          // HTTPS가 아니라면 false
+                .path("/")
+                .sameSite("None")       // 크로스사이트 요청에도 보내기
+                .maxAge(Duration.ofHours(2))
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
     // 토큰 만료 여부 확인

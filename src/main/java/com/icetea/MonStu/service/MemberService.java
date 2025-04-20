@@ -1,8 +1,6 @@
 package com.icetea.MonStu.service;
 
-import com.icetea.MonStu.dto.request.EmailPasswordRequest;
-import com.icetea.MonStu.dto.request.FindEmailRequest;
-import com.icetea.MonStu.dto.request.SignUpRequest;
+import com.icetea.MonStu.dto.request.*;
 import com.icetea.MonStu.dto.response.FindEmailResponse;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.MemberRole;
@@ -10,12 +8,14 @@ import com.icetea.MonStu.enums.MemberStatus;
 import com.icetea.MonStu.exception.ConflictException;
 import com.icetea.MonStu.exception.NoSuchElementException;
 import com.icetea.MonStu.repository.MemberRepository;
+import com.icetea.MonStu.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.jasypt.encryption.StringEncryptor;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +23,10 @@ public class MemberService {
 
     private final MemberRepository memberRps;
 
-    private final PasswordEncoder passwordEncoder;
+    private final UserDetailsService userDetailsService;
 
+    private final PasswordEncoder passwordEncoder;
+    private final StringEncryptor jasypt;
 
     // 회원가입
     @Transactional
@@ -34,7 +36,7 @@ public class MemberService {
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .nickName(request.nickName())
-                .phoneNumber(passwordEncoder.encode(request.phoneNumber()))
+                .phoneNumber(jasypt.encrypt(request.phoneNumber()))
                 .createdAt(new Date())
                 .updatedAt(new Date())
                 .status(MemberStatus.ACTIVE)
@@ -57,8 +59,23 @@ public class MemberService {
 
     // 이메일 찾기
     public FindEmailResponse findEmail(FindEmailRequest request) {
-        Member member = memberRps.findByPhoneNumberAndNickName(request.phoneNumber(),request.nickName())
+        Member member = memberRps.findByPhoneNumberAndNickName( jasypt.encrypt(request.phoneNumber()) ,request.nickName())
                 .orElseThrow(()->new NoSuchElementException("해당 전화번호와 닉네임을 가진 회원이 존재하지 않습니다."));
         return new FindEmailResponse( member.getEmail() );
     }
+
+    @Transactional
+    public void deleteMembers() {
+        System.out.println("DELETE MEMBERS");
+        memberRps.deleteAllByStatus();
+    }
+
+    @Transactional
+    public void signout() {
+        String email = SecurityUtil.getCurrentUsername();
+        System.out.println("Sign Out Email: " + email);
+        int updated = memberRps.updateStatusByEmail(email, MemberStatus.DELETED);
+        if (updated == 0) throw new NoSuchElementException("탈퇴할 계정을 찾을 수 없습니다: " + email);
+    }
+
 }

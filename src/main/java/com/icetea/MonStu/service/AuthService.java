@@ -43,7 +43,7 @@ public class AuthService {
         return  new VerifiCodeResponse(
                 addedVerifiCode.getId(),
                 addedVerifiCode.getEmail(),
-                "이메일 전송을 확인해주세요.");
+                "이메일을 확인해주세요.");
     }
 
     @Transactional
@@ -67,7 +67,7 @@ public class AuthService {
     public void cleanupVerifiCodes(int expiresTime, int failedTime) {
         LocalDateTime now = LocalDateTime.now();
 
-        verifiCodeRps.deleteByVerifiedTrueAndExpiresAtBefore( now.minusMinutes(expiresTime) );
+        verifiCodeRps.deleteByExpiresAtBefore( now.minusMinutes(expiresTime) );
         verifiCodeRps.deleteByFailedCountGreaterThanEqualAndFailedAtBefore((byte) 5, now.minusMinutes(failedTime) );
     }
 
@@ -79,6 +79,5 @@ public class AuthService {
         verifiCode.setFailedAt(LocalDateTime.now());
         verifiCodeRps.save(verifiCode);
     }
-
 
 }
