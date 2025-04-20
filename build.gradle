@@ -38,6 +38,9 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+	// jasypt 암호화
+	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
+
 	// DB
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -60,17 +63,18 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// AI
-	implementation 'org.springframework.ai:spring-ai-ollama-spring-boot-starter'//
+//	implementation 'org.springframework.ai:spring-ai-ollama-spring-boot-starter'//
 
 	// Email
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-
+	// Google Translate API
+	implementation 'com.google.cloud:google-cloud-translate:2.60.0'
 }
 
 dependencyManagement {
 	imports {
-		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"//
+//		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"//
 	}
 }
 

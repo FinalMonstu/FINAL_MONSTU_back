@@ -31,8 +31,8 @@ public class MemberLog {
     private Date lastLogin;
 
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "member_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "member_id",nullable=true)
     private Member member;
 
     public void setMember(Member member) {

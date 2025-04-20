@@ -28,7 +28,7 @@ public enum LanguageCode {
     // 코드(ES 등)를 반환 ex) LanguageCode.getCode("KO") -> Korean
     public static LanguageCode getCode(String code) {
         for (LanguageCode lang : values()) {
-            if (lang.name().equals(code)) {
+            if (lang.languageName.equalsIgnoreCase(code)) {
                 return lang;
             }
         }

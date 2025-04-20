@@ -16,7 +16,7 @@ public interface VerifiCodeRepository extends JpaRepository<VerifiCode,Long> {
 
     Optional<VerifiCode> findByIdAndEmailAndCodeAndExpiresAtGreaterThanEqual(Long id, String email, String code, LocalDateTime now);
 
-    void deleteByVerifiedTrueAndExpiresAtBefore(LocalDateTime dateTime);
+    void deleteByExpiresAtBefore(LocalDateTime dateTime);
 
     void deleteByFailedCountGreaterThanEqualAndFailedAtBefore(Byte count, LocalDateTime dateTime);
 }
