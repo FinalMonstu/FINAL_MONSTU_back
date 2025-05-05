@@ -1,4 +1,4 @@
-package com.icetea.MonStu.dto;
+package com.icetea.MonStu.dto.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.icetea.MonStu.enums.CountryCode;

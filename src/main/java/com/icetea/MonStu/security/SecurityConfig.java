@@ -3,9 +3,11 @@ package com.icetea.MonStu.security;
 import com.icetea.MonStu.enums.MemberRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,14 +23,15 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;        // JWT 인증 필터 (요청마다 JWT 토큰 확인 및 인증 처리)
 
-    private final String[] passPage = {};
     private final String[] authenticatedPage = {
-            "/api/auth/signout"
+
     };
+
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
@@ -38,7 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, DaoAuthenticationProvider authenticationProvider) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)  // CSRF 보안 비활성화 (JWT 방식은 CSRF 보호 필요X)
-                .cors(withDefaults())   //
+                .cors(withDefaults())   // JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))   // 세션을 사용X (JWT는 Stateless 방식)
                 .securityContext(sc -> sc.requireExplicitSave(false))
 
@@ -46,12 +49,19 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)     // UsernamePasswordAuthenticationFilter 전에 JWT 필터 등록
 
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(passPage).permitAll()    //인증 불필요
-                        .requestMatchers(authenticatedPage).authenticated()  //authenticated() -> 인증된 사용자만
-//                        .requestMatchers("/admin/**").hasRole(MemberRole.ADMIN.name())  //DB에 ROLE_ADMIN으로 저장됨
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/post/*",
+                                "/api/post/posts").permitAll()    //인증 불필요
+
+                        .requestMatchers("/api/post/**").authenticated()
+
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/api/mem/*",
+                                "/api/mem/list"
+                            ).hasRole(MemberRole.ADMIN.name())
+
                         .anyRequest().permitAll()   //나머지 모든 요청은 인증 불필요
                 )
-
                 .build();
     }
 

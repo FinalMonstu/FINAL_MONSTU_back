@@ -1,18 +1,16 @@
 package com.icetea.MonStu.dto.request;
 
 import com.icetea.MonStu.dto.MemberRequest;
-import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
 
-public record  SignUpRequest(
-        Long id,
+public record AddmemberRequest (
         String email,
         String password,
         String nickName,
-        MemberRole role,
-        MemberStatus status,
         CountryCode country,
-        String phoneNumber
-) implements MemberRequest {}
+        String phoneNumber,
+        MemberStatus status,
+        MemberRole role
+) implements MemberRequest { }

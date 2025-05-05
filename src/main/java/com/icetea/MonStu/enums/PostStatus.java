@@ -4,4 +4,5 @@ public enum PostStatus {
     PUBLIC,
     DRAFT,  // 임시보관
     DELETED,
+    ADMIN
 }

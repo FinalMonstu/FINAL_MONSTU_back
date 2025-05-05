@@ -1,31 +1,26 @@
 package com.icetea.MonStu.controller;
 
-import com.icetea.MonStu.dto.UserInfoDTO;
+import com.icetea.MonStu.dto.common.MemberInfoDTO;
 import com.icetea.MonStu.dto.request.*;
 import com.icetea.MonStu.dto.response.*;
-import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.exception.ConflictException;
 import com.icetea.MonStu.security.JwtService;
 import com.icetea.MonStu.service.AuthService;
 import com.icetea.MonStu.service.MemberService;
-import com.icetea.MonStu.util.UserInfoMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collection;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,12 +39,14 @@ public class AuthController {
         authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(request.email(), request.password()) );  //DB에서 가져온 비밀번호와 입력한 비밀번호 비교
 
         UserDetails user = userDetailsService.loadUserByUsername(request.email());
-        UserInfoDTO userInfo = UserInfoMapper.toDto(user);
+        MemberInfoDTO memberInfoDTO = memberService.getMemberInfoByEmail(request.email());
 
         String jwtToken = jwtService.generateToken(user);
         jwtService.setOption(response,jwtToken);
-        return ResponseEntity.status(HttpStatus.OK).body(userInfo);
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberInfoDTO);
     }
+
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignUpRequest request) {
@@ -132,9 +129,23 @@ public class AuthController {
     })
     @PostMapping("/signout")
     public ResponseEntity<?> signOut(@AuthenticationPrincipal UserDetails ud) {
-        System.out.println("principal = " + ud);
-        System.out.println("qweqweqweqweqweqwe");
         memberService.signout();
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+
+    @Operation(summary = "로그인 중인 사용자의 정보 반환", description = "인증된 상태인지 확인하는데 사용")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "인증된 사용자"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) { return ResponseEntity.status(401).body(null);}
+        System.out.println("authentication.getName(): "+authentication.getName());
+        MemberInfoDTO memberInfoDTO = memberService.getMemberInfoByEmail( authentication.getName() );
+        return ResponseEntity.status(HttpStatus.OK).body(memberInfoDTO);
+    }
+
 }

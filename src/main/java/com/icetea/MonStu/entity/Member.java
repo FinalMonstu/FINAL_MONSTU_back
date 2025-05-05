@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Setter
 @Getter
 @Builder
 @AllArgsConstructor
@@ -57,17 +58,17 @@ public class Member {
     private CountryCode countryCode;
 
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<MemberLog> memberLogs = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
 
 //    @OneToOne(mappedBy = "post", fetch = FetchType.EAGER)
 //    private PostLog postLog;
 
     // 다대다 연관관계
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<MemberPostHistory> memberPostHistories = new ArrayList<>();
 
 

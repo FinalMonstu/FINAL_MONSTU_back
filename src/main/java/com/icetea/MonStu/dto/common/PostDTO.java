@@ -1,4 +1,4 @@
-package com.icetea.MonStu.dto;
+package com.icetea.MonStu.dto.common;
 
 import com.icetea.MonStu.enums.PostStatus;
 import lombok.*;
