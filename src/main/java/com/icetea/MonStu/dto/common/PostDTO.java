@@ -22,7 +22,7 @@ public class PostDTO{
     private Boolean isPublic;   // 공개여부
 
     //Member Info
-    private Long authorId; //사용자 이메일
+    private String authorEmail; //사용자 이메일
     private String nickName;
 
     //Tag Info
