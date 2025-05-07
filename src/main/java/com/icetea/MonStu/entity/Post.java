@@ -4,6 +4,7 @@ import com.icetea.MonStu.entity.link.MemberPostHistory;
 import com.icetea.MonStu.entity.link.PostTag;
 import com.icetea.MonStu.enums.PostStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -23,10 +24,11 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+    @Column @NotBlank
     private String title;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column
@@ -35,7 +37,7 @@ public class Post {
     @Column
     private Date modifiedAt;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PostStatus status;
 
@@ -47,16 +49,16 @@ public class Post {
     @JoinColumn(name = "author_id")
     private Member member;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true )
     @JoinColumn(name = "thumbnail_id")
     private Image image;
 
     // 다대다 연관관계
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PostTag> postTags = new ArrayList<>();
 
     // 다대다 연관관계
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<MemberPostHistory> memberPostHistories = new ArrayList<>();
 
     public void setMember(Member member) {

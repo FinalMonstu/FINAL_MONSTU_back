@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @ToString
 @JsonInclude(JsonInclude.Include.NON_EMPTY) //null,빈값 제외
-public class MemberInfoDTO {
+public class MemberLiteInfoDTO {
     private Long id;
     private String email;
     private String nickName;

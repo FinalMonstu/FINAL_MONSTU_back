@@ -1,6 +1,7 @@
 package com.icetea.MonStu.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,22 +19,22 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column @NotBlank
     private String name;
 
-    @Column(nullable = false)
+    @Column @NotBlank
     private String url;
 
-    @Column(nullable = false)
+    @Column @NotBlank
     private String type;
 
     @Column
     private Long byteSize;
 
     @Column
-    private int height;
+    private Integer height;
 
     @Column
-    private int width;
+    private Integer width;
 
 }

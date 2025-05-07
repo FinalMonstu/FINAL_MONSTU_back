@@ -27,19 +27,15 @@ public interface MemberRepository extends JpaRepository<Member,Long>, QuerydslPr
     int updateStatusByEmail(@Param("email") String email,
                             @Param("status") MemberStatus status);
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE Member m SET m.password = :password WHERE m.email = :email")
-    int updatePasswordByEmail(@Param("email") String email,
-                              @Param("password") String password);
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("DELETE Member m WHERE m.status = 'DELETED'")
-    void deleteAllByStatus();
-
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Member m SET m.status = :status WHERE m.id IN :ids")
     void updateStatusById( @Param("ids") List<Long> ids,
                            @Param("status") MemberStatus status);
+
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE Member m WHERE m.status = 'DELETED'")
+    void deleteAllByStatus();
 
 }

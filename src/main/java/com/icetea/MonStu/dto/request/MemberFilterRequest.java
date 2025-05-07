@@ -1,6 +1,5 @@
 package com.icetea.MonStu.dto.request;
 
-import com.icetea.MonStu.dto.FilterRequest;
 import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
@@ -20,4 +19,4 @@ public record MemberFilterRequest(
         Date dateEnd
 
 
-) implements FilterRequest { }
+) { }

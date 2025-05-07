@@ -1,6 +1,7 @@
 package com.icetea.MonStu.security;
 
 import com.icetea.MonStu.enums.MemberRole;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,19 +24,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;        // JWT 인증 필터 (요청마다 JWT 토큰 확인 및 인증 처리)
 
-    private final String[] authenticatedPage = {
-
-    };
-
-
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, DaoAuthenticationProvider authenticationProvider) throws Exception {
@@ -49,16 +43,23 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)     // UsernamePasswordAuthenticationFilter 전에 JWT 필터 등록
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET,
-                                "/api/post/*",
-                                "/api/post/posts").permitAll()    //인증 불필요
 
-                        .requestMatchers("/api/post/**").authenticated()
+                        .requestMatchers(
+                                "/api/post/save",
+                                "/api/post/mine/all",
 
-                        .requestMatchers(HttpMethod.DELETE,
-                                "/api/mem/*",
-                                "/api/mem/list"
-                            ).hasRole(MemberRole.ADMIN.name())
+                                "/api/auth/signout",
+                                "/api/auth/me"
+                        ).authenticated()
+
+                        .requestMatchers( HttpMethod.DELETE,
+                                "/api/post/{id}"
+                        ).authenticated()
+
+//                        .requestMatchers(HttpMethod.DELETE,
+//                                "/api/mem/*",
+//                                "/api/mem/list"
+//                        ).hasRole(MemberRole.ADMIN.name())
 
                         .anyRequest().permitAll()   //나머지 모든 요청은 인증 불필요
                 )

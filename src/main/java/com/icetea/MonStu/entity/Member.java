@@ -7,6 +7,7 @@ import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -27,16 +28,17 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @NotBlank
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column @NotBlank
     private String password;
 
-    @Column(nullable = false)
+    @Column @NotBlank
     private String nickName;
 
-    @Column(nullable = false)
+    @Column @NotBlank
     private String phoneNumber;
 
     @Column

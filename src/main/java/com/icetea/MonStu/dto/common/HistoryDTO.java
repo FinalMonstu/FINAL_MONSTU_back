@@ -1,7 +1,6 @@
-package com.icetea.MonStu.dto.request;
+package com.icetea.MonStu.dto.common;
 
 import com.icetea.MonStu.enums.Genre;
-import com.icetea.MonStu.enums.LanguageCode;
 import lombok.*;
 
 @Getter

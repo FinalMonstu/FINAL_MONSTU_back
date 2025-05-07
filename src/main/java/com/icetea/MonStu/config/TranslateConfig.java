@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
+// Google Cloud Translation API의 클라이언트를 설정
 @Configuration
 public class TranslateConfig {
 
@@ -19,8 +20,8 @@ public class TranslateConfig {
     @Bean
     public TranslationServiceClient translationServiceClient(
             @Value("${gcp.project-id}") String projectId,
-            @Value("${gcp.location}") String location
-    ) throws Exception {
+            @Value("${gcp.location}") String location) throws Exception {
+
         // 1) JSON 키 로드
         Credentials creds = ServiceAccountCredentials.fromStream( credentialsResource.getInputStream() );
 

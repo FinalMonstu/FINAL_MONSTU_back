@@ -1,15 +1,15 @@
 package com.icetea.MonStu.exception;
 
 import com.icetea.MonStu.dto.response.ErrorResponse;
+import com.icetea.MonStu.dto.response.MessageResponse;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.security.core.AuthenticationException;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,13 +31,6 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("BAD_REQUEST",StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "잘못된 요청입니다. 요청을 다시 확인해 주세요."));
     }
 
-    // 500
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity
-                .badRequest()
-                .body(new ErrorResponse("BAD_REQUEST",StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "입력을 다시 확인해주세요."));
-    }
 
     // 401 Unauthorized - 인증 실패
     @ExceptionHandler(UnauthorizedException.class)
@@ -60,7 +53,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleNoSuchElementException(NoSuchElementException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("NoSuch Data", StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "데이터가 존재하지 않습니다..") );
+                .body(new ErrorResponse("NoSuch Data", StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "데이터가 존재하지 않습니다") );
     }
 
     // 409 Conflict - 리소스 충돌
@@ -71,12 +64,21 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("Conflict", StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "이미 존재하는 리소스입니다."));
     }
 
-//    // 409
-//    @ExceptionHandler(RuntimeException.class)
-//    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
-//        return ResponseEntity
-//                .status(HttpStatus.CONFLICT)
-//                .body(new ErrorResponse("Runtime error", e.getMessage()));
-//    }
+    // 500
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(new ErrorResponse("BAD_REQUEST",StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "입력을 다시 확인해주세요."));
+    }
+
+    // AuthenticationException - 401 Unauthorized
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<?> handleAuthException(AuthenticationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse("Unauthorized",StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "일치하는 정보가 없습니다"));
+    }
+
 }
 

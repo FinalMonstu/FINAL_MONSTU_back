@@ -1,11 +1,14 @@
 package com.icetea.MonStu.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.List;
 
 /*
     국가 언어 코드 (ISO 639-1)
 */
+@Getter
 public enum LanguageCode {
     KO("Korean"),
     EN("English"),
@@ -14,16 +17,13 @@ public enum LanguageCode {
     FR("French"),
     ES("Spanish");
 
+    // 언어 이름을 반환 ex) LanguageCode.EN -> English
     private final String languageName;
 
     LanguageCode(String languageName) {
         this.languageName = languageName;
     }
 
-    // 언어 이름을 반환 ex) LanguageCode.EN -> English
-    public String getLanguageName() {
-        return languageName;
-    }
 
     // 코드(ES 등)를 반환 ex) LanguageCode.getCode("KO") -> Korean
     public static LanguageCode getCode(String code) {

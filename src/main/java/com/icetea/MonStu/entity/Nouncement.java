@@ -2,6 +2,7 @@ package com.icetea.MonStu.entity;
 
 import com.icetea.MonStu.entity.link.NouncementImage;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -21,11 +22,11 @@ public class Nouncement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column @NotBlank
     private String title;
 
-    @Lob
-    @Column(nullable = false)
+    @NotBlank
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column
@@ -35,17 +36,17 @@ public class Nouncement {
     private LocalDateTime modifiedAt;
 
     @Column(nullable = false)
-    private Boolean isPublic;   // 공개여부
+    private Boolean isPublic;   // 공개 여부
 
     @Column(nullable = false)
-    private Boolean isImportant;   // 중요여부
+    private Boolean isImportant;   // 중요 여부
 
     @Column
-    private int viewCount;   // 공개여부
+    private int viewCount;
 
 
     // 다대다 연관관계
-    @OneToMany(mappedBy = "nouncement", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "nouncement", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<NouncementImage> nouncementImages = new ArrayList<>();
 
 

@@ -13,8 +13,6 @@ public interface MemberRequest {
     CountryCode country();
     String phoneNumber();
 
-    default Long id() { return null; }
-    default Date createdAt() { return null; }
     default MemberStatus status() { return null; }
     default MemberRole role() { return null; }
 }

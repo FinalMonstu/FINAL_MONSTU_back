@@ -1,4 +1,4 @@
-package com.icetea.MonStu.client;
+package com.icetea.MonStu.infra;
 
 import com.google.cloud.translate.v3.LocationName;
 import com.google.cloud.translate.v3.TranslateTextRequest;
@@ -24,7 +24,6 @@ public class TranslationClient {
 
     public TransDTO translate(TransDTO transDTO){
         transDTO.setTransed( null );
-        System.out.println("Translate API Working: "+ transDTO.getTarget());
         LocationName parent = LocationName.of(projectId, location);
         TranslateTextRequest request = TranslateTextRequest.newBuilder()
                 .setParent(parent.toString())

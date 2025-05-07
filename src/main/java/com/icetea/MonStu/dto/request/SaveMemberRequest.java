@@ -12,7 +12,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record  SignUpRequest(
+public record SaveMemberRequest (
 
         @Email
         @NotBlank
@@ -24,16 +24,17 @@ public record  SignUpRequest(
         String password,
 
         @NotBlank
-        @Pattern(regexp= ValidationConstants.PHONE_REGEX, message = "{Pattern.message.phonenumber}")
-        String phoneNumber,
-
-        @NotBlank
         String nickName,
 
         @NotBlank
         CountryCode country,
 
-        MemberRole role,
-        MemberStatus status
+        @NotBlank
+        String phoneNumber,
 
-) implements MemberRequest {}
+        /* 회원가입 시 -> service에서 기본값 추가
+        *  어드민 유저 추가 시 -> 요청에서 캐스팅 */
+        MemberStatus status,
+        MemberRole role
+
+) implements MemberRequest { }

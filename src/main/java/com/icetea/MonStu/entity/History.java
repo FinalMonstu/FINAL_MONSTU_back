@@ -4,6 +4,7 @@ import com.icetea.MonStu.entity.link.MemberPostHistory;
 import com.icetea.MonStu.enums.Genre;
 import com.icetea.MonStu.enums.LanguageCode;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -22,16 +23,17 @@ public class History {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column
+    @Column @NotBlank
     private String target;      // 단어 또는 문장
 
-    @Column
+    @Column @NotBlank
     @Enumerated(EnumType.STRING)
     private Genre genre;        //장르
 
-    @Column
+    @Column @NotBlank
     @Enumerated(EnumType.STRING)
     private LanguageCode languageCode;
+
 
     @OneToMany(mappedBy = "history", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MemberPostHistory> memberPostHistories = new ArrayList<>();;

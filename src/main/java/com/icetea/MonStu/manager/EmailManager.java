@@ -19,6 +19,7 @@ public class EmailManager {
 
     private final JavaMailSender sender;
 
+    //  이메일 인증 번호 전송
     public String sendEmailPass(String email) {
         HttpSession session = ((ServletRequestAttributes)(RequestContextHolder.currentRequestAttributes()))
                 .getRequest().getSession();

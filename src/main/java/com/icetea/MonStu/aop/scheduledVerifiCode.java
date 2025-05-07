@@ -1,13 +1,10 @@
 package com.icetea.MonStu.aop;
 
-import com.icetea.MonStu.repository.VerifiCodeRepository;
 import com.icetea.MonStu.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Aspect
 @RequiredArgsConstructor

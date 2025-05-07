@@ -1,5 +1,7 @@
 package com.icetea.MonStu.dto.common;
 
+import com.icetea.MonStu.entity.Member;
+import com.icetea.MonStu.entity.Post;
 import com.icetea.MonStu.enums.PostStatus;
 import lombok.*;
 
@@ -27,4 +29,17 @@ public class PostDTO{
 
     //Tag Info
     private List<TagDTO> tags;
+
+
+    public static PostDTO mapper(Post p) {
+        return builder()
+                .id(p.getId())
+                .title(p.getTitle())
+                .content(p.getContent())
+                .createdAt(p.getCreatedAt())
+                .modifiedAt(p.getModifiedAt())
+                .status(p.getStatus())
+                .isPublic(p.getIsPublic())
+                .build();
+    }
 }

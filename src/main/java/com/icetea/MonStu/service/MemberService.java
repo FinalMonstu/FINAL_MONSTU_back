@@ -1,33 +1,25 @@
 package com.icetea.MonStu.service;
 
-import com.icetea.MonStu.dto.FilterRequest;
 import com.icetea.MonStu.dto.MemberRequest;
 import com.icetea.MonStu.dto.common.MemberDTO;
-import com.icetea.MonStu.dto.common.MemberInfoDTO;
-import com.icetea.MonStu.dto.common.MemberLogDTO;
+import com.icetea.MonStu.dto.common.MemberLiteInfoDTO;
 import com.icetea.MonStu.dto.request.*;
-import com.icetea.MonStu.dto.response.FindEmailResponse;
-import com.icetea.MonStu.dto.response.PostLiteResponse;
+import com.icetea.MonStu.dto.response.EmailFindResponse;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.entity.QMember;
-import com.icetea.MonStu.entity.log.MemberLog;
-import com.icetea.MonStu.entity.log.QMemberLog;
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
 import com.icetea.MonStu.exception.ConflictException;
 import com.icetea.MonStu.exception.NoSuchElementException;
 import com.icetea.MonStu.repository.MemberRepository;
-import com.icetea.MonStu.repository.log.MemberLogRepository;
 import com.icetea.MonStu.security.SecurityUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import org.jasypt.encryption.StringEncryptor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,17 +36,14 @@ public class MemberService {
 
     private final MemberRepository memberRps;
 
-    private final UserDetailsService userDetailsService;
-
-    private final PasswordEncoder passwordEncoder;
-    private final StringEncryptor jasypt;
-    private final ModelMapper modelMapper;
-    private final MemberLogRepository memberLogRps;
+    private final PasswordEncoder passwordEncoder;  //비밀번호 인코더
+    private final StringEncryptor jasypt;           //문자열 인크립터
 
     // 회원가입
     @Transactional
     public void signup(MemberRequest request) {
         if (memberRps.existsByEmail(request.email())) { throw new ConflictException("이미 사용 중인 이메일입니다."); }
+
         Member member = Member.builder()
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
@@ -62,49 +51,56 @@ public class MemberService {
                 .phoneNumber(jasypt.encrypt(request.phoneNumber()))
                 .createdAt(new Date())
                 .updatedAt(new Date())
-                    .status(MemberStatus.ACTIVE)
-                    .role(MemberRole.MEMBER)
+                .status(MemberStatus.ACTIVE)    // 기본값 'ACTIVE'
+                .role(MemberRole.MEMBER)        // 기본값 'MEMBER'
                 .countryCode(request.country())
                 .build();
-        if(request.createdAt()!=null) member.setCreatedAt(request.createdAt());
+
+        // Admin Page에서 유저 저장 시 사용
         if(request.status()!=null) member.setStatus( request.status() );
         if(request.role()!=null) member.setRole( request.role() );
 
         memberRps.save(member);
     }
 
-    public Boolean existsByEmail(String email) {
-        return memberRps.existsByEmail(email);
+    // 이메일 중복 확인
+    public void existsByEmail(String email) {
+        boolean exist = memberRps.existsByEmail(email);
+        if(exist) throw new ConflictException("이미 존재하는 이메일입니다.");
     }
 
     // 비밀번호 재설정
     @Transactional
-    public void resetPassword(EmailPasswordRequest request) {
-        int success = memberRps.updatePasswordByEmail(request.email(), passwordEncoder.encode(request.password()) );
-        if (success == 0)  throw new IllegalArgumentException("해당 이메일의 회원이 존재하지 않습니다.");
+    public void resetPassword(LoginRequest request) {
+        Member member = memberRps.findByEmail(request.email())
+                .orElseThrow(()-> new NoSuchElementException(null));
+        member.setUpdatedAt(new Date());
+        member.setPassword(passwordEncoder.encode(request.password()));
     }
 
     // 이메일 찾기
-    public FindEmailResponse findEmail(FindEmailRequest request) {
+    public EmailFindResponse findEmail(FindEmailRequest request) {
         Member member = memberRps.findByPhoneNumberAndNickName( jasypt.encrypt(request.phoneNumber()) ,request.nickName())
-                .orElseThrow(()->new NoSuchElementException("해당 전화번호와 닉네임을 가진 회원이 존재하지 않습니다."));
-        return new FindEmailResponse( member.getEmail() );
+                .orElseThrow(()->new NoSuchElementException(null));
+        return new EmailFindResponse( member.getEmail() );
     }
 
+    // status 속성이 'DELETE'인 모든 데이터 삭제
     @Transactional
     public void deleteMembers() {
-        System.out.println("DELETE MEMBERS");
         memberRps.deleteAllByStatus();
     }
+
 
     @Transactional
     public void signout() {
         String email = SecurityUtil.getCurrentUsername();
         System.out.println("Sign Out Email: " + email);
         int updated = memberRps.updateStatusByEmail(email, MemberStatus.DELETED);
-        if (updated == 0) throw new NoSuchElementException("탈퇴할 계정을 찾을 수 없습니다: " + email);
+        if (updated == 0) throw new NoSuchElementException("계정을 찾을 수 없습니다: " + email);
     }
 
+    // ID 목록 이용, 회원 status 속성을 'DELETE'로 변경
     @Transactional
     public void signoutMembers(List<Long> ids) {
         memberRps.updateStatusById(ids,MemberStatus.DELETED);
@@ -117,18 +113,19 @@ public class MemberService {
         member.setStatus(MemberStatus.DELETED);
     }
 
+
+    // ID 이용, 회원 데이터 반환
     @Transactional
     public MemberDTO getMember(Long id) {
         return memberRps.findById(id)
                 .map(MemberDTO::mapper)
                 .orElseThrow(()->new NoSuchElementException(null));
-//        MemberDTO memberDTO = modelMapper.map(member, MemberDTO.class);
     }
 
     // 회원의 id,email,nickname,role,countryCode를 가진 DTO를 반환
-    public MemberInfoDTO getMemberInfoByEmail(String email) {
-        Member member = memberRps.findByEmail(email).orElseThrow(()->new NoSuchElementException("일치하는 회원을 찾을 수 없습니다"));
-        return MemberInfoDTO.builder()
+    public MemberLiteInfoDTO getMemberLiteInfoByEmail(String email) {
+        Member member = memberRps.findByEmail(email).orElseThrow(()->new NoSuchElementException(null));
+        return MemberLiteInfoDTO.builder()
                 .id(member.getId())
                 .email(member.getEmail())
                 .nickName(member.getNickName())
@@ -137,25 +134,33 @@ public class MemberService {
                 .build();
     }
 
-    private Predicate buildMemberPredicate(MemberFilterRequest filterDTO) {
+    // Pageable과 전달 받은 필터 정보를 이용, 필터링된 멤버 목록 반환
+    public Page<MemberDTO> filterMembers(MemberFilterRequest filterDTO, Pageable pageable) {
+        Predicate predicate = buildFilterPredicate(filterDTO);
+        return memberRps.findAll(predicate, pageable)
+                .map(MemberDTO::mapper);
+    }
+
+    // MemberFilterRequest를 이용, 조건식 쿼리 작성-반환
+    private Predicate buildFilterPredicate(MemberFilterRequest filterDTO) {
         QMember member = QMember.member;
 
         BooleanExpression predicate = allOf(
-            StringUtils.hasText(filterDTO.email())
-                    ? member.email.containsIgnoreCase(filterDTO.email())
-                    : null,
-            StringUtils.hasText(filterDTO.nickname())
-                    ? member.nickName.containsIgnoreCase(filterDTO.nickname())
-                    : null,
-            filterDTO.countryCode() != null
-                    ? member.countryCode.eq(filterDTO.countryCode())
-                    : null,
-            filterDTO.role() != null
-                    ? member.role.eq(filterDTO.role())
-                    : null,
-            filterDTO.status() != null
-                    ? member.status.eq(filterDTO.status())
-                    : null
+                StringUtils.hasText(filterDTO.email())
+                        ? member.email.containsIgnoreCase(filterDTO.email())
+                        : null,
+                StringUtils.hasText(filterDTO.nickname())
+                        ? member.nickName.containsIgnoreCase(filterDTO.nickname())
+                        : null,
+                filterDTO.countryCode() != null
+                        ? member.countryCode.eq(filterDTO.countryCode())
+                        : null,
+                filterDTO.role() != null
+                        ? member.role.eq(filterDTO.role())
+                        : null,
+                filterDTO.status() != null
+                        ? member.status.eq(filterDTO.status())
+                        : null
         );
 
         BooleanBuilder builder = new BooleanBuilder(predicate);
@@ -167,13 +172,6 @@ public class MemberService {
                         .and(member.updatedAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
             }
         }
-//        return builder.and(memberLog.member.isNotNull());
         return builder;
-    }
-
-    public Page<MemberDTO> findMembers(MemberFilterRequest filterDTO, Pageable pageable) {
-        Predicate predicate = buildMemberPredicate(filterDTO);
-        return memberRps.findAll(predicate, pageable)
-                .map(MemberDTO::mapper);
     }
 }

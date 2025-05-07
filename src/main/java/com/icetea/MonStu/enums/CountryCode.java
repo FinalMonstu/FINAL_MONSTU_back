@@ -36,12 +36,12 @@ public enum CountryCode {
         return alpha3Code;
     }
 
-    @JsonValue  //Java 객체를 → JSON으로 변환할 때 어떤 값을 사용할지를 지정.
+    @JsonValue
     public String getCountryName() {
         return countryName;
     }
 
-    @JsonCreator    //문자열을 enum이나 객체로 바꿔줄 때, JSON 값을 → Java 객체로 변환할 때 어떤 생성자나 메서드를 사용할지를 지정.
+    @JsonCreator
     public static CountryCode fromCountryName(String name) {
         for (CountryCode country : values()) {
             if (country.getCountryName().equalsIgnoreCase(name)) {
@@ -51,6 +51,7 @@ public enum CountryCode {
         throw new IllegalArgumentException("Invalid country name: " + name);
     }
 
+    // 모든 countryName 반환
     public static List<String> getCountryNames(){
         return Arrays.stream(CountryCode.values())
                 .map(CountryCode::getCountryName)

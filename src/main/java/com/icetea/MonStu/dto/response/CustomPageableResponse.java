@@ -15,7 +15,7 @@ public class CustomPageableResponse<T> {
     private final int number;
     private final int size;
 
-    public static <T> CustomPageableResponse<T> from(Page<T> page) {
+    public static <T> CustomPageableResponse<T> mapper(Page<T> page) {
         return CustomPageableResponse.<T>builder()
                 .content(page.getContent())
                 .totalElements(page.getTotalElements())

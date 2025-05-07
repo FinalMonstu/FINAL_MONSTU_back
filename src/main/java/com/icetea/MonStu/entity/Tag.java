@@ -2,6 +2,7 @@ package com.icetea.MonStu.entity;
 
 import com.icetea.MonStu.entity.link.PostTag;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.List;
@@ -19,9 +20,9 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+    @Column @NotBlank
     private String value;
 
-    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PostTag> postTags;
 }
