@@ -6,6 +6,7 @@ import com.icetea.MonStu.enums.PostStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString(exclude = {"member","image","postTags"})
 @Entity
+@DynamicUpdate
 @Table(name="post")
 public class Post {
 

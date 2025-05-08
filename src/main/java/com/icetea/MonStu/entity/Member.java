@@ -1,5 +1,6 @@
 package com.icetea.MonStu.entity;
 
+import com.icetea.MonStu.converter.CryptoConverter;
 import com.icetea.MonStu.entity.link.MemberPostHistory;
 import com.icetea.MonStu.entity.log.MemberLog;
 import com.icetea.MonStu.entity.log.PostLog;
@@ -9,6 +10,7 @@ import com.icetea.MonStu.enums.MemberStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString(exclude = {"memberLogs","posts","postLog","memberHistories"})
 @Entity
+@DynamicUpdate  // 수정된 필드만 update문에 반영
 @Table(name= "member")
 public class Member {
 
@@ -39,6 +42,7 @@ public class Member {
     private String nickName;
 
     @Column @NotBlank
+    @Convert(converter = CryptoConverter.class)
     private String phoneNumber;
 
     @Column

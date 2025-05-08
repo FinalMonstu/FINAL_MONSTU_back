@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @RequiredArgsConstructor
 @Component
-public class scheduledMember {
+public class ScheduledMember {
 
     private final MemberService memberSvc;
     private final MemberLogService memberLogSvc;

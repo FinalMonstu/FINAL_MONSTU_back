@@ -8,10 +8,11 @@ import java.util.Date;
 
 public interface MemberRequest {
     String email();
-    String password();
     String nickName();
     CountryCode country();
     String phoneNumber();
+
+    default String password() { return null; }
 
     default MemberStatus status() { return null; }
     default MemberRole role() { return null; }

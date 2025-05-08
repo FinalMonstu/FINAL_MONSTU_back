@@ -7,17 +7,23 @@ import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import org.jasypt.encryption.StringEncryptor;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 
 @Getter
+@Setter
 @Builder
 @ToString
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class MemberDTO {
     private Long memberId;
+
     private String email;
+
     private String nickName;
     private String phoneNumber;
 

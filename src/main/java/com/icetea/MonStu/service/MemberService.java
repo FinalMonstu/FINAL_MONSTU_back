@@ -37,7 +37,6 @@ public class MemberService {
     private final MemberRepository memberRps;
 
     private final PasswordEncoder passwordEncoder;  //비밀번호 인코더
-    private final StringEncryptor jasypt;           //문자열 인크립터
 
     // 회원가입
     @Transactional
@@ -48,7 +47,7 @@ public class MemberService {
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .nickName(request.nickName())
-                .phoneNumber(jasypt.encrypt(request.phoneNumber()))
+                .phoneNumber(request.phoneNumber()) // 암호화된 값 저장
                 .createdAt(new Date())
                 .updatedAt(new Date())
                 .status(MemberStatus.ACTIVE)    // 기본값 'ACTIVE'
@@ -80,7 +79,7 @@ public class MemberService {
 
     // 이메일 찾기
     public EmailFindResponse findEmail(FindEmailRequest request) {
-        Member member = memberRps.findByPhoneNumberAndNickName( jasypt.encrypt(request.phoneNumber()) ,request.nickName())
+        Member member = memberRps.findByPhoneNumberAndNickName( request.phoneNumber() ,request.nickName())
                 .orElseThrow(()->new NoSuchElementException(null));
         return new EmailFindResponse( member.getEmail() );
     }
@@ -106,6 +105,21 @@ public class MemberService {
         memberRps.updateStatusById(ids,MemberStatus.DELETED);
     }
 
+    // 권한 : ADMIN , 회원 정보 수정
+    @Transactional
+    public void updateMember(UpdateMemberRequest request) {
+        Member member = memberRps.findById(request.id())
+                .orElseThrow(()->new NoSuchElementException(null));
+        member.setEmail(request.email());
+        member.setNickName(request.nickName());
+        member.setPhoneNumber(request.phoneNumber());
+        member.setUpdatedAt(new Date());
+
+        member.setStatus(request.status());
+        member.setRole(request.role());
+        member.setCountryCode(request.country());
+    }
+
     // Update Status to 'DELETE' by id
     @Transactional
     public void deleteMember(Long id) {
@@ -115,7 +129,6 @@ public class MemberService {
 
 
     // ID 이용, 회원 데이터 반환
-    @Transactional
     public MemberDTO getMember(Long id) {
         return memberRps.findById(id)
                 .map(MemberDTO::mapper)
@@ -174,4 +187,6 @@ public class MemberService {
         }
         return builder;
     }
+
+
 }

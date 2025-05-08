@@ -3,6 +3,7 @@ package com.icetea.MonStu.controller;
 import com.icetea.MonStu.dto.common.MemberDTO;
 import com.icetea.MonStu.dto.request.MemberFilterRequest;
 import com.icetea.MonStu.dto.request.SaveMemberRequest;
+import com.icetea.MonStu.dto.request.UpdateMemberRequest;
 import com.icetea.MonStu.dto.response.CustomPageableResponse;
 import com.icetea.MonStu.dto.response.MessageResponse;
 import com.icetea.MonStu.service.MemberService;
@@ -21,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestController
@@ -74,6 +76,21 @@ public class MemberController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(result);
+    }
+
+
+    @Operation(summary = "회원 정보 수정", description = "")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "500", description = "수정 실패")
+    })
+    @PutMapping("/update")
+    @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
+    public ResponseEntity<?> updateMember(@RequestBody UpdateMemberRequest request) {
+        memberSVC.updateMember(request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body( new MessageResponse("수정 성공") );
     }
 
 
