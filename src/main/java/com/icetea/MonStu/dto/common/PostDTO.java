@@ -40,6 +40,10 @@ public class PostDTO{
                 .modifiedAt(p.getModifiedAt())
                 .status(p.getStatus())
                 .isPublic(p.getIsPublic())
+
+                .authorEmail(p.getMember().getEmail())
+                .nickName(p.getMember().getNickName())
+
                 .build();
     }
 }

@@ -11,8 +11,10 @@ public record PostLiteResponse(
          // Post Info
          Long id,
          String title,
+
          Date createdAt,
          Date modifiedAt,
+
          PostStatus status,
          Boolean isPublic,   // 공개여부
 

@@ -30,6 +30,7 @@ public record SaveMemberRequest (
         CountryCode country,
 
         @NotBlank
+        @Pattern(regexp= ValidationConstants.PHONE_REGEX, message = "{Pattern.message.phonenumber}")
         String phoneNumber,
 
         /* 회원가입 시 -> service에서 기본값 추가

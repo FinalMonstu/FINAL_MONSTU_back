@@ -1,5 +1,6 @@
 package com.icetea.MonStu.controller;
 
+import com.icetea.MonStu.dto.common.EmailDTO;
 import com.icetea.MonStu.dto.common.MemberLiteInfoDTO;
 import com.icetea.MonStu.dto.request.*;
 import com.icetea.MonStu.dto.response.*;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -73,6 +75,7 @@ public class AuthController {
     })
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignUpRequest request) {
+        System.out.println("회원가입: "+request);
         memberService.signup(request);
         return ResponseEntity .status(HttpStatus.CREATED).body("회원가입이 완료되었습니다.");
     }
@@ -112,8 +115,8 @@ public class AuthController {
             @ApiResponse(responseCode = "409", description = "이메일 중복")
     })
     @GetMapping("/email/avail")
-    public ResponseEntity<?> availEmail(@RequestParam String email) {
-        memberService.existsByEmail(email);
+    public ResponseEntity<?> availEmail(@Valid @ModelAttribute EmailDTO dto) {
+        memberService.existsByEmail(dto.email());
         return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("사용할 수 있는 이메일입니다."));
     }
 
@@ -124,7 +127,7 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "재설정 실패")
     })
     @PostMapping("/repassword")
-    public ResponseEntity<?> resetPassword(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         memberService.resetPassword(request);
         return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("변경되었습니다"));
     }

@@ -1,16 +1,22 @@
 package com.icetea.MonStu.controller;
 
+import com.icetea.MonStu.dto.common.MemberDTO;
 import com.icetea.MonStu.dto.common.PostDTO;
+import com.icetea.MonStu.dto.request.MemberFilterRequest;
+import com.icetea.MonStu.dto.request.PostFilterRequest;
 import com.icetea.MonStu.dto.request.PostRequest;
+import com.icetea.MonStu.dto.request.UpdatePostRequest;
 import com.icetea.MonStu.dto.response.CustomPageableResponse;
 import com.icetea.MonStu.dto.response.MessageResponse;
 import com.icetea.MonStu.dto.response.PostLiteResponse;
+import com.icetea.MonStu.dto.response.PostResponse;
 import com.icetea.MonStu.security.CustomUserDetails;
 import com.icetea.MonStu.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,6 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -37,8 +45,9 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("/save")
-    public ResponseEntity<PostDTO> savePost(@RequestBody PostRequest request){
-        PostDTO postDto = postSvc.savePost(request);
+    public ResponseEntity<PostDTO> savePost(@Valid @RequestBody PostRequest request, @AuthenticationPrincipal CustomUserDetails user){
+        System.out.println("insert Post: "+request);
+        PostDTO postDto = postSvc.savePost(request,user);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( postDto );
@@ -80,9 +89,10 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
-    @GetMapping("/mine/all")
+    @GetMapping("/me/posts")
     public ResponseEntity<?> getMinePosts( @AuthenticationPrincipal CustomUserDetails user, Pageable pageable ){
-        Page<PostLiteResponse> page = postSvc.getPosts(user,pageable);
+        System.out.println("user:"+user.getId());
+        Page<PostLiteResponse> page = postSvc.getPosts(user.getId(),pageable);
         CustomPageableResponse<PostLiteResponse> result = CustomPageableResponse.mapper(page);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -103,5 +113,69 @@ public class PostController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( result );
+    }
+
+
+    @Operation(summary = "필터링된 게시물 데이터 목록 반환", description = "페이지 정보와 필터링 정보를 이용, 필터링된 게시물 데이터 목록 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "반환 성공"),
+            @ApiResponse(responseCode = "500", description = "반환 실패")
+    })
+    @PostMapping("/filter")
+    public ResponseEntity<?> filterPosts(@RequestBody PostFilterRequest filter, Pageable pageable) {
+        System.out.println("filter:"+filter);
+        System.out.println("pageable:"+pageable);
+        Page<PostResponse> page = postSvc.filterPosts(filter,pageable);
+        CustomPageableResponse<PostResponse> result = CustomPageableResponse.mapper(page);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(result);
+    }
+
+    @Operation(summary = "게시글 & 로그 조회", description = "게시글 ID를 이용하여 게시물 & 로그 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    })
+    @GetMapping("/detail/{id}")
+    @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
+    public ResponseEntity<?> findWithPostsAndLogById( @PathVariable Long id ){
+        System.out.println("id: "+id);
+        PostResponse result = postSvc.findWithMemberAndLogById(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body( result );
+    }
+
+    @Operation(summary = "여러 게시물 데이터 삭제", description = "전달받은 ID 목록을 이용, 해당 게시물 상태를 'DELETE'로 변경")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "삭제 성공"),
+            @ApiResponse(responseCode = "500", description = "삭제_서버 오류 실패")
+    })
+    @PostMapping("/delete")
+    @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
+    public ResponseEntity<?> deletePosts(@RequestBody List<Long> ids) {
+        System.out.println("idList:"+ids);
+        postSvc.deletePosts(ids);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body( new MessageResponse("삭제 성공") );
+    }
+
+
+    @Operation(summary = "게시물 데이터 수정", description = "")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "500", description = "수정_서버 오류 실패")
+    })
+    @PutMapping("/update")
+    @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
+    public ResponseEntity<?> updatePost(@RequestBody UpdatePostRequest request) {
+        System.out.println("request:"+request);
+        postSvc.updatePost(request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body( new MessageResponse("수정 성공") );
     }
 }

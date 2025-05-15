@@ -11,15 +11,16 @@ import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
 import com.icetea.MonStu.exception.ConflictException;
 import com.icetea.MonStu.exception.NoSuchElementException;
+import com.icetea.MonStu.manager.FilterPredicateManager;
 import com.icetea.MonStu.repository.MemberRepository;
 import com.icetea.MonStu.security.SecurityUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
-import org.jasypt.encryption.StringEncryptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,6 @@ import static com.querydsl.core.types.dsl.Expressions.allOf;
 public class MemberService {
 
     private final MemberRepository memberRps;
-
     private final PasswordEncoder passwordEncoder;  //비밀번호 인코더
 
     // 회원가입
@@ -70,7 +70,7 @@ public class MemberService {
 
     // 비밀번호 재설정
     @Transactional
-    public void resetPassword(LoginRequest request) {
+    public void resetPassword(ResetPasswordRequest request) {
         Member member = memberRps.findByEmail(request.email())
                 .orElseThrow(()-> new NoSuchElementException(null));
         member.setUpdatedAt(new Date());
@@ -149,44 +149,20 @@ public class MemberService {
 
     // Pageable과 전달 받은 필터 정보를 이용, 필터링된 멤버 목록 반환
     public Page<MemberDTO> filterMembers(MemberFilterRequest filterDTO, Pageable pageable) {
-        Predicate predicate = buildFilterPredicate(filterDTO);
+        Predicate predicate = FilterPredicateManager.buildMembersFilterPredicate(filterDTO);
         return memberRps.findAll(predicate, pageable)
                 .map(MemberDTO::mapper);
     }
 
-    // MemberFilterRequest를 이용, 조건식 쿼리 작성-반환
-    private Predicate buildFilterPredicate(MemberFilterRequest filterDTO) {
-        QMember member = QMember.member;
 
-        BooleanExpression predicate = allOf(
-                StringUtils.hasText(filterDTO.email())
-                        ? member.email.containsIgnoreCase(filterDTO.email())
-                        : null,
-                StringUtils.hasText(filterDTO.nickname())
-                        ? member.nickName.containsIgnoreCase(filterDTO.nickname())
-                        : null,
-                filterDTO.countryCode() != null
-                        ? member.countryCode.eq(filterDTO.countryCode())
-                        : null,
-                filterDTO.role() != null
-                        ? member.role.eq(filterDTO.role())
-                        : null,
-                filterDTO.status() != null
-                        ? member.status.eq(filterDTO.status())
-                        : null
-        );
-
-        BooleanBuilder builder = new BooleanBuilder(predicate);
-        if (StringUtils.hasText(filterDTO.dateOption()) && filterDTO.dateStart() != null && filterDTO.dateEnd() != null) {
-            switch (filterDTO.dateOption()) {
-                case "createdAt" -> builder
-                        .and(member.createdAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
-                case "updatedAt" -> builder
-                        .and(member.updatedAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
-            }
-        }
-        return builder;
+    public MemberDTO getMyInfo(String email) {
+        Member member = memberRps.findByEmail(email).orElseThrow(()->new NoSuchElementException(null));
+        return MemberDTO.builder()
+                .memberId(member.getId())
+                .email(member.getEmail())
+                .nickName(member.getNickName())
+                .phoneNumber( member.getPhoneNumber())
+                .countryCode(member.getCountryCode())
+                .build();
     }
-
-
 }

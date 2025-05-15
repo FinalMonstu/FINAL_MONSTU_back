@@ -1,12 +1,16 @@
 package com.icetea.MonStu.service;
 
 import com.icetea.MonStu.dto.common.PostDTO;
+import com.icetea.MonStu.dto.request.PostFilterRequest;
 import com.icetea.MonStu.dto.request.PostRequest;
+import com.icetea.MonStu.dto.request.UpdatePostRequest;
 import com.icetea.MonStu.dto.response.PostLiteResponse;
+import com.icetea.MonStu.dto.response.PostResponse;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.entity.Post;
 import com.icetea.MonStu.enums.PostStatus;
 import com.icetea.MonStu.exception.NoSuchElementException;
+import com.icetea.MonStu.manager.FilterPredicateManager;
 import com.icetea.MonStu.repository.MemberRepository;
 import com.icetea.MonStu.repository.PostRepository;
 import com.icetea.MonStu.security.CustomUserDetails;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 import static com.icetea.MonStu.entity.QPost.post;
 
@@ -30,8 +35,8 @@ public class PostService {
 
 
     @Transactional
-    public PostDTO savePost(PostRequest request) {
-        Member member = memberRps.findByEmail( request.authorEmail() )
+    public PostDTO savePost(PostRequest request, CustomUserDetails user) {
+        Member member = memberRps.findById( user.getId() )
                 .orElseThrow(()->new NoSuchElementException("회원 정보를 찾을 수 없습니다"));
 
         Post post = Post.builder()
@@ -43,6 +48,7 @@ public class PostService {
                 .isPublic( request.isPublic() )
                 .member( member )
                 .build();
+        System.out.println("Post: "+post);
         Post savedPost  = postRps.save(post);
 
         PostDTO postDTO = PostDTO.mapper(savedPost);
@@ -51,9 +57,9 @@ public class PostService {
         return postDTO;
     }
 
-    // Pageable | AuthenticationPrincipal 이용, 로그인 상태의 회원이 작성한 게시물 목록 반환
-    public Page<PostLiteResponse> getPosts(CustomUserDetails user, Pageable pageable) {
-        Predicate predicate = post.member.id.eq(user.getId());
+    // Pageable | Id 이용, 회원이 작성한 게시물 목록 반환
+    public Page<PostLiteResponse> getPosts(Long userId, Pageable pageable) {
+        Predicate predicate = post.member.id.eq( userId );
 
         return postRps.findAll(predicate, pageable)
                 .map( PostLiteResponse::mapper );
@@ -79,5 +85,39 @@ public class PostService {
         Post post = postRps.findById(id)
                 .orElseThrow(()-> new NoSuchElementException(null));
         return PostDTO.mapper(post);
+    }
+
+    // Pageable과 전달 받은 필터 정보를 이용, 필터링된 게시물 목록 반환
+    public Page<PostResponse> filterPosts(PostFilterRequest filter, Pageable pageable) {
+        Predicate predicate = FilterPredicateManager.buildPostsFilterPredicate(filter);
+        return postRps.findAll(predicate, pageable)
+                .map(PostResponse::mapper);
+    }
+
+    // 게시글 ID를 이용, 게시글 & 로그 정보 반환
+    public PostResponse findWithMemberAndLogById(Long id) {
+        return postRps.findWithMemberAndLogById(id)
+                .map(PostResponse::mapper)
+                .orElseThrow(()-> new NoSuchElementException(null));
+    }
+
+    // 게시글 ID 사용, Status를 'DELETE'로 변경
+    @Transactional
+    public void deletePosts(List<Long> ids) {
+        postRps.updateStatusById(ids,PostStatus.DELETED);
+    }
+
+    // 게시글 ID 사용, 게시글 수정
+    @Transactional
+    public void updatePost(UpdatePostRequest request) {
+        Post post = postRps.findById(request.id())
+                .orElseThrow(()-> new NoSuchElementException(null));
+        System.out.println("post:"+post);
+        post.setTitle(request.title());
+        post.setContent(request.content());
+        post.setStatus(request.status());
+        post.setIsPublic(request.isPublic());
+
+        post.setModifiedAt(new Date());
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -122,5 +123,20 @@ public class MemberController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( new MessageResponse("삭제 성공") );
+    }
+
+
+    @Operation(summary = "로그인 중인 회원의 정보 반환", description = "회원이 자기 정보 확인하는데 사용")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication authentication) {
+        MemberDTO memberDTO = memberSVC.getMyInfo(authentication.getName());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body( memberDTO );
     }
 }

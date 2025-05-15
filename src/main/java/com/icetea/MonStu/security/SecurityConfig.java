@@ -46,10 +46,12 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/post/save",
-                                "/api/post/mine/all",
+                                "/api/post/me/posts",
 
                                 "/api/auth/signout",
-                                "/api/auth/me"
+                                "/api/auth/me",
+
+                                "/api/mem/me"
                         ).authenticated()
 
                         .requestMatchers( HttpMethod.DELETE,
