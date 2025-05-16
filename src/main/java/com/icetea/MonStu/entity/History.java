@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"memberHistories"})
+@ToString(exclude = {"memberPostHistories"})
 @Entity
 @Table(name="history")
 public class History {
@@ -34,7 +34,7 @@ public class History {
     @Enumerated(EnumType.STRING)
     private LanguageCode languageCode;
 
-
+    @Builder.Default
     @OneToMany(mappedBy = "history", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MemberPostHistory> memberPostHistories = new ArrayList<>();;
 }

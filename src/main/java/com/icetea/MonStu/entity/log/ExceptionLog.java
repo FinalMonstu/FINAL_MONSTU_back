@@ -49,5 +49,4 @@ public class ExceptionLog {
 
     @Column
     private String httpStatus;
-
 }

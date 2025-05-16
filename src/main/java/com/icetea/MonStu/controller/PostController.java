@@ -1,15 +1,12 @@
 package com.icetea.MonStu.controller;
 
-import com.icetea.MonStu.dto.common.MemberDTO;
-import com.icetea.MonStu.dto.common.PostDTO;
-import com.icetea.MonStu.dto.request.MemberFilterRequest;
-import com.icetea.MonStu.dto.request.PostFilterRequest;
-import com.icetea.MonStu.dto.request.PostRequest;
-import com.icetea.MonStu.dto.request.UpdatePostRequest;
+import com.icetea.MonStu.dto.request.post.PostFilterRequest;
+import com.icetea.MonStu.dto.request.post.PostRequest;
+import com.icetea.MonStu.dto.request.post.UpdatePostRequest;
 import com.icetea.MonStu.dto.response.CustomPageableResponse;
 import com.icetea.MonStu.dto.response.MessageResponse;
-import com.icetea.MonStu.dto.response.PostLiteResponse;
-import com.icetea.MonStu.dto.response.PostResponse;
+import com.icetea.MonStu.dto.response.post.PostLiteResponse;
+import com.icetea.MonStu.dto.response.post.PostResponse;
 import com.icetea.MonStu.security.CustomUserDetails;
 import com.icetea.MonStu.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,12 +42,11 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("/save")
-    public ResponseEntity<PostDTO> savePost(@Valid @RequestBody PostRequest request, @AuthenticationPrincipal CustomUserDetails user){
-        System.out.println("insert Post: "+request);
-        PostDTO postDto = postSvc.savePost(request,user);
+    public ResponseEntity<PostResponse> savePost(@Valid @RequestBody PostRequest request, @AuthenticationPrincipal CustomUserDetails user){
+        PostResponse postResponse = postSvc.create(request,user.getId());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body( postDto );
+                .body(postResponse);
     }
 
 
@@ -61,10 +57,10 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePostById( @PathVariable Long id ){
-        postSvc.deleteBtId(id);
+    public ResponseEntity<MessageResponse> deletePost( @PathVariable Long id ){
+        postSvc.deleteById(id);
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
                 .body(new MessageResponse("삭제 성공"));
     }
 
@@ -76,11 +72,11 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPost( @PathVariable Long id ){
-        PostDTO postDTO = postSvc.findById(id);
+    public ResponseEntity<PostResponse> getPost(@PathVariable Long id ){
+        PostResponse postResponse = postSvc.getById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body( postDTO );
+                .body(postResponse);
     }
 
 
@@ -90,9 +86,8 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("/me/posts")
-    public ResponseEntity<?> getMinePosts( @AuthenticationPrincipal CustomUserDetails user, Pageable pageable ){
-        System.out.println("user:"+user.getId());
-        Page<PostLiteResponse> page = postSvc.getPosts(user.getId(),pageable);
+    public ResponseEntity<CustomPageableResponse<PostLiteResponse>> getMyPosts( @AuthenticationPrincipal CustomUserDetails user, Pageable pageable ){
+        Page<PostLiteResponse> page = postSvc.getMyPosts(user.getId(),pageable);
         CustomPageableResponse<PostLiteResponse> result = CustomPageableResponse.mapper(page);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -107,7 +102,8 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("/posts")
-    public ResponseEntity<?> getPublicPosts( Pageable pageable ){
+    public ResponseEntity<CustomPageableResponse<PostLiteResponse>> getPublicPosts( Pageable pageable ){
+        System.out.println("pageable: "+pageable);
         Page<PostLiteResponse> page = postSvc.getPublicPosts(pageable);
         CustomPageableResponse<PostLiteResponse> result = CustomPageableResponse.mapper(page);
         return ResponseEntity
@@ -122,17 +118,15 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "반환 실패")
     })
     @PostMapping("/filter")
-    public ResponseEntity<?> filterPosts(@RequestBody PostFilterRequest filter, Pageable pageable) {
-        System.out.println("filter:"+filter);
-        System.out.println("pageable:"+pageable);
-        Page<PostResponse> page = postSvc.filterPosts(filter,pageable);
-        CustomPageableResponse<PostResponse> result = CustomPageableResponse.mapper(page);
+    public ResponseEntity<CustomPageableResponse<com.icetea.MonStu.dto.response.post.PostResponse>> getPostsWithfilter(@RequestBody PostFilterRequest filter, Pageable pageable) {
+        Page<com.icetea.MonStu.dto.response.post.PostResponse> page = postSvc.filter(filter,pageable);
+        CustomPageableResponse<com.icetea.MonStu.dto.response.post.PostResponse> result = CustomPageableResponse.mapper(page);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(result);
     }
 
-    @Operation(summary = "게시글 & 로그 조회", description = "게시글 ID를 이용하여 게시물 & 로그 조회")
+    @Operation(summary = "게시글과 로그 조회", description = "게시글 ID를 이용하여 게시물 & 로그 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
@@ -140,23 +134,21 @@ public class PostController {
     })
     @GetMapping("/detail/{id}")
     @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
-    public ResponseEntity<?> findWithPostsAndLogById( @PathVariable Long id ){
-        System.out.println("id: "+id);
-        PostResponse result = postSvc.findWithMemberAndLogById(id);
+    public ResponseEntity<com.icetea.MonStu.dto.response.post.PostResponse> findWithPostsAndLog(@PathVariable Long id ){
+        com.icetea.MonStu.dto.response.post.PostResponse result = postSvc.findWithMemberAndLogById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( result );
     }
 
-    @Operation(summary = "여러 게시물 데이터 삭제", description = "전달받은 ID 목록을 이용, 해당 게시물 상태를 'DELETE'로 변경")
+    @Operation(summary = "여러 게시물 데이터 삭제", description = "전달받은 ID 목록을 이용, 해당 게시물 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
-            @ApiResponse(responseCode = "500", description = "삭제_서버 오류 실패")
+            @ApiResponse(responseCode = "500", description = "서버 오류 실패")
     })
     @PostMapping("/delete")
     @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
-    public ResponseEntity<?> deletePosts(@RequestBody List<Long> ids) {
-        System.out.println("idList:"+ids);
+    public ResponseEntity<MessageResponse> deletePosts(@RequestBody List<Long> ids) {
         postSvc.deletePosts(ids);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -171,9 +163,8 @@ public class PostController {
     })
     @PutMapping("/update")
     @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
-    public ResponseEntity<?> updatePost(@RequestBody UpdatePostRequest request) {
-        System.out.println("request:"+request);
-        postSvc.updatePost(request);
+    public ResponseEntity<?> updatePost(@Valid @RequestBody UpdatePostRequest request) {
+        postSvc.update(request);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( new MessageResponse("수정 성공") );

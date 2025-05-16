@@ -8,8 +8,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 @Configuration
 public class QuerydslConfig {
 
-    @Bean
-    public JPAQueryFactory jpaQueryFactory(EntityManager em) {
+    @Bean public JPAQueryFactory jpaQueryFactory(EntityManager em) {
         return new JPAQueryFactory(em);
     }
 }

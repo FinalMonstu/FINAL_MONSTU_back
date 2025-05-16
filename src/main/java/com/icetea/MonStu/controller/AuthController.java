@@ -1,10 +1,12 @@
 package com.icetea.MonStu.controller;
 
-import com.icetea.MonStu.dto.common.EmailDTO;
-import com.icetea.MonStu.dto.common.MemberLiteInfoDTO;
-import com.icetea.MonStu.dto.request.*;
+import com.icetea.MonStu.dto.request.auth.*;
+import com.icetea.MonStu.dto.response.auth.EmailFindResponse;
+import com.icetea.MonStu.dto.response.auth.LiteMemberRespnse;
 import com.icetea.MonStu.dto.response.*;
-import com.icetea.MonStu.security.JwtService;
+import com.icetea.MonStu.dto.response.auth.VerifiCodeResponse;
+import com.icetea.MonStu.enums.MemberStatus;
+import com.icetea.MonStu.security.CustomUserDetails;
 import com.icetea.MonStu.service.AuthService;
 import com.icetea.MonStu.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,14 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,40 +25,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;   // 로그인 인증을 처리
-    private final JwtService jwtService;                         // JWT를 생성하고 검증
-    private final UserDetailsService userDetailsService;         //유저 정보
-
     private final MemberService memberService;
     private final AuthService authService;
 
 
-    @Operation(summary = "로그인", description = "Email, Password 이용 - 로그인")
+    @Operation(summary = "로그인", description = "Email & Password 이용 - 로그인, 사용자 정보 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @ApiResponse(responseCode = "401", description = "정보 불일치"),
+            @ApiResponse(responseCode = "400", description = "정보 불일치"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        try{
-            authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(request.email(), request.password()) );  //DB에서 가져온 비밀번호와 입력한 비밀번호 비교
-
-            UserDetails user = userDetailsService.loadUserByUsername(request.email());
-            MemberLiteInfoDTO memberLiteInfoDTO = memberService.getMemberLiteInfoByEmail(request.email());  //사용자 정보 반환
-
-            String jwtToken = jwtService.generateToken(user);
-            jwtService.setOption(response,jwtToken);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(memberLiteInfoDTO);
-
-        }catch (BadCredentialsException ex) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new MessageResponse("정보가 일치하지 않습니다"));
-        }
+    public ResponseEntity<LiteMemberRespnse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        LiteMemberRespnse member = authService.login(request, response);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(member);
     }
 
 
@@ -74,10 +51,11 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody SignUpRequest request) {
-        System.out.println("회원가입: "+request);
-        memberService.signup(request);
-        return ResponseEntity .status(HttpStatus.CREATED).body("회원가입이 완료되었습니다.");
+    public ResponseEntity<MessageResponse> signup(@Valid @RequestBody SignUpRequest request) {
+        memberService.register(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new MessageResponse("회원가입이 완료되었습니다."));
     }
 
 
@@ -88,9 +66,12 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/email/send")
-    public ResponseEntity<?> sendEmailCode(@Valid @RequestBody SendEmailCodeRequest request) {
-        VerifiCodeResponse result= authService.sendEmailCode(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    public ResponseEntity<VerifiCodeResponse> sendEmailCode(@Valid @RequestBody SendEmailCodeRequest request) {
+        VerifiCodeResponse savedCode= authService.sendEmailCode(request);
+        System.out.println("savedCode: "+savedCode);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(savedCode);
     }
 
 
@@ -100,24 +81,25 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "인증 실패")
     })
     @PostMapping("/email/verify")
-    public ResponseEntity<?> verifyEmailCode(@Valid @RequestBody VerifyEmailCodeRequest request) {
+    public ResponseEntity<MessageResponse> verifyEmailCode(@Valid @RequestBody VerifyEmailCodeRequest request) {
         boolean success = authService.verifyEmailCode(request);
-        System.out.println("success: "+success);
         return success
                 ? ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("인증되었습니다"))
                 : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("인증 코드가 만료되었거나 일치하지 않습니다"));
     }
 
 
-    @Operation(summary = "이메일 중복 검증", description = "데이터베이스에 해당 이메일이 존재 하는지 확인합니다.")
+    @Operation(summary = "사용 가능 이메일 검증", description = "해당 이메일이 이미 가입된 이메일인지 확인")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이메일 중복 없음"),
+            @ApiResponse(responseCode = "200", description = "이메일 사용 가능"),
             @ApiResponse(responseCode = "409", description = "이메일 중복")
     })
     @GetMapping("/email/avail")
-    public ResponseEntity<?> availEmail(@Valid @ModelAttribute EmailDTO dto) {
-        memberService.existsByEmail(dto.email());
-        return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("사용할 수 있는 이메일입니다."));
+    public ResponseEntity<MessageResponse> availEmail(@Valid @ModelAttribute EmailRequest request) {
+        memberService.existsByEmail(request.email());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new MessageResponse("사용할 수 있는 이메일입니다."));
     }
 
 
@@ -127,22 +109,25 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "재설정 실패")
     })
     @PostMapping("/repassword")
-    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         memberService.resetPassword(request);
-        return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("변경되었습니다"));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new MessageResponse("비밀번호가 변경되었습니다."));
     }
 
 
-    @Operation(summary = "이메일 찾기", description = "")
+    @Operation(summary = "이메일 찾기", description = "핸드폰 번호 & 닉네임을 이용 - 이메일 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 완료"),
             @ApiResponse(responseCode = "500", description = "조회 실패")
     })
     @PostMapping("/email/find")
-    public ResponseEntity<?> findEmail(@Valid @RequestBody FindEmailRequest request) {
-        System.out.println("request: "+request.toString());
-        EmailFindResponse result = memberService.findEmail(request);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+    public ResponseEntity<EmailFindResponse> findEmail(@Valid @RequestBody FindEmailRequest request) {
+        EmailFindResponse email = memberService.findEmail(request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(email);
     }
 
 
@@ -153,24 +138,26 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "탈퇴 실패")
     })
     @PostMapping("/signout")
-    public ResponseEntity<?> signOut(@AuthenticationPrincipal UserDetails ud) {
-        memberService.signout();
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<Void> signOut(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        memberService.updateStatus(userDetails.getId(), MemberStatus.DELETED);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
     }
 
 
-    @Operation(summary = "로그인 중인 회원의 정보 반환", description = "인증된 상태인지 확인하는데 사용")
+    @Operation(summary = "로그인 중인 회원의 정보 반환", description = "")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "인증된 사용자"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/me")
-    public ResponseEntity<?> me(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) { return ResponseEntity.status(HttpStatus.NO_CONTENT).build();}
-        System.out.println("authentication.getName(): "+authentication.getName());
-        MemberLiteInfoDTO memberLiteInfoDTO = memberService.getMemberLiteInfoByEmail( authentication.getName() );
-        return ResponseEntity.status(HttpStatus.OK).body(memberLiteInfoDTO);
+    public ResponseEntity<LiteMemberRespnse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        LiteMemberRespnse member = memberService.getLiteById( userDetails.getId() );
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(member);
     }
 
 }

@@ -1,10 +1,7 @@
-package com.icetea.MonStu.dto.request;
+package com.icetea.MonStu.dto.request.post;
 
-import com.icetea.MonStu.entity.link.PostTag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-import java.util.List;
 
 public record PostRequest(
         Long id,
@@ -20,8 +17,6 @@ public record PostRequest(
         //Member Info
         @NotNull(message = "{PostRequest.authorEmail.NotNull}")
         String authorEmail,
-        String nickName,
+        String nickName
 
-        //Tag Info
-        List<PostTag> postTags
 ) { }

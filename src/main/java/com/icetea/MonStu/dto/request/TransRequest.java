@@ -9,11 +9,8 @@ import static com.icetea.MonStu.validation.ValidationConstants.Translate_Target_
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
-public class TransDTO {
+public class TransRequest {
 
     /*  검증 실패 시 400 Bad Request
     *   null, ' ' 차단

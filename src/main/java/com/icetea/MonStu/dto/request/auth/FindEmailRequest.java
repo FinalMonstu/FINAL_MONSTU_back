@@ -1,4 +1,4 @@
-package com.icetea.MonStu.dto.request;
+package com.icetea.MonStu.dto.request.auth;
 
 import com.icetea.MonStu.validation.ValidationConstants;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +9,5 @@ public record FindEmailRequest(
         @Pattern(regexp= ValidationConstants.PHONE_REGEX, message = "{Pattern.message.phonenumber}")
         String phoneNumber,
 
-        @NotBlank
-        String nickName
+        @NotBlank String nickName
 ) { }

@@ -11,6 +11,8 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
+//	sourceCompatibility = JavaVersion.VERSION_21
+//	targetCompatibility = JavaVersion.VERSION_21
 }
 
 configurations {
@@ -21,7 +23,9 @@ configurations {
 
 repositories {
 	mavenCentral()
-	maven { url 'https://repo.spring.io/snapshot' }//
+	maven {
+		url = uri("https://repo.spring.io/snapshot")
+	}
 }
 
 ext {
@@ -40,7 +44,7 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	// jasypt 암호화
-	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
+//	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
 
 	// DB
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -58,18 +62,20 @@ dependencies {
 	// API Document   http://localhost:8080/swagger-ui.html
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// Email
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 	// Google Translate API
 	implementation 'com.google.cloud:google-cloud-translate:2.60.0'
+
+	//Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.mockito:mockito-junit-jupiter'
 }
 
-tasks.named('test') {
+
+test {
 	useJUnitPlatform()
 }
 

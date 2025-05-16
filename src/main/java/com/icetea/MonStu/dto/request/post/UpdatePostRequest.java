@@ -1,13 +1,13 @@
-package com.icetea.MonStu.dto.request;
+package com.icetea.MonStu.dto.request.post;
 
-import com.icetea.MonStu.enums.PostStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record UpdatePostRequest(
-        Long id,
+
+        @NotNull Long id,
 
         @NotBlank(message = "{PostRequest.title.NotBlank}")
         String title,
@@ -15,10 +15,7 @@ public record UpdatePostRequest(
         @NotBlank(message = "{PostRequest.title.NotBlank}")
         String content,
 
-        PostStatus status,
-
-        @NotNull
-        Boolean isPublic
+        @NotNull Boolean isPublic
 ) {
 
 }

@@ -1,4 +1,4 @@
-package com.icetea.MonStu.dto.request;
+package com.icetea.MonStu.dto.request.member;
 
 import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;

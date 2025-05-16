@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
-// Google Cloud Translation API의 클라이언트를 설정
+/* Google Cloud Translation API의 클라이언트를 설정 */
 @Configuration
 public class TranslateConfig {
 

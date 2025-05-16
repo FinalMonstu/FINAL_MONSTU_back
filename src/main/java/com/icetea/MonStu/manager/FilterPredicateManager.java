@@ -1,7 +1,7 @@
 package com.icetea.MonStu.manager;
 
-import com.icetea.MonStu.dto.request.MemberFilterRequest;
-import com.icetea.MonStu.dto.request.PostFilterRequest;
+import com.icetea.MonStu.dto.request.member.MemberFilterRequest;
+import com.icetea.MonStu.dto.request.post.PostFilterRequest;
 import com.icetea.MonStu.entity.QMember;
 import com.icetea.MonStu.entity.QPost;
 import com.querydsl.core.BooleanBuilder;
@@ -16,7 +16,6 @@ import static com.querydsl.core.types.dsl.Expressions.allOf;
 @Component
 @RequiredArgsConstructor
 public class FilterPredicateManager {
-
 
     // MemberFilterRequest를 이용, 조건식 쿼리 작성-반환
     public static Predicate buildMembersFilterPredicate(MemberFilterRequest filterDTO) {
@@ -63,9 +62,6 @@ public class FilterPredicateManager {
                         : null,
                 StringUtils.hasText(filterDTO.title())
                         ? post.title.containsIgnoreCase(filterDTO.title())
-                        : null,
-                filterDTO.status() != null
-                        ? post.status.eq(filterDTO.status())
                         : null,
                 filterDTO.authorId() != null
                         ? post.member.id.eq(filterDTO.authorId())

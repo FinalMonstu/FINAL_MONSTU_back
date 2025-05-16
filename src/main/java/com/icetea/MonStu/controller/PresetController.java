@@ -2,7 +2,6 @@ package com.icetea.MonStu.controller;
 
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
-import com.icetea.MonStu.enums.PostStatus;
 import com.icetea.MonStu.service.PresetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -84,20 +83,4 @@ public class PresetController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(result);
     }
-
-
-    @Operation(summary = "게시물 상태 배열 반환", description = "")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "반환 성공"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    })
-    @GetMapping("/post/status")
-    @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
-    public ResponseEntity<List<PostStatus>> getPostStatus() {
-        List<PostStatus> result = presetSvc.getPostStatus();
-        return result.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(result);
-    }
-
 }

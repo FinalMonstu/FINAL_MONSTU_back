@@ -1,4 +1,4 @@
-package com.icetea.MonStu.dto.request;
+package com.icetea.MonStu.dto.request.auth;
 
 import com.icetea.MonStu.validation.ValidationConstants;
 import jakarta.validation.constraints.Email;

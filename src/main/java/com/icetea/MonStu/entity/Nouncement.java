@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -30,10 +30,10 @@ public class Nouncement {
     private String content;
 
     @Column
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
     @Column
-    private LocalDateTime modifiedAt;
+    private Date modifiedAt;
 
     @Column(nullable = false)
     private Boolean isPublic;   // 공개 여부
@@ -46,6 +46,7 @@ public class Nouncement {
 
 
     // 다대다 연관관계
+    @Builder.Default
     @OneToMany(mappedBy = "nouncement", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<NouncementImage> nouncementImages = new ArrayList<>();
 

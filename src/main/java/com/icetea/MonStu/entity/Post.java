@@ -1,9 +1,7 @@
 package com.icetea.MonStu.entity;
 
 import com.icetea.MonStu.entity.link.MemberPostHistory;
-import com.icetea.MonStu.entity.link.PostTag;
 import com.icetea.MonStu.entity.log.PostLog;
-import com.icetea.MonStu.enums.PostStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -18,7 +16,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"member","image","postTags"})
+@ToString(exclude = {"member","image"})
 @Entity
 @DynamicUpdate
 @Table(name="post")
@@ -42,10 +40,6 @@ public class Post {
     private Date modifiedAt;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PostStatus status;
-
-    @Column(nullable = false)
     private Boolean isPublic;   // 공개여부
 
 
@@ -61,11 +55,9 @@ public class Post {
     @JoinColumn(name = "post_log_id")
     private PostLog postLog;
 
-    // 다대다 연관관계
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<PostTag> postTags = new ArrayList<>();
 
     // 다대다 연관관계
+    @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<MemberPostHistory> memberPostHistories = new ArrayList<>();
 

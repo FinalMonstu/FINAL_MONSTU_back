@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString(exclude = {"member","history"})
 @Entity
-@Table(name="member_history")
+@Table(name="member_post_history")
 public class MemberPostHistory {
 
     @Id

@@ -17,6 +17,4 @@ public class PresetService {
     public List<MemberStatus> getMemberStatus() { return List.of(MemberStatus.values()); }
 
     public List<MemberRole> getMemberRole() { return List.of(MemberRole.values()); }
-
-    public List<PostStatus> getPostStatus() { return List.of(PostStatus.values()); }
 }

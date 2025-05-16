@@ -20,7 +20,7 @@ public class EmailManager {
     private final JavaMailSender sender;
 
     //  이메일 인증 번호 전송
-    public String sendEmailPass(String email) {
+    public String sendEmailCode(String email) {
         HttpSession session = ((ServletRequestAttributes)(RequestContextHolder.currentRequestAttributes()))
                 .getRequest().getSession();
         String randomCode = getRandomText();
@@ -37,7 +37,7 @@ public class EmailManager {
             sender.send(mimeMessage);
             return randomCode;
         } catch (MessagingException e) {
-            return null;
+            throw new RuntimeException("코드 전송에 실패했습니다.");
         }
     }
 
