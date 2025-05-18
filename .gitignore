@@ -39,5 +39,4 @@ out/
 ##custom##
 src/main/resources/application_private.properties
 src/main/resources/certs/
-src/main/java/com/icetea/MonStu/converter
 
