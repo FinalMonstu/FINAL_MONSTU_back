@@ -2,10 +2,9 @@
 MONSTU project backend code
 
 ---
+### ⚡ Live Site: [MonStu_Site_Link](https://monstu.win) 접근코드 24601
 
 ### 📦 GitHub Front Repository: [github.com](https://github.com/FinalMonstu/FINAL_MONSTU_front)
-
-### ⚡ Live Site: [MonStu_Site_Link](https://monstu.win)
 
 ### 💿 Demo Video: [youtube.com](https://www.youtube.com/watch?v=54qtrOOisXw)
 
@@ -22,7 +21,7 @@ MonStu는 웹 상의 텍스트를 활용해 다양한 언어 학습을 지원하
 ### 🚀 주요 기능
 
 - 실시간 단어 / 문장 번역
-- 번역 기록 확
+- 회원 관리, 게시글 관리
 
 ---
 
