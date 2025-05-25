@@ -2,11 +2,14 @@
 MONSTU project backend code
 
 ---
+
 ### ⚡ Live Site: [MonStu_Site_Link](https://monstu.win) 접근코드 24601
 
 ### 📦 GitHub Front Repository: [github.com](https://github.com/FinalMonstu/FINAL_MONSTU_front)
 
 ### 💿 Demo Video: [youtube.com](https://www.youtube.com/watch?v=54qtrOOisXw)
+
+### 📖 Developer Profile: [notion.com](https://www.notion.so/PORTFOLIO-19e303eae1f280828d69f4b34a9654a7?pvs=4)
 
 ---
 
