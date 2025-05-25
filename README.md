@@ -7,7 +7,7 @@ MONSTU project backend code
 
 ### ⚡ Live Site: [MonStu_Site_Link](https://monstu.win)
 
-### 💿 Demo Video:
+### 💿 Demo Video: [youtube.com](https://www.youtube.com/watch?v=54qtrOOisXw)
 
 ---
 
