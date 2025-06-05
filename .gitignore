@@ -37,12 +37,6 @@ out/
 .vscode/
 
 ##custom##
-<<<<<<< HEAD
-src/main/resources/application_private.properties
-src/main/resources/certs/
-=======
 src/main/resources/credentials.properties
 src/main/resources/certs/
 src/test/resources/
-
->>>>>>> hosik99
