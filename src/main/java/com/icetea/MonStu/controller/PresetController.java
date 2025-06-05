@@ -83,5 +83,4 @@ public class PresetController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(result);
     }
-
 }

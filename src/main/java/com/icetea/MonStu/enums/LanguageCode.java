@@ -35,7 +35,6 @@ public enum LanguageCode {
         throw new IllegalArgumentException("Invalid code: " + code);
     }
 
-    // 모든 국가이름 출력  ex) ["Korean","English"..]
     public static List<String> getLanguageList() {
         return Arrays.stream(LanguageCode.values())
                 .map(LanguageCode::getLanguageName)

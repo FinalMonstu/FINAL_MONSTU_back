@@ -1,6 +1,6 @@
 package com.icetea.MonStu.controller;
 
-import com.icetea.MonStu.dto.request.TransDTO;
+import com.icetea.MonStu.dto.request.TransRequest;
 import com.icetea.MonStu.infra.TranslationClient;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -8,11 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/ai")
@@ -29,13 +27,11 @@ public class AiController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("/trans")
-    public ResponseEntity<TransDTO> transTarget(@Valid @RequestBody TransDTO transDTO){
-        System.out.println("transDTO: "+transDTO.toString());
-        TransDTO result = translationClient.translate( transDTO );
+    public ResponseEntity<TransRequest> transTarget(@Valid @RequestBody TransRequest transRequest){
+        TransRequest result = translationClient.translate(transRequest);
         return  result.getTransed() != null
                 ? new ResponseEntity<>(result, HttpStatus.OK)
-                : new ResponseEntity<>(transDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+                : new ResponseEntity<>(transRequest, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 
 }

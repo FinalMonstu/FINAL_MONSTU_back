@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final Member member;  // 이건 DB의 사용자 엔티티
+    private final Member member;
 
     public CustomUserDetails(Member member) {
         this.member = member;
@@ -28,6 +28,10 @@ public class CustomUserDetails implements UserDetails {
 
     public String getRole() {
         return member.getRole().name();
+    }
+
+    public String getCountryCode() {
+        return member.getCountryCode().name();
     }
 
     @Override

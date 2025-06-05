@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @RequiredArgsConstructor
 @Component
-public class scheduledMember {
+public class ScheduledMember {
 
     private final MemberService memberSvc;
     private final MemberLogService memberLogSvc;
@@ -19,10 +19,11 @@ public class scheduledMember {
     @Scheduled(cron = "0 00 00 * * *", zone = "Asia/Seoul")
     public void runDailyTask() {
 
+        /* 멤버 삭제 */
         // Member, MemberLog 테이블 연결 제거
         memberLogSvc.deleteMembersAndUnlinkLogs();
         // Member 'Status'속성 'DELETE'인 모든 사용자 삭제
-        memberSvc.deleteMembers();
+        memberSvc.purgeDeletedMembers();
 
     }
 }

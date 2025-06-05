@@ -1,6 +1,5 @@
 package com.icetea.MonStu.security;
 
-import com.icetea.MonStu.enums.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -46,10 +44,13 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/post/save",
-                                "/api/post/mine/all",
+                                "/api/post/me/posts",
 
                                 "/api/auth/signout",
-                                "/api/auth/me"
+                                "/api/auth/me",
+
+                                "/api/mem/me",
+                                "/api/mem/reactivate"
                         ).authenticated()
 
                         .requestMatchers( HttpMethod.DELETE,

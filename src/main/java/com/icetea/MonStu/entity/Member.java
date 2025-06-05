@@ -2,13 +2,13 @@ package com.icetea.MonStu.entity;
 
 import com.icetea.MonStu.entity.link.MemberPostHistory;
 import com.icetea.MonStu.entity.log.MemberLog;
-import com.icetea.MonStu.entity.log.PostLog;
 import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,8 +19,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"memberLogs","posts","postLog","memberHistories"})
+@ToString(exclude = {"memberLogs","posts","memberPostHistories"})
 @Entity
+@DynamicUpdate  // 수정된 필드만 update문에 반영
 @Table(name= "member")
 public class Member {
 
@@ -59,17 +60,15 @@ public class Member {
     @Column(nullable = false)
     private CountryCode countryCode;
 
-
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<MemberLog> memberLogs = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
 
-//    @OneToOne(mappedBy = "post", fetch = FetchType.EAGER)
-//    private PostLog postLog;
-
-    // 다대다 연관관계
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<MemberPostHistory> memberPostHistories = new ArrayList<>();
 

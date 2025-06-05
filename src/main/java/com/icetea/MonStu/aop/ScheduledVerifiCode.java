@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @RequiredArgsConstructor
 @Component
-public class scheduledVerifiCode {
+public class ScheduledVerifiCode {
 
     private final AuthService authService;
 

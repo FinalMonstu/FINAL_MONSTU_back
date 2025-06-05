@@ -1,23 +1,25 @@
-package com.icetea.MonStu.dto.common;
+package com.icetea.MonStu.dto.response.member;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
 
 @Getter
+@Setter
 @Builder
 @ToString
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class MemberDTO {
+public class MemberResponse {
     private Long memberId;
+
     private String email;
+
     private String nickName;
     private String phoneNumber;
 
@@ -29,17 +31,17 @@ public class MemberDTO {
     private CountryCode countryCode;
 
 
-    public static MemberDTO mapper(Member e) {
+    public static MemberResponse toDto(Member m) {
         return builder()
-                .memberId(e.getId())
-                .email(e.getEmail())
-                .nickName(e.getNickName())
-                .phoneNumber(e.getPhoneNumber())
-                .createdAt(e.getCreatedAt())
-                .updatedAt(e.getUpdatedAt())
-                .status(e.getStatus())
-                .role(e.getRole())
-                .countryCode(e.getCountryCode())
+                .memberId(m.getId())
+                .email(m.getEmail())
+                .nickName(m.getNickName())
+                .phoneNumber(m.getPhoneNumber())
+                .createdAt(m.getCreatedAt())
+                .updatedAt(m.getUpdatedAt())
+                .status(m.getStatus())
+                .role(m.getRole())
+                .countryCode(m.getCountryCode())
                 .build();
     }
 }

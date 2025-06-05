@@ -1,10 +1,14 @@
 package com.icetea.MonStu.controller;
 
-import com.icetea.MonStu.dto.common.MemberDTO;
-import com.icetea.MonStu.dto.request.MemberFilterRequest;
-import com.icetea.MonStu.dto.request.SaveMemberRequest;
+import com.icetea.MonStu.dto.response.member.MemberResponse;
+import com.icetea.MonStu.dto.request.member.MemberFilterRequest;
+import com.icetea.MonStu.dto.request.member.SaveMemberRequest;
+import com.icetea.MonStu.dto.request.member.UpdateMemberRequest;
 import com.icetea.MonStu.dto.response.CustomPageableResponse;
 import com.icetea.MonStu.dto.response.MessageResponse;
+import com.icetea.MonStu.enums.MemberRole;
+import com.icetea.MonStu.enums.MemberStatus;
+import com.icetea.MonStu.security.CustomUserDetails;
 import com.icetea.MonStu.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,34 +34,32 @@ import java.util.List;
 @Tag(name = "Member API", description = "유저 관리")
 public class MemberController {
 
-    private final MemberService memberSVC;
+    private final MemberService memberService;
 
 
-    @Operation(summary = "신규 회원 정보 저장", description = "회원가입과는 달리 status,role 또한 지정된 데이터를 저장")
+    @Operation(summary = "신규 회원 정보 저장", description = "회원가입과는 달리 status,role 데이터까지 저장")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "저장 성공"),
             @ApiResponse(responseCode = "500", description = "오류 저장 실패")
     })
     @PostMapping("/save")
-    public ResponseEntity<?> save(@Valid @RequestBody SaveMemberRequest request) {
-        memberSVC.signup(request);
+    public ResponseEntity<MessageResponse> save(@Valid @RequestBody SaveMemberRequest request) {
+        memberService.register(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body( new MessageResponse("회원가입이 완료") );
+                .body( new MessageResponse("회원 추가 완료") );
     }
 
 
-    @Operation(summary = "필터링된 회원 데이터 목록 반환", description = "페이지 정보와 필터링 정보를 이용, 필터링된 회원 데이터 목록 반환")
+    @Operation(summary = "필터링된 회원 데이터 목록 반환", description = "페이지 정보와 필터링 정보를 이용 - 필터링된 회원 데이터 목록 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
             @ApiResponse(responseCode = "500", description = "반환 실패")
     })
     @PostMapping("/filter")
-    public ResponseEntity<?> filterMembers(@RequestBody MemberFilterRequest filter, Pageable pageable) {
-        System.out.println("filter:"+filter);
-        System.out.println("pageable:"+pageable);
-        Page<MemberDTO> page = memberSVC.filterMembers(filter,pageable);
-        CustomPageableResponse<MemberDTO> result = CustomPageableResponse.mapper(page);
+    public ResponseEntity<CustomPageableResponse<MemberResponse>> getMembersWithFilter(@RequestBody MemberFilterRequest filter, Pageable pageable) {
+        Page<MemberResponse> page = memberService.filterMembers(filter,pageable);
+        CustomPageableResponse<MemberResponse> result = CustomPageableResponse.mapper(page);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(result);
@@ -70,10 +73,25 @@ public class MemberController {
     })
     @GetMapping("/get")
     public ResponseEntity<?> getMember(@RequestParam Long id) {
-        MemberDTO result = memberSVC.getMember(id);
+        MemberResponse memberResponse = memberService.getById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(result);
+                .body(memberResponse);
+    }
+
+
+    @Operation(summary = "회원 정보 수정", description = "")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "500", description = "수정 실패")
+    })
+    @PutMapping("/update")
+    @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
+    public ResponseEntity<?> updateMember(@RequestBody UpdateMemberRequest request) {
+        memberService.updateMember(request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body( new MessageResponse("수정 성공") );
     }
 
 
@@ -85,7 +103,7 @@ public class MemberController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
     public ResponseEntity<?> deleteMember(@PathVariable Long id) {
-        memberSVC.deleteMember(id);
+        memberService.updateStatus(id, MemberStatus.DELETED);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body( new MessageResponse("삭제 성공") );
@@ -97,13 +115,41 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "500", description = "삭제_서버 오류 실패")
     })
-    @PostMapping("/delete")
+    @PostMapping("/delete/all")
     @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
-    public ResponseEntity<?> deleteMembers(@RequestBody List<Long> ids) {
-        System.out.println("idList:"+ids);
-        memberSVC.signoutMembers(ids);
+    public ResponseEntity<?> deleteAllMembers(@RequestBody List<Long> ids) {
+        memberService.deactivateAll(ids);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( new MessageResponse("삭제 성공") );
+    }
+
+    @Operation(summary = "탈퇴 멤버 재활성화", description = "")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "재활성화 성공"),
+            @ApiResponse(responseCode = "500", description = "실패")
+    })
+    @PostMapping("/reactivate")
+    public ResponseEntity<?> reactivateMember(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        memberService.updateStatus(userDetails.getId(), MemberStatus.ACTIVE);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body( new MessageResponse("재활성화 성공") );
+    }
+
+    @Operation(summary = "로그인 중인 회원의 정보 반환", description = "")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/me")
+    public ResponseEntity<MemberResponse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        System.out.println(userDetails.getId());
+        MemberResponse memberResponse = memberService.getById(userDetails.getId());
+        System.out.println(memberResponse);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(memberResponse);
     }
 }

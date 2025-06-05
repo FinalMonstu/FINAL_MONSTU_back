@@ -1,4 +1,4 @@
-package com.icetea.MonStu.dto.response;
+package com.icetea.MonStu.dto.response.auth;
 
 import com.icetea.MonStu.entity.VerifiCode;
 import lombok.Builder;
@@ -10,7 +10,7 @@ public record VerifiCodeResponse(
         String message
 ) {
 
-    public static VerifiCodeResponse mapper(VerifiCode vc) {
+    public static VerifiCodeResponse toDto(VerifiCode vc) {
         return builder()
                 .id(vc.getId())
                 .email(vc.getEmail())

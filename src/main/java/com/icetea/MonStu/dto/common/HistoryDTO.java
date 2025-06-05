@@ -6,8 +6,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
 public class HistoryDTO {
     private Long id;    //단어 ID

@@ -1,4 +1,4 @@
-package com.icetea.MonStu.dto.request;
+package com.icetea.MonStu.dto.request.auth;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

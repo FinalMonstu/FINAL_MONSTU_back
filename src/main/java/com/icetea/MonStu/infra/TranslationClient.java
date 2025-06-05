@@ -4,7 +4,7 @@ import com.google.cloud.translate.v3.LocationName;
 import com.google.cloud.translate.v3.TranslateTextRequest;
 import com.google.cloud.translate.v3.TranslateTextResponse;
 import com.google.cloud.translate.v3.TranslationServiceClient;
-import com.icetea.MonStu.dto.request.TransDTO;
+import com.icetea.MonStu.dto.request.TransRequest;
 import com.icetea.MonStu.enums.LanguageCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,25 +15,23 @@ import org.springframework.stereotype.Service;
 public class TranslationClient {
     private final TranslationServiceClient client;
 
-    @Value("${gcp.project-id}")
-    private String projectId;
+    @Value("${gcp.project-id}") private String projectId;
 
-    @Value("${gcp.location}")
-    private String location;
+    @Value("${gcp.location}") private String location;
 
 
-    public TransDTO translate(TransDTO transDTO){
-        transDTO.setTransed( null );
+    public TransRequest translate(TransRequest transRequest){
+        transRequest.setTransed( null );
         LocationName parent = LocationName.of(projectId, location);
         TranslateTextRequest request = TranslateTextRequest.newBuilder()
                 .setParent(parent.toString())
                 .setMimeType("text/plain")
-                .setTargetLanguageCode( LanguageCode.getCode(transDTO.getTransLang()).toString() )
-                .addContents( transDTO.getTarget() )
+                .setTargetLanguageCode( LanguageCode.getCode(transRequest.getTransLang()).toString() )
+                .addContents( transRequest.getTarget() )
                 .build();
         TranslateTextResponse response = client.translateText(request);
         String transed = response.getTranslationsList().getFirst().getTranslatedText();
-        transDTO.setTransed(transed);
-        return transDTO;
+        transRequest.setTransed(transed);
+        return transRequest;
     }
 }
