@@ -28,12 +28,10 @@ public class AiController {
     })
     @PostMapping("/trans")
     public ResponseEntity<TransRequest> transTarget(@Valid @RequestBody TransRequest transRequest){
-        System.out.println("transDTO: "+ transRequest.toString());
         TransRequest result = translationClient.translate(transRequest);
         return  result.getTransed() != null
                 ? new ResponseEntity<>(result, HttpStatus.OK)
                 : new ResponseEntity<>(transRequest, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 
 }

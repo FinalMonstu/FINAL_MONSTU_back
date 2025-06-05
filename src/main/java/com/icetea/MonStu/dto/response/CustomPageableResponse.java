@@ -2,11 +2,13 @@ package com.icetea.MonStu.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 public class CustomPageableResponse<T> {
     private final List<T> content;

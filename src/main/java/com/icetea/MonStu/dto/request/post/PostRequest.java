@@ -16,7 +16,7 @@ public record PostRequest(
 
         //Member Info
         @NotNull(message = "{PostRequest.authorEmail.NotNull}")
-        String authorEmail,
+        Long authorId,
         String nickName
 
 ) { }

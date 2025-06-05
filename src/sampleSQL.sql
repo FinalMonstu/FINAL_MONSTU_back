@@ -1,0 +1,8 @@
+INSERT INTO `member` (`id`,`email`,`password`,`nick_name`,`phone_number`,`created_at`,`updated_at`,`status`,`role`,`country_code`)
+VALUES ( 1, 'mon@mon.com',  '123123#',    'Super',        '000-0000-0000',   '2025-05-01 10:00:00', '2025-05-01 12:00:00', 'ACTIVE',   'ADMIN',   'KOR');
+
+INSERT INTO `post` (`id`,`title`,`content`,`created_at`,`modified_at`,`is_public`,`author_id`,`thumbnail_id`)
+VALUES ( 1,  'Perfect - Ed Sheeran','I found a love for me\n\n난 내 사랑을 찾았어\n\n\nDarling just dive right in, and follow my lead\n\n자기야 그냥 뛰어들어, 내가 하는 대로만 해\n\n\nWell I found a girl, beautiful and sweet\n\n난 여자친구가 생겼어,아름답고 스윗하지\n\n\nI never knew\n\n난 전혀 몰랐어\n\n\nyou were the someone waiting for me\n\n내가 기다리던 사람이 너일 줄이야\n\n\nCause we were just kids when we fell in love\n\n왜냐면 우리가 사랑에 빠졌을 땐 우린 어린 아이일 뿐이었으니까',
+        '2025-05-01 08:00:00','2025-05-01 08:00:00',    TRUE,        1,        NULL),
+       ( 2,  'Bad Day - Daniel Powter','Where is the moment we needed the most?\n\n우리가 가장 간절히 필요했던 그 순간은 어디에 있나요?\n\n\nYou kick up the leaves and the magic is lost\n\n네가 낙엽을 차올리자 마법은 사라져 버렸어\n\n\nThey tell me your blue skies fade to gray\n\n사람들은 네 푸른 하늘이 잿빛으로 바랜다고 말해\n\n\nThey tell me your passion''s gone away\n\n사람들은 네 열정이 다 사라졌다고 하지\n\n\nAnd I don''t need no carryin'' on\n\n난 더 이상 이걸 끌고 갈 필요 없어\n\n\nYou stand in the line just to hit a new low\n\n넌 또 다른 밑바닥을 찍기 위해 줄을 서 있어\n\n\nYou''re faking a smile with the coffee to go\n\n테이크아웃 커피를 들고 가짜 미소를 짓고 있어\n\n\nYou tell me your life''s been way off line\n\n네 인생이 완전히 빗나갔다고 말하네\n\n\nYou''re falling to pieces every time\n\n넌 매번 산산조각 나듯 무너지고 있어\n\n\nAnd I don''t need no carryin'' on\n\n난 더 이상 이걸 끌고 갈 필요 없어\n\n\n'
+       ,'2025-05-01 08:00:00','2025-05-01 08:00:00',    TRUE,        1,        NULL);

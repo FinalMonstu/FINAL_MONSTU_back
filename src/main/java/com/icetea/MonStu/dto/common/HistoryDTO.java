@@ -4,6 +4,7 @@ import com.icetea.MonStu.enums.Genre;
 import lombok.*;
 
 @Getter
+@Setter
 @Builder
 @ToString
 public class HistoryDTO {

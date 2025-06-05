@@ -9,7 +9,7 @@ import java.util.Date;
 @Builder
 public record PostResponse(
         // Post Info
-        Long postId,
+        Long id,
 
         String title,
         String content,
@@ -33,7 +33,7 @@ public record PostResponse(
         PostLog log = e.getPostLog();
 
         PostResponse.PostResponseBuilder response = builder()
-                .postId(e.getId())
+                .id(e.getId())
                 .title(e.getTitle())
                 .content(e.getContent())
                 .createdAt(e.getCreatedAt())

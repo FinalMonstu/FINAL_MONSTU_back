@@ -7,7 +7,7 @@ import com.icetea.MonStu.enums.MemberStatus;
 import lombok.*;
 
 @Builder
-public record LiteMemberRespnse(
+public record LiteMemberResponse(
         Long id,
         String email,
         String nickName,
@@ -15,8 +15,8 @@ public record LiteMemberRespnse(
         MemberStatus status,
         CountryCode countryCode
 ){
-    public static LiteMemberRespnse toDto(Member m) {
-        return LiteMemberRespnse.builder()
+    public static LiteMemberResponse toDto(Member m) {
+        return LiteMemberResponse.builder()
                 .id(m.getId())
                 .email(m.getEmail())
                 .nickName(m.getNickName())

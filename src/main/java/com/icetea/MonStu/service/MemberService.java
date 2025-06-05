@@ -6,7 +6,7 @@ import com.icetea.MonStu.dto.request.member.UpdateMemberRequest;
 import com.icetea.MonStu.dto.response.member.MemberResponse;
 import com.icetea.MonStu.dto.request.auth.FindEmailRequest;
 import com.icetea.MonStu.dto.request.auth.ResetPasswordRequest;
-import com.icetea.MonStu.dto.response.auth.LiteMemberRespnse;
+import com.icetea.MonStu.dto.response.auth.LiteMemberResponse;
 import com.icetea.MonStu.dto.response.auth.EmailFindResponse;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.MemberStatus;
@@ -71,9 +71,9 @@ public class MemberService {
     }
 
     // 회원 간단 정보 반환
-    public LiteMemberRespnse getLiteById(Long id) {
+    public LiteMemberResponse getLiteById(Long id) {
         return memberRps.findById(id)
-                .map(LiteMemberRespnse::toDto)
+                .map(LiteMemberResponse::toDto)
                 .orElseThrow(()->new NoSuchElementException(null));
     }
 

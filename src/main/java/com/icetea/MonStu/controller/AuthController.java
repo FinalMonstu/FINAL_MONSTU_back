@@ -2,7 +2,7 @@ package com.icetea.MonStu.controller;
 
 import com.icetea.MonStu.dto.request.auth.*;
 import com.icetea.MonStu.dto.response.auth.EmailFindResponse;
-import com.icetea.MonStu.dto.response.auth.LiteMemberRespnse;
+import com.icetea.MonStu.dto.response.auth.LiteMemberResponse;
 import com.icetea.MonStu.dto.response.*;
 import com.icetea.MonStu.dto.response.auth.VerifiCodeResponse;
 import com.icetea.MonStu.enums.MemberStatus;
@@ -32,12 +32,12 @@ public class AuthController {
     @Operation(summary = "로그인", description = "Email & Password 이용 - 로그인, 사용자 정보 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @ApiResponse(responseCode = "400", description = "정보 불일치"),
+            @ApiResponse(responseCode = "401", description = "정보 불일치"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/login")
-    public ResponseEntity<LiteMemberRespnse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        LiteMemberRespnse member = authService.login(request, response);
+    public ResponseEntity<LiteMemberResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        LiteMemberResponse member = authService.login(request, response);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(member);
@@ -68,7 +68,6 @@ public class AuthController {
     @PostMapping("/email/send")
     public ResponseEntity<VerifiCodeResponse> sendEmailCode(@Valid @RequestBody SendEmailCodeRequest request) {
         VerifiCodeResponse savedCode= authService.sendEmailCode(request);
-        System.out.println("savedCode: "+savedCode);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(savedCode);
@@ -153,8 +152,8 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/me")
-    public ResponseEntity<LiteMemberRespnse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        LiteMemberRespnse member = memberService.getLiteById( userDetails.getId() );
+    public ResponseEntity<LiteMemberResponse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        LiteMemberResponse member = memberService.getLiteById( userDetails.getId() );
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(member);
