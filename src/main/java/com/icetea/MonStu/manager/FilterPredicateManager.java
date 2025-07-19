@@ -1,7 +1,6 @@
 package com.icetea.MonStu.manager;
 
-import com.icetea.MonStu.api.v1.dto.request.member.MemberFilterRequest;
-import com.icetea.MonStu.api.v1.dto.request.post.PostFilterRequest;
+import com.icetea.MonStu.api.v2.dto.request.FilterMemberRequest;
 import com.icetea.MonStu.entity.QMember;
 import com.icetea.MonStu.entity.QPost;
 import com.querydsl.core.BooleanBuilder;
@@ -18,7 +17,7 @@ import static com.querydsl.core.types.dsl.Expressions.allOf;
 public class FilterPredicateManager {
 
     // MemberFilterRequest를 이용, 조건식 쿼리 작성-반환
-    public static Predicate buildMembersFilterPredicate(MemberFilterRequest filterDTO) {
+    public static Predicate buildMembersFilterPredicate(FilterMemberRequest filterDTO) {
         QMember member = QMember.member;
 
         BooleanExpression predicate = allOf(

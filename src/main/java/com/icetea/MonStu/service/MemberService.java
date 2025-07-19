@@ -1,11 +1,9 @@
 package com.icetea.MonStu.service;
 
-i
 import com.icetea.MonStu.api.v2.dto.MemberRequest;
-import com.icetea.MonStu.api.v2.dto.request.FindEmailRequest;
-import com.icetea.MonStu.api.v2.dto.request.MemberSummaryResponse;
-import com.icetea.MonStu.api.v2.dto.request.ResetPasswordRequest;
+import com.icetea.MonStu.api.v2.dto.request.*;
 import com.icetea.MonStu.api.v2.dto.response.FindEmailResponse;
+import com.icetea.MonStu.api.v2.dto.response.MemberResponse;
 import com.icetea.MonStu.api.v2.mapper.MemberMapper;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.MemberStatus;
@@ -32,9 +30,9 @@ public class MemberService {
 
     // 회원 추가
     @Transactional
-    public void signUp(MemberRequest signUpRequest) {
-        if (memberRps.existsByEmail(signUpRequest.email())) { throw new ConflictException("이미 사용 중인 이메일입니다."); }
-        memberRps.save( MemberMapper.toEntity(signUpRequest, passwordEncoder) );
+    public void createMember(MemberRequest request) {
+        if (memberRps.existsByEmail(request.email())) { throw new ConflictException("이미 사용 중인 이메일입니다."); }
+        memberRps.save( MemberMapper.toEntity(request, passwordEncoder) );
     }
 
     // 이메일 중복 확인
@@ -77,10 +75,10 @@ public class MemberService {
 
     // ADMIN 전용, 회원 정보 수정
     @Transactional
-    public void updateMember(UpdateMemberRequest request) {
-        Member member = memberRps.findById(request.id())
+    public void updateMember(UpdateMemberRequest updateMemberRequest) {
+        Member member = memberRps.findById(updateMemberRequest.id())
                 .orElseThrow(()->new NoSuchElementException(null));
-        MemberMapper.updateFromDto(member,request);
+        MemberMapper.updateFromDto(member,updateMemberRequest);
     }
 
     // Id 이용, 회원 비활성화
@@ -105,8 +103,8 @@ public class MemberService {
 
 
     // Pageable과 전달 받은 필터링 값을 이용, 필터링된 멤버 목록 반환
-    public Page<MemberResponse> filterMembers(MemberFilterRequest filterDTO, Pageable pageable) {
-        Predicate predicate = FilterPredicateManager.buildMembersFilterPredicate(filterDTO);
+    public Page<MemberResponse> filterMembers(FilterMemberRequest filterMemberRequest, Pageable pageable) {
+        Predicate predicate = FilterPredicateManager.buildMembersFilterPredicate(filterMemberRequest);
         return memberRps.findAll(predicate, pageable)
             .map(MemberResponse::toDto);
     }

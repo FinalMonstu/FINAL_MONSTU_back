@@ -1,8 +1,8 @@
 package com.icetea.MonStu.api.v2.mapper;
 
 import com.icetea.MonStu.api.v2.dto.MemberRequest;
-import com.icetea.MonStu.api.v2.dto.request.PasswordResetRequest;
 import com.icetea.MonStu.api.v2.dto.request.ResetPasswordRequest;
+import com.icetea.MonStu.api.v2.dto.request.UpdateMemberRequest;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;

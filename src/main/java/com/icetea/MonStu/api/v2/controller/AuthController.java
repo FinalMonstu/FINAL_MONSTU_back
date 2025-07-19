@@ -51,7 +51,7 @@ public class AuthController {
     })
     @PostMapping("/signup")
     public ResponseEntity<MessageResponse> signup(@Valid @RequestBody UserSignUpRequest signUpRequest) {
-        memberService.signUp(signUpRequest);
+        memberService.createMember(signUpRequest);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new MessageResponse("회원가입이 완료되었습니다."));
