@@ -1,14 +1,14 @@
 package com.icetea.MonStu.service;
 
-import com.icetea.MonStu.api.v1.dto.request.post.PostFilterRequest;
-import com.icetea.MonStu.api.v1.dto.request.post.PostRequest;
-import com.icetea.MonStu.api.v1.dto.request.post.UpdatePostRequest;
-import com.icetea.MonStu.api.v1.dto.response.post.PostLiteResponse;
-import com.icetea.MonStu.api.v1.dto.response.post.PostResponse;
+import com.icetea.MonStu.api.v2.dto.request.CreatePostRequest;
+import com.icetea.MonStu.api.v2.dto.request.FilterPostRequest;
+import com.icetea.MonStu.api.v2.dto.request.UpdatePostRequest;
+import com.icetea.MonStu.api.v2.dto.response.PostResponse;
+import com.icetea.MonStu.api.v2.dto.response.PostSummaryResponse;
+import com.icetea.MonStu.api.v2.mapper.PostMapper;
 import com.icetea.MonStu.entity.Post;
 import com.icetea.MonStu.exception.NoSuchElementException;
 import com.icetea.MonStu.manager.FilterPredicateManager;
-import com.icetea.MonStu.api.v1.mapper.PostMapper;
 import com.icetea.MonStu.repository.MemberRepository;
 import com.icetea.MonStu.repository.PostRepository;
 import com.querydsl.core.types.Predicate;
@@ -29,23 +29,23 @@ public class PostService {
 
 
     @Transactional
-    public PostResponse create(PostRequest request, Long userId) {
+    public PostResponse create(CreatePostRequest createPostRequest, Long userId) {
         return memberRps.findById( userId )
-                .map(member-> postRps.save(PostMapper.toEntity(request,member)))
+                .map(member-> postRps.save(PostMapper.toEntity(createPostRequest,member)))
                 .map(PostResponse::toDto)
                 .orElseThrow(()->new NoSuchElementException("회원 정보를 찾을 수 없습니다"));
     }
 
     // Pageable과 Id 이용, 회원이 작성한 모든 게시물 목록 반환
-    public Page<PostLiteResponse> getMyPosts(Long userId, Pageable pageable) {
+    public Page<PostSummaryResponse> getMyPosts(Long userId, Pageable pageable) {
         return postRps.findByMember_Id(userId, pageable)
-                .map(PostLiteResponse::toDto);
+                .map(PostSummaryResponse::toDto);
     }
 
     // Pageable 이용, 모든 공개 게시물 반환
-    public Page<PostLiteResponse> getPublicPosts(Pageable pageable) {
+    public Page<PostSummaryResponse> getPublicPosts(Pageable pageable) {
         return postRps.findByIsPublicTrue(pageable)
-                .map( PostLiteResponse::toDto );
+                .map( PostSummaryResponse::toDto );
     }
 
     // ID 사용, 게시물 반환
@@ -56,25 +56,25 @@ public class PostService {
     }
 
     // Pageable과 전달 받은 필터 정보를 이용, 필터링된 게시물 목록 반환
-    public Page<PostResponse> filter(PostFilterRequest filter, Pageable pageable) {
-        Predicate predicate = FilterPredicateManager.buildPostsFilterPredicate(filter);
+    public Page<PostResponse> filter(FilterPostRequest postFilter, Pageable pageable) {
+        Predicate predicate = FilterPredicateManager.buildPostsFilterPredicate(postFilter);
         return postRps.findAll(predicate, pageable)
-                .map(com.icetea.MonStu.api.v1.dto.response.post.PostResponse::toDto);
+                .map(PostResponse::toDto);
     }
 
     // 게시글 ID를 이용, 게시글 & 로그 정보 반환
     public PostResponse findWithMemberAndLogById(Long id) {
         return postRps.findWithMemberAndLogById(id)
-                .map(com.icetea.MonStu.api.v1.dto.response.post.PostResponse::toDto)
+                .map(PostResponse::toDto)
                 .orElseThrow(()-> new NoSuchElementException(null));
     }
 
     // 게시글 ID 사용, 게시글 수정
     @Transactional
-    public void update(UpdatePostRequest request) {
-        Post post = postRps.findById(request.id())
+    public void update(UpdatePostRequest updatePostRequest) {
+        Post post = postRps.findById(updatePostRequest.id())
                 .orElseThrow(()-> new NoSuchElementException(null));
-        PostMapper.updateFromDto(post, request);
+        PostMapper.updateFromDto(post, updatePostRequest);
     }
 
     // ID 사용, 게시물 삭제
