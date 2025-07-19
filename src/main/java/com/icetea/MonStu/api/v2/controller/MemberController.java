@@ -27,13 +27,13 @@ public class MemberController {
     private final MemberService memberService;
 
 
-    @Operation(summary = "탈퇴 멤버 재활성화", description = "")
+    @Operation(summary = "회원탈퇴 취소", description = "")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "재활성화 성공"),
             @ApiResponse(responseCode = "500", description = "실패")
     })
-    @PostMapping("/reactivate")
-    public ResponseEntity<MessageResponse> reactivateMember(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    @PatchMapping ("/me/activate")
+    public ResponseEntity<MessageResponse> activateMember(@AuthenticationPrincipal CustomUserDetails userDetails) {
         memberService.updateStatus(userDetails.getId(), MemberStatus.ACTIVE);
         return ResponseEntity
                 .status(HttpStatus.OK)
