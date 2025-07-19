@@ -1,19 +1,17 @@
 package com.icetea.MonStu.service;
 
-import com.icetea.MonStu.api.v1.dto.MemberRequest;
-import com.icetea.MonStu.api.v1.dto.request.member.MemberFilterRequest;
-import com.icetea.MonStu.api.v1.dto.request.member.UpdateMemberRequest;
-import com.icetea.MonStu.api.v1.dto.response.member.MemberResponse;
-import com.icetea.MonStu.api.v1.dto.request.auth.FindEmailRequest;
-import com.icetea.MonStu.api.v1.dto.request.auth.ResetPasswordRequest;
-import com.icetea.MonStu.api.v1.dto.response.auth.LiteMemberResponse;
-import com.icetea.MonStu.api.v1.dto.response.auth.EmailFindResponse;
+i
+import com.icetea.MonStu.api.v2.dto.MemberRequest;
+import com.icetea.MonStu.api.v2.dto.request.FindEmailRequest;
+import com.icetea.MonStu.api.v2.dto.request.MemberSummaryResponse;
+import com.icetea.MonStu.api.v2.dto.request.ResetPasswordRequest;
+import com.icetea.MonStu.api.v2.dto.response.FindEmailResponse;
+import com.icetea.MonStu.api.v2.mapper.MemberMapper;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.MemberStatus;
 import com.icetea.MonStu.exception.ConflictException;
 import com.icetea.MonStu.exception.NoSuchElementException;
 import com.icetea.MonStu.manager.FilterPredicateManager;
-import com.icetea.MonStu.api.v1.mapper.MemberMapper;
 import com.icetea.MonStu.repository.MemberRepository;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +32,9 @@ public class MemberService {
 
     // 회원 추가
     @Transactional
-    public void register(MemberRequest request) {
-        if (memberRps.existsByEmail(request.email())) { throw new ConflictException("이미 사용 중인 이메일입니다."); }
-        memberRps.save( MemberMapper.toEntity(request, passwordEncoder) );
+    public void signUp(MemberRequest signUpRequest) {
+        if (memberRps.existsByEmail(signUpRequest.email())) { throw new ConflictException("이미 사용 중인 이메일입니다."); }
+        memberRps.save( MemberMapper.toEntity(signUpRequest, passwordEncoder) );
     }
 
     // 이메일 중복 확인
@@ -47,19 +45,19 @@ public class MemberService {
 
     // 비밀번호 재설정
     @Transactional
-    public void resetPassword(ResetPasswordRequest request) {
-        memberRps.findByEmail(request.email())
+    public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        memberRps.findByEmail(resetPasswordRequest.email())
                 .map(member -> {
-                    MemberMapper.updateFromDto(member, request, passwordEncoder);
+                    MemberMapper.updateFromDto(member, resetPasswordRequest, passwordEncoder);
                     return member;
                 })
                 .orElseThrow(()-> new NoSuchElementException(null));
     }
 
     // 이메일 찾기
-    public EmailFindResponse findEmail(FindEmailRequest request) {
+    public FindEmailResponse findEmail(FindEmailRequest request) {
         return memberRps.findByPhoneNumberAndNickName( request.phoneNumber() ,request.nickName())
-                .map(member -> new EmailFindResponse(member.getEmail()))
+                .map(member -> new FindEmailResponse(member.getEmail()))
                 .orElseThrow(()->new NoSuchElementException(null));
     }
 
@@ -71,9 +69,9 @@ public class MemberService {
     }
 
     // 회원 간단 정보 반환
-    public LiteMemberResponse getLiteById(Long id) {
+    public MemberSummaryResponse getMemberSummaryById(Long id) {
         return memberRps.findById(id)
-                .map(LiteMemberResponse::toDto)
+                .map(MemberSummaryResponse::toDto)
                 .orElseThrow(()->new NoSuchElementException(null));
     }
 

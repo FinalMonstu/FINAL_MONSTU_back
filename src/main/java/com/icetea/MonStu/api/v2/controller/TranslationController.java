@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/translate")
+@RequestMapping("/api/v2/translate")
 @Tag(name = "Translation API", description = "단어,문장 번역")
 public class TranslationController {
 

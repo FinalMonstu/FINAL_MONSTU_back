@@ -1,10 +1,11 @@
 package com.icetea.MonStu.service;
 
-import com.icetea.MonStu.api.v1.dto.request.auth.SendEmailCodeRequest;
-import com.icetea.MonStu.api.v1.dto.request.auth.VerifyEmailCodeRequest;
-import com.icetea.MonStu.api.v1.dto.request.auth.LoginRequest;
-import com.icetea.MonStu.api.v1.dto.response.auth.VerifiCodeResponse;
-import com.icetea.MonStu.api.v1.dto.response.auth.LiteMemberResponse;
+import com.icetea.MonStu.api.v2.dto.request.EmailVerifyRequest;
+import com.icetea.MonStu.api.v2.dto.request.LoginRequest;
+import com.icetea.MonStu.api.v2.dto.request.MemberSummaryResponse;
+import com.icetea.MonStu.api.v2.dto.request.VerifyEmailCodeRequest;
+import com.icetea.MonStu.api.v2.dto.response.EmailVerifyResponse;
+import com.icetea.MonStu.api.v2.dto.response.VerifiCodeResponse;
 import com.icetea.MonStu.entity.VerifiCode;
 import com.icetea.MonStu.manager.EmailManager;
 import com.icetea.MonStu.repository.VerifiCodeRepository;
@@ -32,11 +33,11 @@ public class AuthService {
      * 비고 : 인증 코드 재전송 시 전달 받은 ID로 DB에 새로운 인증정보 삽입 (새로운 행 생성 X),
      * 인증 제한 시간 : 3분 */
     @Transactional
-    public VerifiCodeResponse sendEmailCode(SendEmailCodeRequest request) {
+    public EmailVerifyResponse sendEmailCode(EmailVerifyRequest request) {
         String code = emailManager.sendEmailCode(request.email());
         VerifiCode entity = request.toEntity(code);
         VerifiCode savedCode = verifiCodeRps.save(entity);
-        return VerifiCodeResponse.toDto(savedCode);
+        return EmailVerifyResponse.toDto(savedCode);
     }
 
     // 이메일 인증코드 인증
@@ -59,12 +60,12 @@ public class AuthService {
     }
 
     @Transactional
-    public LiteMemberResponse login(LoginRequest request, HttpServletResponse response) {
+    public MemberSummaryResponse login(LoginRequest request, HttpServletResponse httpServletResponse) {
         CustomUserDetails ud = (CustomUserDetails) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password())).getPrincipal();
 
         String token = jwtService.generateToken(ud);
-        jwtService.setOption(response, token);
+        jwtService.setOption(httpServletResponse, token);
 
-        return memberService.getLiteById(ud.getId());
+        return memberService.getMemberSummaryById(ud.getId());
     }
 }
