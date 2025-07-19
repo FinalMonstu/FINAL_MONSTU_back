@@ -4,6 +4,7 @@ import com.icetea.MonStu.api.v2.dto.MessageResponse;
 import com.icetea.MonStu.api.v2.dto.request.*;
 import com.icetea.MonStu.api.v2.dto.response.EmailVerifyResponse;
 import com.icetea.MonStu.api.v2.dto.response.FindEmailResponse;
+import com.icetea.MonStu.api.v2.dto.response.MemberProfileResponse;
 import com.icetea.MonStu.enums.MemberStatus;
 import com.icetea.MonStu.security.CustomUserDetails;
 import com.icetea.MonStu.service.AuthService;
@@ -35,8 +36,8 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/login")
-    public ResponseEntity<MemberSummaryResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
-        MemberSummaryResponse member = authService.login(loginRequest, httpServletResponse);
+    public ResponseEntity<MemberProfileResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
+        MemberProfileResponse member = authService.login(loginRequest, httpServletResponse);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(member);

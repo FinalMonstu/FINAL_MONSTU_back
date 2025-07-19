@@ -1,5 +1,6 @@
 package com.icetea.MonStu.security;
 
+import com.icetea.MonStu.enums.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,10 +58,7 @@ public class SecurityConfig {
                                 "/api/post/{id}"
                         ).authenticated()
 
-//                        .requestMatchers(HttpMethod.DELETE,
-//                                "/api/mem/*",
-//                                "/api/mem/list"
-//                        ).hasRole(MemberRole.ADMIN.name())
+                        .requestMatchers("/api/v2/admin/*").hasRole(MemberRole.ADMIN.name())
 
                         .anyRequest().permitAll()   //나머지 모든 요청은 인증 불필요
                 )

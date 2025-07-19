@@ -9,7 +9,7 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 @Builder
-public record CreateMemberRequest(
+public record AdminCreateMemberRequest(
 
         @Email @NotBlank String email,
 

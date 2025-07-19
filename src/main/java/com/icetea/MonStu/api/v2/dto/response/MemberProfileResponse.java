@@ -15,7 +15,7 @@ import java.util.Date;
 @Setter
 @Builder
 @ToString
-public class MemberResponse {
+public class MemberProfileResponse {
     private Long memberId;
 
     private String email;
@@ -31,7 +31,7 @@ public class MemberResponse {
     private CountryCode countryCode;
 
 
-    public static MemberResponse toDto(Member m) {
+    public static MemberProfileResponse toDto(Member m) {
         return builder()
                 .memberId(m.getId())
                 .email(m.getEmail())

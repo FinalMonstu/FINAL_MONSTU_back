@@ -2,8 +2,9 @@ package com.icetea.MonStu.service;
 
 import com.icetea.MonStu.api.v2.dto.MemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.*;
+import com.icetea.MonStu.api.v2.dto.response.AdminMemberResponse;
 import com.icetea.MonStu.api.v2.dto.response.FindEmailResponse;
-import com.icetea.MonStu.api.v2.dto.response.MemberResponse;
+import com.icetea.MonStu.api.v2.dto.response.MemberProfileResponse;
 import com.icetea.MonStu.api.v2.mapper.MemberMapper;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.MemberStatus;
@@ -60,16 +61,16 @@ public class MemberService {
     }
 
     // ID 이용, 회원 데이터 반환
-    public MemberResponse getById(Long id) {
+    public AdminMemberResponse getById(Long id) {
         return memberRps.findById(id)
-                .map(MemberResponse::toDto)
+                .map(AdminMemberResponse::toDto)
                 .orElseThrow(()->new NoSuchElementException(null));
     }
 
     // 회원 간단 정보 반환
-    public MemberSummaryResponse getMemberSummaryById(Long id) {
+    public MemberProfileResponse getMemberSummaryById(Long id) {
         return memberRps.findById(id)
-                .map(MemberSummaryResponse::toDto)
+                .map(MemberProfileResponse::toDto)
                 .orElseThrow(()->new NoSuchElementException(null));
     }
 
@@ -103,10 +104,10 @@ public class MemberService {
 
 
     // Pageable과 전달 받은 필터링 값을 이용, 필터링된 멤버 목록 반환
-    public Page<MemberResponse> filterMembers(FilterMemberRequest filterMemberRequest, Pageable pageable) {
+    public Page<AdminMemberResponse> filterMembers(FilterMemberRequest filterMemberRequest, Pageable pageable) {
         Predicate predicate = FilterPredicateManager.buildMembersFilterPredicate(filterMemberRequest);
         return memberRps.findAll(predicate, pageable)
-            .map(MemberResponse::toDto);
+            .map(AdminMemberResponse::toDto);
     }
 
 }

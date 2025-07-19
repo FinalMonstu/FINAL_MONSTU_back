@@ -5,6 +5,7 @@ import com.icetea.MonStu.api.v2.dto.request.LoginRequest;
 import com.icetea.MonStu.api.v2.dto.request.MemberSummaryResponse;
 import com.icetea.MonStu.api.v2.dto.request.VerifyEmailCodeRequest;
 import com.icetea.MonStu.api.v2.dto.response.EmailVerifyResponse;
+import com.icetea.MonStu.api.v2.dto.response.MemberProfileResponse;
 import com.icetea.MonStu.entity.VerifiCode;
 import com.icetea.MonStu.manager.EmailManager;
 import com.icetea.MonStu.repository.VerifiCodeRepository;
@@ -59,7 +60,7 @@ public class AuthService {
     }
 
     @Transactional
-    public MemberSummaryResponse login(LoginRequest request, HttpServletResponse httpServletResponse) {
+    public MemberProfileResponse login(LoginRequest request, HttpServletResponse httpServletResponse) {
         CustomUserDetails ud = (CustomUserDetails) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password())).getPrincipal();
 
         String token = jwtService.generateToken(ud);
