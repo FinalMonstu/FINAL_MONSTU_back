@@ -8,6 +8,7 @@ import lombok.*;
 
 import static com.icetea.MonStu.validation.ValidationConstants.Translate_Target_REGEX;
 
+@Deprecated
 @Getter
 @Setter
 @ToString

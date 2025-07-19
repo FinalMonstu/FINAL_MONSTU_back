@@ -3,6 +3,7 @@ package com.icetea.MonStu.api.v1.dto.response.auth;
 import com.icetea.MonStu.entity.VerifiCode;
 import lombok.Builder;
 
+@Deprecated
 @Builder
 public record VerifiCodeResponse(
         Long id,

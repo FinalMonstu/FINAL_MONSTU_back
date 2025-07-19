@@ -5,7 +5,7 @@ import com.icetea.MonStu.entity.log.PostLog;
 import lombok.Builder;
 
 import java.util.Date;
-
+@Deprecated
 @Builder
 public record PostResponse(
         // Post Info

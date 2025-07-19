@@ -145,9 +145,7 @@ public class MemberController {
     })
     @GetMapping("/me")
     public ResponseEntity<MemberResponse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        System.out.println(userDetails.getId());
         MemberResponse memberResponse = memberService.getById(userDetails.getId());
-        System.out.println(memberResponse);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(memberResponse);

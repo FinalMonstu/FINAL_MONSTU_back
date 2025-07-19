@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+@Deprecated
 public record ResetPasswordRequest(
         @Email(message = "{Size.min.message}")
         @NotBlank(message = "{Size.min.message}")

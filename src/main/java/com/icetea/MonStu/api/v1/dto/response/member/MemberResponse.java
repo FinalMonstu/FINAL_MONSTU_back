@@ -11,6 +11,7 @@ import lombok.ToString;
 
 import java.util.Date;
 
+@Deprecated
 @Getter
 @Setter
 @Builder

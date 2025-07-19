@@ -3,6 +3,7 @@ package com.icetea.MonStu.api.v1.dto.request.post;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+@Deprecated
 public record PostRequest(
         Long id,
 

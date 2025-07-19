@@ -6,6 +6,7 @@ import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
 import lombok.*;
 
+@Deprecated
 @Builder
 public record LiteMemberResponse(
         Long id,

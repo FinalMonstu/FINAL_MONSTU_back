@@ -64,7 +64,7 @@ public class AuthController {
             @ApiResponse(responseCode = "409", description = "이메일 전송 오류"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PostMapping("/email/send")
+    @PostMapping("/email-code")
     public ResponseEntity<EmailVerifyResponse> sendEmailCode(@Valid @RequestBody EmailVerifyRequest emailVerifyRequest) {
         EmailVerifyResponse savedCode= authService.sendEmailCode(emailVerifyRequest);
         return ResponseEntity
@@ -78,7 +78,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "인증 성공"),
             @ApiResponse(responseCode = "401", description = "인증 실패")
     })
-    @PostMapping("/email/verify")
+    @PostMapping("/email-code/verify")
     public ResponseEntity<MessageResponse> verifyEmailCode(@Valid @RequestBody VerifyEmailCodeRequest verifyEmailCodeRequest) {
         boolean success = authService.verifyEmailCode(verifyEmailCodeRequest);
         return success
@@ -92,7 +92,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "이메일 사용 가능"),
             @ApiResponse(responseCode = "409", description = "이메일 중복")
     })
-    @GetMapping("/email/avail")
+    @GetMapping("/email-avail")
     public ResponseEntity<MessageResponse> availEmail(@Valid @ModelAttribute EmailRequest emailRequest) {
         memberService.existsByEmail(emailRequest.email());
         return ResponseEntity
@@ -106,7 +106,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "재설정 완료"),
             @ApiResponse(responseCode = "500", description = "재설정 실패")
     })
-    @PostMapping("/repassword")
+    @PostMapping("/password")
     public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         memberService.resetPassword(resetPasswordRequest);
         return ResponseEntity
@@ -115,12 +115,12 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "이메일 찾기", description = "핸드폰 번호 & 닉네임을 이용 - 이메일 조회")
+    @Operation(summary = "이메일 찾기", description = "핸드폰 번호 & 닉네임 정보로 이메일 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 완료"),
             @ApiResponse(responseCode = "500", description = "조회 실패")
     })
-    @PostMapping("/email/find")
+    @PostMapping("/email-find")
     public ResponseEntity<FindEmailResponse> findEmail(@Valid @RequestBody FindEmailRequest findEmailRequest) {
         FindEmailResponse email = memberService.findEmail(findEmailRequest);
         return ResponseEntity
@@ -143,19 +143,5 @@ public class AuthController {
                 .build();
     }
 
-
-    @Operation(summary = "로그인 중인 회원의 정보 반환", description = "")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "인증된 사용자"),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
-    })
-    @GetMapping("/me")
-    public ResponseEntity<MemberSummaryResponse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        MemberSummaryResponse member = memberService.getMemberSummaryById( userDetails.getId() );
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(member);
-    }
 
 }

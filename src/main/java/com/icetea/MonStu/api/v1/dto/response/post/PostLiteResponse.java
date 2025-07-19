@@ -5,6 +5,7 @@ import lombok.Builder;
 
 import java.util.Date;
 
+@Deprecated
 @Builder
 public record PostLiteResponse(
          // Post Info

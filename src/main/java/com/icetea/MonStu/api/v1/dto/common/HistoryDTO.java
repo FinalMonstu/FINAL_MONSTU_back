@@ -3,6 +3,7 @@ package com.icetea.MonStu.api.v1.dto.common;
 import com.icetea.MonStu.enums.Genre;
 import lombok.*;
 
+@Deprecated
 @Getter
 @Setter
 @Builder

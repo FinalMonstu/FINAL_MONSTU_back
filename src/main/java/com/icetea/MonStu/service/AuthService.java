@@ -5,7 +5,6 @@ import com.icetea.MonStu.api.v2.dto.request.LoginRequest;
 import com.icetea.MonStu.api.v2.dto.request.MemberSummaryResponse;
 import com.icetea.MonStu.api.v2.dto.request.VerifyEmailCodeRequest;
 import com.icetea.MonStu.api.v2.dto.response.EmailVerifyResponse;
-import com.icetea.MonStu.api.v2.dto.response.VerifiCodeResponse;
 import com.icetea.MonStu.entity.VerifiCode;
 import com.icetea.MonStu.manager.EmailManager;
 import com.icetea.MonStu.repository.VerifiCodeRepository;

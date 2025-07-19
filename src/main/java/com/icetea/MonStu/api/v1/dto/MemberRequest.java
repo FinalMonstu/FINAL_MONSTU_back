@@ -3,7 +3,7 @@ package com.icetea.MonStu.api.v1.dto;
 import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
-
+@Deprecated
 public interface MemberRequest {
     String email();
     String nickName();

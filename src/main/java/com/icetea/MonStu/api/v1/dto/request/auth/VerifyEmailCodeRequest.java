@@ -3,6 +3,7 @@ package com.icetea.MonStu.api.v1.dto.request.auth;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+@Deprecated
 public record VerifyEmailCodeRequest(
 
         @NotNull

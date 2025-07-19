@@ -6,6 +6,7 @@ import com.icetea.MonStu.enums.MemberStatus;
 
 import java.util.Date;
 
+@Deprecated
 public record FilterMemberRequest(
         String email,
         String nickname,

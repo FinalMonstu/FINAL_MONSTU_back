@@ -7,6 +7,7 @@ import com.icetea.MonStu.entity.Post;
 
 import java.util.Date;
 
+@Deprecated
 public final class PostMapper {
 
     private PostMapper() {}

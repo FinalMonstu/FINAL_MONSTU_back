@@ -8,6 +8,7 @@ import com.icetea.MonStu.validation.ValidationConstants;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 
+@Deprecated
 @Builder
 public record SaveMemberRequest (
 

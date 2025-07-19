@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
 
+@Deprecated
 public final class MemberMapper {
     private MemberMapper() {}
 
