@@ -1,8 +1,8 @@
 package com.icetea.MonStu.controller;
 
 import com.icetea.MonStu.AbstractIntegrationTest;
-import com.icetea.MonStu.dto.request.auth.LoginRequest;
-import com.icetea.MonStu.dto.response.auth.LiteMemberResponse;
+import com.icetea.MonStu.api.v1.dto.request.auth.LoginRequest;
+import com.icetea.MonStu.api.v1.dto.response.auth.LiteMemberResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;

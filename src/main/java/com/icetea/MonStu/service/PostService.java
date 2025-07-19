@@ -1,14 +1,14 @@
 package com.icetea.MonStu.service;
 
-import com.icetea.MonStu.dto.request.post.PostFilterRequest;
-import com.icetea.MonStu.dto.request.post.PostRequest;
-import com.icetea.MonStu.dto.request.post.UpdatePostRequest;
-import com.icetea.MonStu.dto.response.post.PostLiteResponse;
-import com.icetea.MonStu.dto.response.post.PostResponse;
+import com.icetea.MonStu.api.v1.dto.request.post.PostFilterRequest;
+import com.icetea.MonStu.api.v1.dto.request.post.PostRequest;
+import com.icetea.MonStu.api.v1.dto.request.post.UpdatePostRequest;
+import com.icetea.MonStu.api.v1.dto.response.post.PostLiteResponse;
+import com.icetea.MonStu.api.v1.dto.response.post.PostResponse;
 import com.icetea.MonStu.entity.Post;
 import com.icetea.MonStu.exception.NoSuchElementException;
 import com.icetea.MonStu.manager.FilterPredicateManager;
-import com.icetea.MonStu.mapper.PostMapper;
+import com.icetea.MonStu.api.v1.mapper.PostMapper;
 import com.icetea.MonStu.repository.MemberRepository;
 import com.icetea.MonStu.repository.PostRepository;
 import com.querydsl.core.types.Predicate;
@@ -59,13 +59,13 @@ public class PostService {
     public Page<PostResponse> filter(PostFilterRequest filter, Pageable pageable) {
         Predicate predicate = FilterPredicateManager.buildPostsFilterPredicate(filter);
         return postRps.findAll(predicate, pageable)
-                .map(com.icetea.MonStu.dto.response.post.PostResponse::toDto);
+                .map(com.icetea.MonStu.api.v1.dto.response.post.PostResponse::toDto);
     }
 
     // 게시글 ID를 이용, 게시글 & 로그 정보 반환
     public PostResponse findWithMemberAndLogById(Long id) {
         return postRps.findWithMemberAndLogById(id)
-                .map(com.icetea.MonStu.dto.response.post.PostResponse::toDto)
+                .map(com.icetea.MonStu.api.v1.dto.response.post.PostResponse::toDto)
                 .orElseThrow(()-> new NoSuchElementException(null));
     }
 

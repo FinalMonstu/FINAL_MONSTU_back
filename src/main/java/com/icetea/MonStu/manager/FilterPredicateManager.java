@@ -1,7 +1,7 @@
 package com.icetea.MonStu.manager;
 
-import com.icetea.MonStu.dto.request.member.MemberFilterRequest;
-import com.icetea.MonStu.dto.request.post.PostFilterRequest;
+import com.icetea.MonStu.api.v1.dto.request.member.MemberFilterRequest;
+import com.icetea.MonStu.api.v1.dto.request.post.PostFilterRequest;
 import com.icetea.MonStu.entity.QMember;
 import com.icetea.MonStu.entity.QPost;
 import com.querydsl.core.BooleanBuilder;

@@ -2,8 +2,9 @@ package com.icetea.MonStu.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.translate.v3.TranslationServiceClient;
-import com.icetea.MonStu.dto.request.TransRequest;
-import com.icetea.MonStu.infra.TranslationClient;
+import com.icetea.MonStu.api.v1.controller.AiController;
+import com.icetea.MonStu.api.v1.dto.request.TransRequest;
+import com.icetea.MonStu.api.v1.infra.TranslationClient;
 import com.icetea.MonStu.security.JwtAuthenticationFilter;
 import com.icetea.MonStu.security.JwtService;
 import org.junit.jupiter.api.DisplayName;

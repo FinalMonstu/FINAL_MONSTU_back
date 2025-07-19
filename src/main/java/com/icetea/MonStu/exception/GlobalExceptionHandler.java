@@ -1,6 +1,6 @@
 package com.icetea.MonStu.exception;
 
-import com.icetea.MonStu.dto.response.ErrorResponse;
+import com.icetea.MonStu.api.v1.dto.response.ErrorResponse;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

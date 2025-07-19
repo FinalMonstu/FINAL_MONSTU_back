@@ -1,10 +1,10 @@
 package com.icetea.MonStu.service;
 
-import com.icetea.MonStu.dto.request.auth.SendEmailCodeRequest;
-import com.icetea.MonStu.dto.request.auth.VerifyEmailCodeRequest;
-import com.icetea.MonStu.dto.request.auth.LoginRequest;
-import com.icetea.MonStu.dto.response.auth.VerifiCodeResponse;
-import com.icetea.MonStu.dto.response.auth.LiteMemberResponse;
+import com.icetea.MonStu.api.v1.dto.request.auth.SendEmailCodeRequest;
+import com.icetea.MonStu.api.v1.dto.request.auth.VerifyEmailCodeRequest;
+import com.icetea.MonStu.api.v1.dto.request.auth.LoginRequest;
+import com.icetea.MonStu.api.v1.dto.response.auth.VerifiCodeResponse;
+import com.icetea.MonStu.api.v1.dto.response.auth.LiteMemberResponse;
 import com.icetea.MonStu.entity.VerifiCode;
 import com.icetea.MonStu.manager.EmailManager;
 import com.icetea.MonStu.repository.VerifiCodeRepository;

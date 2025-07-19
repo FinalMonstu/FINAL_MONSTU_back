@@ -1,7 +1,7 @@
 package com.icetea.MonStu.controller;
 
 import com.icetea.MonStu.AbstractIntegrationTest;
-import com.icetea.MonStu.dto.request.TransRequest;
+import com.icetea.MonStu.api.v1.dto.request.TransRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
