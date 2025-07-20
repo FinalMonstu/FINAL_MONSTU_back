@@ -29,7 +29,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v2/post")
+@RequestMapping("/api/v2/posts")
 @Tag(name = "Post API", description = "게시물 관리")
 public class PostController {
 
@@ -41,7 +41,7 @@ public class PostController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
-    @PostMapping("/save")
+    @PostMapping("")
     public ResponseEntity<PostResponse> savePost(@Valid @RequestBody CreatePostRequest createPostRequest, @AuthenticationPrincipal CustomUserDetails user){
         PostResponse postResponse = postSvc.create(createPostRequest,user.getId());
         return ResponseEntity
@@ -85,7 +85,7 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
-    @GetMapping("/me/posts")
+    @GetMapping("/me")
     public ResponseEntity<CustomPageableResponse<PostSummaryResponse>> getMyPosts(@AuthenticationPrincipal CustomUserDetails user, Pageable pageable ){
         Page<PostSummaryResponse> page = postSvc.getMyPosts(user.getId(),pageable);
         CustomPageableResponse<PostSummaryResponse> result = CustomPageableResponse.mapper(page);
@@ -101,7 +101,7 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
-    @GetMapping("/posts")
+    @GetMapping("")
     public ResponseEntity<CustomPageableResponse<PostSummaryResponse>> getPublicPosts( Pageable pageable ){
         Page<PostSummaryResponse> page = postSvc.getPublicPosts(pageable);
         CustomPageableResponse<PostSummaryResponse> result = CustomPageableResponse.mapper(page);
@@ -116,7 +116,7 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
             @ApiResponse(responseCode = "500", description = "반환 실패")
     })
-    @PostMapping("/filter")
+    @GetMapping("/filter")
     public ResponseEntity<CustomPageableResponse<PostResponse>> getPostsWithfilter(@RequestBody FilterPostRequest postFilter, Pageable pageable) {
         Page<PostResponse> page = postSvc.filter(postFilter,pageable);
         CustomPageableResponse<PostResponse> result = CustomPageableResponse.mapper(page);
@@ -125,47 +125,4 @@ public class PostController {
                 .body(result);
     }
 
-    @Operation(summary = "게시글과 로그 조회", description = "게시글 ID를 이용하여 게시물 & 로그 조회")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    })
-    @GetMapping("/detail/{id}")
-    @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
-    public ResponseEntity<PostResponse> findWithPostsAndLog(@PathVariable Long id ){
-        PostResponse result = postSvc.findWithMemberAndLogById(id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body( result );
-    }
-
-    @Operation(summary = "여러 게시물 데이터 삭제", description = "전달받은 ID 목록을 이용, 해당 게시물 삭제")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "삭제 성공"),
-            @ApiResponse(responseCode = "500", description = "서버 오류 실패")
-    })
-    @PostMapping("/delete")
-    @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
-    public ResponseEntity<MessageResponse> deletePosts(@RequestBody List<Long> ids) {
-        postSvc.deletePosts(ids);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body( new MessageResponse("삭제 성공") );
-    }
-
-
-    @Operation(summary = "게시물 데이터 수정", description = "")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "수정 성공"),
-            @ApiResponse(responseCode = "500", description = "수정_서버 오류 실패")
-    })
-    @PutMapping("/update")
-    @PreAuthorize("hasRole(T(com.icetea.MonStu.enums.MemberRole).ADMIN.name())")
-    public ResponseEntity<MessageResponse> updatePost(@Valid @RequestBody UpdatePostRequest updatePostRequest) {
-        postSvc.update(updatePostRequest);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body( new MessageResponse("수정 성공") );
-    }
 }

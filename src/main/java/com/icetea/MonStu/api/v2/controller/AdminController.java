@@ -4,10 +4,13 @@ import com.icetea.MonStu.api.v2.dto.MessageResponse;
 import com.icetea.MonStu.api.v2.dto.request.AdminCreateMemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.FilterMemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.UpdateMemberRequest;
+import com.icetea.MonStu.api.v2.dto.request.UpdatePostRequest;
 import com.icetea.MonStu.api.v2.dto.response.AdminMemberResponse;
 import com.icetea.MonStu.api.v2.dto.response.CustomPageableResponse;
+import com.icetea.MonStu.api.v2.dto.response.PostResponse;
 import com.icetea.MonStu.enums.MemberStatus;
 import com.icetea.MonStu.service.MemberService;
+import com.icetea.MonStu.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +31,9 @@ import java.util.List;
 public class AdminController {
 
     private final MemberService memberService;
+    private final PostService postService;
 
+    /*----------Member----------------------------------------------------------------*/
     @Operation(summary = "관리자용 신규 회원 정보 저장", description = "회원가입과는 달리 status,role 데이터까지 저장")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "저장 성공"),
@@ -112,4 +118,46 @@ public class AdminController {
                 .body( new MessageResponse("삭제 성공") );
     }
 
+    /*----------Post----------------------------------------------------------------*/
+    @Operation(summary = "게시글과 로그 조회", description = "게시글 ID를 이용하여 게시물 & 로그 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    })
+    @GetMapping("/posts/{id}/logs")
+    public ResponseEntity<PostResponse> findWithPostsAndLog(@PathVariable Long id ){
+        PostResponse result = postService.findWithMemberAndLogById(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body( result );
+    }
+
+
+    @Operation(summary = "여러 게시물 데이터 삭제", description = "전달받은 ID 목록을 이용, 해당 게시물 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "삭제 성공"),
+            @ApiResponse(responseCode = "500", description = "서버 오류 실패")
+    })
+    @DeleteMapping("/posts/all")
+    public ResponseEntity<MessageResponse> deletePosts(@RequestBody List<Long> ids) {
+        postService.deletePosts(ids);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body( new MessageResponse("삭제 성공") );
+    }
+
+
+    @Operation(summary = "게시물 데이터 수정", description = "")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "500", description = "수정_서버 오류 실패")
+    })
+    @PutMapping("/posts/{id}")
+    public ResponseEntity<MessageResponse> updatePost(@Valid @RequestBody UpdatePostRequest updatePostRequest) {
+        postService.update(updatePostRequest);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body( new MessageResponse("수정 성공") );
+    }
 }
