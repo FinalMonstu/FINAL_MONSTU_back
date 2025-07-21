@@ -20,12 +20,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController("adminControllerV2")
 @RequiredArgsConstructor
 @RequestMapping("/api/v2/admin")
 public class AdminController {
@@ -110,7 +109,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "500", description = "삭제_서버 오류 실패")
     })
-    @PostMapping("/members")
+    @DeleteMapping("/members")
     public ResponseEntity<MessageResponse> deleteAllMembers(@RequestBody List<Long> ids) {
         memberService.deactivateAll(ids);
         return ResponseEntity
@@ -139,7 +138,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "500", description = "서버 오류 실패")
     })
-    @DeleteMapping("/posts/all")
+    @DeleteMapping("/posts")
     public ResponseEntity<MessageResponse> deletePosts(@RequestBody List<Long> ids) {
         postService.deletePosts(ids);
         return ResponseEntity
@@ -153,7 +152,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "수정 성공"),
             @ApiResponse(responseCode = "500", description = "수정_서버 오류 실패")
     })
-    @PutMapping("/posts/{id}")
+    @PatchMapping("/posts/{id}")
     public ResponseEntity<MessageResponse> updatePost(@Valid @RequestBody UpdatePostRequest updatePostRequest) {
         postService.update(updatePostRequest);
         return ResponseEntity

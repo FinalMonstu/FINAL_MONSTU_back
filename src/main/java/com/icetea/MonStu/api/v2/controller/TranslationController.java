@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("translationControllerV2")
 @RequiredArgsConstructor
 @RequestMapping("/api/v2/translate")
 @Tag(name = "Translation API", description = "단어,문장 번역")
@@ -27,13 +27,13 @@ public class TranslationController {
     @Operation(summary = "단어, 문장 번역", description = "전달받은 단어,문장을 번역 후 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "번역 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 문법"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping
-    public ResponseEntity<TranslationResponse> transTarget(@Valid @RequestBody TranslationRequest req){
-        System.out.println(req.toString());
-        TranslationResponse response = translationService.translate(req);
+    public ResponseEntity<TranslationResponse> translationTarget(@Valid @RequestBody TranslationRequest translationRequest){
+        System.out.println( translationRequest.toString() );
+        TranslationResponse response = translationService.translate( translationRequest );
         return  response.getTranslatedText() != null
                 ? new ResponseEntity<>(response, HttpStatus.OK)
                 : new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

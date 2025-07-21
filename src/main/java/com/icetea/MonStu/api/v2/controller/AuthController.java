@@ -20,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@RestController("authControllerV2")
 @RequiredArgsConstructor
 @RequestMapping("/api/v2/auth")
 public class AuthController {
@@ -29,7 +29,7 @@ public class AuthController {
     private final AuthService authService;
 
 
-    @Operation(summary = "로그인", description = "Email & Password 이용 - 로그인, 사용자 정보 반환")
+    @Operation(summary = "로그인", description = "로그인 성공 시 사용자 정보 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "401", description = "정보 불일치"),
@@ -37,10 +37,10 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<MemberProfileResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
-        MemberProfileResponse member = authService.login(loginRequest, httpServletResponse);
+        MemberProfileResponse memberProfile = authService.login( loginRequest, httpServletResponse );
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(member);
+                .body(memberProfile);
     }
 
 

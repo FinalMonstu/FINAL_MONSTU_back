@@ -12,13 +12,13 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 @Deprecated
-@RestController
-@RequiredArgsConstructor
-//@RequestMapping("/api/ai")
-@Tag(name = "Ai API", description = "AI API와 소통")
+//@RestController
+//@RequiredArgsConstructor
+////@RequestMapping("/api/ai")
+//@Tag(name = "Ai API", description = "AI API와 소통")
 public class AiController {
 
-    private final TranslationClient translationClient;
+//    private final TranslationClient translationClient;
 
 
 //    @Operation(summary = "단어, 문장 번역", description = "전달받은 단어,문장을 번역 후 반환")

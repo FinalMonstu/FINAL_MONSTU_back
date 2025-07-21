@@ -21,13 +21,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Deprecated
-@RestController
-@RequiredArgsConstructor
+//@RestController
+//@RequiredArgsConstructor
 //@RequestMapping("/api/auth")
 public class AuthController {
 
-    private final MemberService memberService;
-    private final AuthService authService;
+//    private final MemberService memberService;
+//    private final AuthService authService;
 
 
 //    @Operation(summary = "로그인", description = "Email & Password 이용 - 로그인, 사용자 정보 반환")

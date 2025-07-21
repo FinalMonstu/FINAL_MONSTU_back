@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @Slf4j
-@RestController
+@RestController("presetControllerV2")
 @RequiredArgsConstructor
 @RequestMapping("/api/v2/presets")
 @Tag(name = "Lookup API", description = "고정(프리셋) 값 조회용 API")

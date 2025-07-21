@@ -3,7 +3,6 @@ package com.icetea.MonStu.api.v2.controller;
 import com.icetea.MonStu.api.v2.dto.MessageResponse;
 import com.icetea.MonStu.api.v2.dto.request.CreatePostRequest;
 import com.icetea.MonStu.api.v2.dto.request.FilterPostRequest;
-import com.icetea.MonStu.api.v2.dto.request.UpdatePostRequest;
 import com.icetea.MonStu.api.v2.dto.response.CustomPageableResponse;
 import com.icetea.MonStu.api.v2.dto.response.PostResponse;
 import com.icetea.MonStu.api.v2.dto.response.PostSummaryResponse;
@@ -20,14 +19,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Slf4j
-@RestController
+@RestController("postControllerV2")
 @RequiredArgsConstructor
 @RequestMapping("/api/v2/posts")
 @Tag(name = "Post API", description = "게시물 관리")
@@ -116,7 +113,7 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
             @ApiResponse(responseCode = "500", description = "반환 실패")
     })
-    @GetMapping("/filter")
+    @GetMapping("/filter")  //search로 변경
     public ResponseEntity<CustomPageableResponse<PostResponse>> getPostsWithfilter(@RequestBody FilterPostRequest postFilter, Pageable pageable) {
         Page<PostResponse> page = postSvc.filter(postFilter,pageable);
         CustomPageableResponse<PostResponse> result = CustomPageableResponse.mapper(page);
