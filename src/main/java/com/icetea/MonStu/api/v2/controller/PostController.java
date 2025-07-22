@@ -113,8 +113,8 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
             @ApiResponse(responseCode = "500", description = "반환 실패")
     })
-    @GetMapping("/filter")  //search로 변경
-    public ResponseEntity<CustomPageableResponse<PostResponse>> getPostsWithfilter(@RequestBody FilterPostRequest postFilter, Pageable pageable) {
+    @GetMapping("/search")  //search로 변경
+    public ResponseEntity<CustomPageableResponse<PostResponse>> getPostsWithfilter(@ModelAttribute FilterPostRequest postFilter, Pageable pageable) {
         Page<PostResponse> page = postSvc.filter(postFilter,pageable);
         CustomPageableResponse<PostResponse> result = CustomPageableResponse.mapper(page);
         return ResponseEntity
