@@ -68,7 +68,7 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "반환 실패")
     })
     @GetMapping("/members/{id}")
-    public ResponseEntity<AdminMemberResponse> getMember(@RequestParam Long id) {
+    public ResponseEntity<AdminMemberResponse> getMember(@PathVariable Long id) {
         AdminMemberResponse memberResponse = memberService.getById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -110,7 +110,8 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "삭제_서버 오류 실패")
     })
     @DeleteMapping("/members")
-    public ResponseEntity<MessageResponse> deleteAllMembers(@RequestBody List<Long> ids) {
+    public ResponseEntity<MessageResponse> deleteAllMembers(@RequestParam("ids") List<Long> ids) {
+        System.out.println("ids: "+ids);
         memberService.deactivateAll(ids);
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -2,6 +2,7 @@ package com.icetea.MonStu.api.v2.controller;
 
 import com.icetea.MonStu.api.v2.dto.request.TranslationRequest;
 import com.icetea.MonStu.api.v2.dto.response.TranslationResponse;
+import com.icetea.MonStu.enums.TextUnit;
 import com.icetea.MonStu.service.TranslationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,10 +33,22 @@ public class TranslationController {
     })
     @PostMapping
     public ResponseEntity<TranslationResponse> translationTarget(@Valid @RequestBody TranslationRequest translationRequest){
-        System.out.println( translationRequest.toString() );
-        TranslationResponse response = translationService.translate( translationRequest );
-        return  response.getTranslatedText() != null
-                ? new ResponseEntity<>(response, HttpStatus.OK)
-                : new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//        TranslationResponse response = translationService.translate( translationRequest );
+//        return  response.getTranslatedText() != null
+//                ? new ResponseEntity<>(response, HttpStatus.OK)
+//                : new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        //For developing - Test
+        TranslationResponse t = TranslationResponse.builder()
+                .originalText("fun")
+                .translatedText("테스트")
+                .sourceLang("English")
+                .targetLang("Korean")
+                .textUnit(TextUnit.WORD)
+                .build();
+
+        return  t.getTranslatedText() != null
+                ? new ResponseEntity<>(t, HttpStatus.OK)
+                : new ResponseEntity<>(t, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

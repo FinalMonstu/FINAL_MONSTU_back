@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.rmi.ServerError;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -94,6 +96,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse("UNAUTHORIZED", "정보가 일치하지 않습니다"));
+    }
+
+
+
+    // Google Translate API 토큰 모두 소진
+    @ExceptionHandler(GoogleResourceExhaustedException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(GoogleResourceExhaustedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(new ErrorResponse("TOO_MANY_REQUESTS", "번역 토큰이 모두 소진되었습니다. 내일 다시 시도해주세요."));
     }
 
 }

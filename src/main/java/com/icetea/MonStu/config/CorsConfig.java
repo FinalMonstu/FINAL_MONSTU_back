@@ -17,7 +17,7 @@ public class CorsConfig {
                                 "http://localhost:3000",
                                 "https://localhost:3000"
                         )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // 허용할 HTTP 메서드
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")  // 허용할 HTTP 메서드
                         .allowedHeaders("*") // 모든 헤더 허용
                         .allowCredentials(true); // 쿠키 포함 요청 허용
             }
