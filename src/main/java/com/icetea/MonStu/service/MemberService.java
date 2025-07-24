@@ -76,8 +76,8 @@ public class MemberService {
 
     // ADMIN 전용, 회원 정보 수정
     @Transactional
-    public void updateMember(UpdateMemberRequest updateMemberRequest) {
-        Member member = memberRps.findById(updateMemberRequest.id())
+    public void updateMember(Long memberId, UpdateMemberRequest updateMemberRequest) {
+        Member member = memberRps.findById(memberId)
                 .orElseThrow(()->new NoSuchElementException(null));
         MemberMapper.updateFromDto(member,updateMemberRequest);
     }

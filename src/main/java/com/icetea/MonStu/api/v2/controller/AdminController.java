@@ -81,9 +81,9 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "수정 성공"),
             @ApiResponse(responseCode = "500", description = "수정 실패")
     })
-    @PatchMapping("/members/{id}")
-    public ResponseEntity<MessageResponse> updateMember(@RequestBody UpdateMemberRequest updateMemberRequest) {
-        memberService.updateMember(updateMemberRequest);
+    @PatchMapping("/members/{memberId}")
+    public ResponseEntity<MessageResponse> updateMember(@PathVariable Long memberId,@RequestBody UpdateMemberRequest updateMemberRequest) {
+        memberService.updateMember(memberId,updateMemberRequest);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( new MessageResponse("수정 성공") );
