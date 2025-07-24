@@ -40,6 +40,7 @@ public class PostController {
     })
     @PostMapping("")
     public ResponseEntity<PostResponse> savePost(@Valid @RequestBody CreatePostRequest createPostRequest, @AuthenticationPrincipal CustomUserDetails user){
+        System.out.println("createPostRequest: "+createPostRequest);
         PostResponse postResponse = postSvc.create(createPostRequest,user.getId());
         return ResponseEntity
                 .status(HttpStatus.OK)

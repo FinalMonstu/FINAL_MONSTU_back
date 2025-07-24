@@ -15,8 +15,9 @@ public record CreatePostRequest(
         Boolean isPublic,
 
         //Member Info
-        @NotNull(message = "{PostRequest.authorEmail.NotNull}")
+//        @NotNull(message = "{PostRequest.authorEmail.NotNull}")
         Long authorId,
+
         String nickName
 
 ) { }

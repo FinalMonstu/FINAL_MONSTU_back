@@ -1,7 +1,6 @@
 package com.icetea.MonStu.api.v2.mapper;
 
 import com.icetea.MonStu.api.v2.dto.request.CreatePostRequest;
-import com.icetea.MonStu.api.v2.dto.request.PostRequest;
 import com.icetea.MonStu.api.v2.dto.request.UpdatePostRequest;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.entity.Post;
@@ -20,6 +19,7 @@ public final class PostMapper {
                 .content(request.content())
                 .isPublic(request.isPublic())
                 .createdAt(new Date())
+//                .authorId( (request.authorId()!=null) ? request.authorId() : member.getId() )
                 .member(member)
                 .build();
     }

@@ -52,7 +52,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
             @ApiResponse(responseCode = "500", description = "반환 실패")
     })
-    @PostMapping("/filter/members")
+    @PostMapping("/members/search")
     public ResponseEntity<CustomPageableResponse<AdminMemberResponse>> getMembersWithFilter(@RequestBody FilterMemberRequest filterMemberRequest, Pageable pageable) {
         Page<AdminMemberResponse> page = memberService.filterMembers(filterMemberRequest,pageable);
         CustomPageableResponse<AdminMemberResponse> result = CustomPageableResponse.mapper(page);
@@ -140,7 +140,7 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "서버 오류 실패")
     })
     @DeleteMapping("/posts")
-    public ResponseEntity<MessageResponse> deletePosts(@RequestBody List<Long> ids) {
+    public ResponseEntity<MessageResponse> deletePosts(@RequestParam("ids") List<Long> ids) {
         postService.deletePosts(ids);
         return ResponseEntity
                 .status(HttpStatus.OK)
