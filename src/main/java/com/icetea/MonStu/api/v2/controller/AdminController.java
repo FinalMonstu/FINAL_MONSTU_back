@@ -8,7 +8,6 @@ import com.icetea.MonStu.api.v2.dto.request.UpdatePostRequest;
 import com.icetea.MonStu.api.v2.dto.response.AdminMemberResponse;
 import com.icetea.MonStu.api.v2.dto.response.CustomPageableResponse;
 import com.icetea.MonStu.api.v2.dto.response.PostResponse;
-import com.icetea.MonStu.enums.MemberStatus;
 import com.icetea.MonStu.service.MemberService;
 import com.icetea.MonStu.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +35,7 @@ public class AdminController {
     @Operation(summary = "관리자용 신규 회원 정보 저장", description = "회원가입과는 달리 status,role 데이터까지 저장")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "저장 성공"),
-            @ApiResponse(responseCode = "500", description = "오류 저장 실패")
+            @ApiResponse(responseCode = "500", description = "저장 실패")
     })
     @PostMapping("/members")
     public ResponseEntity<MessageResponse> adminCreateMember(@Valid @RequestBody AdminCreateMemberRequest request) {
