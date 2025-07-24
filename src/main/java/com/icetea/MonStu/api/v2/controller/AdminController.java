@@ -90,29 +90,28 @@ public class AdminController {
     }
 
 
-    @Operation(summary = "회원 정보 삭제", description = "회원 status 속성을 'DELETE'로 변경")
+    @Operation(summary = "단일 회원 정보 삭제", description = "회원 정보 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "500", description = "삭제 실패")
     })
     @DeleteMapping("/members/{id}")
     public ResponseEntity<MessageResponse> deleteMember(@PathVariable Long id) {
-        memberService.updateStatus(id, MemberStatus.DELETED);
+        memberService.deleteMembers(List.of(id));
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(HttpStatus.OK)
                 .body( new MessageResponse("삭제 성공") );
     }
 
 
-    @Operation(summary = "여러 회원 데이터 삭제", description = "전달받은 ID 목록을 이용, 해당 회원들 상태를 'DELETE'로 변경")
+    @Operation(summary = "다중 회원 데이터 삭제", description = "다중 회원 정보 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "500", description = "삭제_서버 오류 실패")
     })
     @DeleteMapping("/members")
-    public ResponseEntity<MessageResponse> deleteAllMembers(@RequestParam("ids") List<Long> ids) {
-        System.out.println("ids: "+ids);
-        memberService.deactivateAll(ids);
+    public ResponseEntity<MessageResponse> deleteMembers(@RequestParam("ids") List<Long> ids) {
+        memberService.deleteMembers(ids);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( new MessageResponse("삭제 성공") );

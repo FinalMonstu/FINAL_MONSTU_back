@@ -102,6 +102,9 @@ public class MemberService {
         memberRps.deleteAllByStatus();
     }
 
+    // 단일/다중 회원 바로 삭제
+    @Transactional
+    public void deleteMembers(List<Long> ids) { memberRps.deleteAllById(ids); }
 
     // Pageable과 전달 받은 필터링 값을 이용, 필터링된 멤버 목록 반환
     public Page<AdminMemberResponse> filterMembers(FilterMemberRequest filterMemberRequest, Pageable pageable) {
