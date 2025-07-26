@@ -9,11 +9,13 @@ import com.icetea.MonStu.api.v2.mapper.MemberMapper;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.MemberStatus;
 import com.icetea.MonStu.exception.ConflictException;
+import com.icetea.MonStu.exception.EmptyParameterException;
 import com.icetea.MonStu.exception.NoSuchElementException;
 import com.icetea.MonStu.manager.FilterPredicateManager;
 import com.icetea.MonStu.repository.MemberRepository;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -104,7 +106,10 @@ public class MemberService {
 
     // 단일/다중 회원 바로 삭제
     @Transactional
-    public void deleteMembers(List<Long> ids) { memberRps.deleteAllById(ids); }
+    public void deleteMembers(List<Long> ids) {
+        if (ids == null || ids.isEmpty())  throw new EmptyParameterException(null);
+        memberRps.deleteAllById(ids);
+    }
 
     // Pageable과 전달 받은 필터링 값을 이용, 필터링된 멤버 목록 반환
     public Page<AdminMemberResponse> filterMembers(FilterMemberRequest filterMemberRequest, Pageable pageable) {

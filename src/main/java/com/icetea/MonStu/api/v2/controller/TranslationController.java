@@ -33,22 +33,22 @@ public class TranslationController {
     })
     @PostMapping
     public ResponseEntity<TranslationResponse> translationTarget(@Valid @RequestBody TranslationRequest translationRequest){
-//        TranslationResponse response = translationService.translate( translationRequest );
-//        return  response.getTranslatedText() != null
-//                ? new ResponseEntity<>(response, HttpStatus.OK)
-//                : new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        TranslationResponse response = translationService.translate( translationRequest );
+        return  response.getTranslatedText() != null
+                ? new ResponseEntity<>(response, HttpStatus.OK)
+                : new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 
         //For developing - Test
-        TranslationResponse t = TranslationResponse.builder()
-                .originalText("fun")
-                .translatedText("테스트")
-                .sourceLang("English")
-                .targetLang("Korean")
-                .textUnit(TextUnit.WORD)
-                .build();
-
-        return  t.getTranslatedText() != null
-                ? new ResponseEntity<>(t, HttpStatus.OK)
-                : new ResponseEntity<>(t, HttpStatus.INTERNAL_SERVER_ERROR);
+//        TranslationResponse t = TranslationResponse.builder()
+//                .originalText("fun")
+//                .translatedText("테스트")
+//                .sourceLang("English")
+//                .targetLang("Korean")
+//                .textUnit(TextUnit.WORD)
+//                .build();
+//
+//        return  t.getTranslatedText() != null
+//                ? new ResponseEntity<>(t, HttpStatus.OK)
+//                : new ResponseEntity<>(t, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
