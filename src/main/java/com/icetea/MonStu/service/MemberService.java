@@ -31,7 +31,6 @@ public class MemberService {
     private final MemberRepository memberRps;
     private final PasswordEncoder passwordEncoder;
 
-    // 회원 추가
     @Transactional
     public void createMember(MemberRequest request) {
         if (memberRps.existsByEmail(request.email())) { throw new ConflictException("이미 사용 중인 이메일입니다."); }
@@ -41,10 +40,9 @@ public class MemberService {
     // 이메일 중복 확인
     public void existsByEmail(String email) {
         boolean exist = memberRps.existsByEmail(email);
-        if(exist) throw new ConflictException("이미 존재하는 이메일입니다.");
+        if(exist) throw new ConflictException("이미 존재하는 이메일입니다");
     }
 
-    // 비밀번호 재설정
     @Transactional
     public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
         memberRps.findByEmail(resetPasswordRequest.email())
@@ -62,8 +60,8 @@ public class MemberService {
                 .orElseThrow(()->new NoSuchElementException(null));
     }
 
-    // ID 이용, 회원 데이터 반환
-    public AdminMemberResponse getById(Long id) {
+    // ADMIN 전용, 회원 데이터 반환
+    public AdminMemberResponse getMemberById(Long id) {
         return memberRps.findById(id)
                 .map(AdminMemberResponse::toDto)
                 .orElseThrow(()->new NoSuchElementException(null));
@@ -86,7 +84,7 @@ public class MemberService {
 
     // Id 이용, 회원 비활성화
     @Transactional
-    public void updateStatus(Long id,MemberStatus status) {
+    public void updateMemberStatus(Long id, MemberStatus status) {
         Member member = memberRps.findById(id)
                 .orElseThrow(()->new NoSuchElementException("계정을 찾을 수 없습니다"));
         member.setStatus(status);
@@ -112,7 +110,7 @@ public class MemberService {
     }
 
     // Pageable과 전달 받은 필터링 값을 이용, 필터링된 멤버 목록 반환
-    public Page<AdminMemberResponse> filterMembers(FilterMemberRequest filterMemberRequest, Pageable pageable) {
+    public Page<AdminMemberResponse> getPagedFilteredMembers(FilterMemberRequest filterMemberRequest, Pageable pageable) {
         Predicate predicate = FilterPredicateManager.buildMembersFilterPredicate(filterMemberRequest);
         return memberRps.findAll(predicate, pageable)
             .map(AdminMemberResponse::toDto);

@@ -13,7 +13,7 @@ public class TranslationService{
 
     private final GoogleTranslateClient translateClient;
 
-    public TranslationResponse translate(TranslationRequest req) {
+    public TranslationResponse translateText(TranslationRequest req) {
         String translated = translateClient.translateText(req.getOriginalText(), req.getSourceLang(), req.getTargetLang());
         return TranslationMapper.toTranslationResponse(req, translated);
     }

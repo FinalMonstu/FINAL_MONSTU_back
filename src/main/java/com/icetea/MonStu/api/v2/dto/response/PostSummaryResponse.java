@@ -22,16 +22,17 @@ public record PostSummaryResponse(
 ){
     public static PostSummaryResponse toDto(Post p) {
         return builder()
+
                 // Post Info
-                .id(p.getId())
-                .title(p.getTitle())
-                .createdAt(p.getCreatedAt())
-                .modifiedAt(p.getModifiedAt())
-                .isPublic(p.getIsPublic())
+                .id         (p.getId())
+                .title      (p.getTitle())
+                .createdAt  (p.getCreatedAt())
+                .modifiedAt (p.getModifiedAt())
+                .isPublic   (p.getIsPublic())
 
                 // Member Info
-                .authorId(p.getMember().getId())
-                .nickName(p.getMember().getNickName())
+                .authorId   (p.getMember().getId())
+                .nickName   (p.getMember().getNickName())
 
                 .build();
     }

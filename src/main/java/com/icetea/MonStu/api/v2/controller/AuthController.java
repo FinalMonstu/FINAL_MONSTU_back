@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v2/auth")
 public class AuthController {
 
-    private final MemberService memberService;
-    private final AuthService authService;
+    private final MemberService memberSvc;
+    private final AuthService authSvc;
 
 
     @Operation(summary = "로그인", description = "로그인 성공 시 사용자 정보 반환")
@@ -36,11 +36,11 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/login")
-    public ResponseEntity<MemberProfileResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
-        MemberProfileResponse memberProfile = authService.login( loginRequest, httpServletResponse );
+    public ResponseEntity<MemberProfileResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
+        MemberProfileResponse memberProfile = authSvc.login( loginRequest, httpServletResponse );
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(memberProfile);
+                .status (HttpStatus.OK)
+                .body   (memberProfile);
     }
 
 
@@ -52,10 +52,10 @@ public class AuthController {
     })
     @PostMapping("/signup")
     public ResponseEntity<MessageResponse> signup(@Valid @RequestBody UserSignUpRequest signUpRequest) {
-        memberService.createMember(signUpRequest);
+        memberSvc.createMember(signUpRequest);
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new MessageResponse("회원가입이 완료되었습니다."));
+                .status (HttpStatus.CREATED)
+                .body   (new MessageResponse("회원가입이 완료되었습니다."));
     }
 
 
@@ -66,50 +66,50 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/email-code")
-    public ResponseEntity<EmailVerifyResponse> sendEmailCode(@Valid @RequestBody EmailVerifyRequest emailVerifyRequest) {
-        EmailVerifyResponse savedCode= authService.sendEmailCode(emailVerifyRequest);
+    public ResponseEntity<EmailVerifyResponse> sendVerifiyEmailCode(@Valid @RequestBody EmailVerifyRequest emailVerifyRequest) {
+        EmailVerifyResponse savedCode= authSvc.sendVerificationEmailCode(emailVerifyRequest);
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(savedCode);
+                .status (HttpStatus.CREATED)
+                .body   (savedCode);
     }
 
 
     @Operation(summary = "이메일 인증번호 검증", description = "")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "인증 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패")
+            @ApiResponse(responseCode = "422", description = "인증 실패")
     })
     @PostMapping("/email-code/verify")
     public ResponseEntity<MessageResponse> verifyEmailCode(@Valid @RequestBody VerifyEmailCodeRequest verifyEmailCodeRequest) {
-        boolean success = authService.verifyEmailCode(verifyEmailCodeRequest);
+        boolean success = authSvc.verifyEmailCode(verifyEmailCodeRequest);
         return success
                 ? ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("인증되었습니다"))
-                : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("인증 코드가 만료되었거나 일치하지 않습니다"));
+                : ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new MessageResponse("인증 코드가 만료되었거나 일치하지 않습니다"));
     }
 
 
-    @Operation(summary = "사용 가능 이메일 검증", description = "해당 이메일이 이미 가입된 이메일인지 확인")
+    @Operation(summary = "이메일 중복 확인", description = "해당 이메일이 이미 가입된 이메일인지 확인")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이메일 사용 가능"),
             @ApiResponse(responseCode = "409", description = "이메일 중복")
     })
     @GetMapping("/email-avail")
-    public ResponseEntity<MessageResponse> availEmail(@Valid @ModelAttribute EmailRequest emailRequest) {
-        memberService.existsByEmail(emailRequest.email());
+    public ResponseEntity<MessageResponse> checkEmailDuplicate(@Valid @ModelAttribute EmailRequest emailRequest) {
+        memberSvc.existsByEmail(emailRequest.email());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new MessageResponse("사용할 수 있는 이메일입니다."));
+                .body(new MessageResponse("사용할 수 있는 이메일입니다"));
     }
 
 
-    @Operation(summary = "비밀번호 재설정", description = "해당 이메일 정보의 비밀번호 재설정")
+    @Operation(summary = "비밀번호 재설정", description = "전달받은 이메일 정보의 비밀번호 재설정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "재설정 완료"),
             @ApiResponse(responseCode = "500", description = "재설정 실패")
     })
     @PostMapping("/password")
     public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
-        memberService.resetPassword(resetPasswordRequest);
+        memberSvc.resetPassword(resetPasswordRequest);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new MessageResponse("비밀번호가 변경되었습니다."));
@@ -123,7 +123,7 @@ public class AuthController {
     })
     @PostMapping("/email-find")
     public ResponseEntity<FindEmailResponse> findEmail(@Valid @RequestBody FindEmailRequest findEmailRequest) {
-        FindEmailResponse email = memberService.findEmail(findEmailRequest);
+        FindEmailResponse email = memberSvc.findEmail(findEmailRequest);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(email);
@@ -133,15 +133,15 @@ public class AuthController {
     @Operation(summary = "회원 탈퇴", description = "회원의 상태속성을 'DELETE'로 변경")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "탈퇴 완료"),
-            @ApiResponse(responseCode = "404", description = "이메일 인증 코드 오류"),
+            @ApiResponse(responseCode = "404", description = "오류_존재하지 않는 이메일"),
             @ApiResponse(responseCode = "500", description = "탈퇴 실패")
     })
     @PostMapping("/signout")
-    public ResponseEntity<Void> signOut(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        memberService.updateStatus(userDetails.getId(), MemberStatus.DELETED);
+    public ResponseEntity<MessageResponse> signOut(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        memberSvc.updateMemberStatus(userDetails.getId(), MemberStatus.DELETED);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .build();
+                .body(new MessageResponse("00시 전까지 탈퇴 요청을 취소 할 수 있습니다"));
     }
 
 

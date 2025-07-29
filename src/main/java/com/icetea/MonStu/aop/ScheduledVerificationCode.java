@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @RequiredArgsConstructor
 @Component
-public class ScheduledVerifiCode {
+public class ScheduledVerificationCode {
 
     private final AuthService authService;
 
@@ -20,7 +20,7 @@ public class ScheduledVerifiCode {
     * */
     @Scheduled(fixedRate = 600000)
     public void cleanupVerifiCodes() {
-        authService.cleanupVerifiCodes(1,20);
+        authService.cleanupVerificationCodes(1,20);
     }
 
 }

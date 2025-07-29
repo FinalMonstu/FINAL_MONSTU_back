@@ -8,13 +8,13 @@ import java.util.Date;
 public record FilterPostRequest(
 
         Boolean isPublic,   // 공개여부
-        String title,
-        Long authorId, //작성자 id
+        String  title,
+        Long    authorId,   //작성자 id
 
         String dateOption,
-        Date dateStart,
-        Date dateEnd,
+        Date   dateStart,
+        Date   dateEnd,
 
-        Long viewCount,
+        Long   viewCount,
         String viewCountOption  // "more", "less"
 ) { }

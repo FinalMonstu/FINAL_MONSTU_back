@@ -22,18 +22,18 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final AuthenticationManager authenticationManager;   // 로그인 인증을 처리
-    private final JwtService jwtService;                         // JWT를 생성하고 검증
-    private final MemberService memberService;
+    private final AuthenticationManager authenticationMng;   // 로그인 인증을 처리
+    private final JwtService jwtSvc;                         // JWT를 생성하고 검증
+    private final MemberService memberSvc;
     private final VerifiCodeRepository verifiCodeRps;
-    private final EmailManager emailManager;
+    private final EmailManager emailMng;
 
     /* 기능 : 이메일 인증 코드 전송
      * 비고 : 인증 코드 재전송 시 전달 받은 ID로 DB에 새로운 인증정보 삽입 (새로운 행 생성 X),
      * 인증 제한 시간 : 3분 */
     @Transactional
-    public EmailVerifyResponse sendEmailCode(EmailVerifyRequest request) {
-        String code = emailManager.sendEmailCode(request.email());
+    public EmailVerifyResponse sendVerificationEmailCode(EmailVerifyRequest request) {
+        String code = emailMng.sendVerificationEmailCode(request.email());
         VerifiCode entity = request.toEntity(code);
         VerifiCode savedCode = verifiCodeRps.save(entity);
         return EmailVerifyResponse.toDto(savedCode);
@@ -51,7 +51,7 @@ public class AuthService {
     /* 기능 : 특정 시간마다 불필요한 데이터 삭제
     *  비고 : scheduledVerifiCode.class에서 사용 */
     @Transactional
-    public void cleanupVerifiCodes(int expiresTime, int failedTime) {
+    public void cleanupVerificationCodes(int expiresTime, int failedTime) {
         LocalDateTime now = LocalDateTime.now();
 
         verifiCodeRps.deleteByExpiresAtBefore( now.minusMinutes(expiresTime) );
@@ -60,11 +60,11 @@ public class AuthService {
 
     @Transactional
     public MemberProfileResponse login(LoginRequest request, HttpServletResponse httpServletResponse) {
-        CustomUserDetails ud = (CustomUserDetails) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password())).getPrincipal();
+        CustomUserDetails userDetail = (CustomUserDetails) authenticationMng.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password())).getPrincipal();
 
-        String token = jwtService.generateToken(ud);
-        jwtService.setOption(httpServletResponse, token);
+        String token = jwtSvc.generateToken(userDetail);
+        jwtSvc.setOption(httpServletResponse, token);
 
-        return memberService.getMemberSummaryById(ud.getId());
+        return memberSvc.getMemberSummaryById(userDetail.getId());
     }
 }

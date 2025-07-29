@@ -13,9 +13,9 @@ public record EmailVerifyResponse(
 
     public static EmailVerifyResponse toDto(VerifiCode vc) {
         return builder()
-                .id(vc.getId())
-                .email(vc.getEmail())
-                .message("이메일을 확인해주세요.")
+                .id         (vc.getId())
+                .email      (vc.getEmail())
+                .message    ("이메일을 확인해주세요.")
                 .build();
     }
 }

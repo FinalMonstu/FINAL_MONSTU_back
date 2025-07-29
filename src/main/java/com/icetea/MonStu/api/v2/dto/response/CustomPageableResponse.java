@@ -19,11 +19,13 @@ public class CustomPageableResponse<T> {
 
     public static <T> CustomPageableResponse<T> mapper(Page<T> page) {
         return CustomPageableResponse.<T>builder()
-                .content(page.getContent())
+
+                .content      (page.getContent())
                 .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .number(page.getNumber())
-                .size(page.getSize())
+                .totalPages   (page.getTotalPages())
+                .number       (page.getNumber())
+                .size         (page.getSize())
+
                 .build();
     }
 }

@@ -35,19 +35,19 @@ public class GlobalExceptionHandler {
     }
 
     // 400 Bad Request - 잘못된 요청
-    @ExceptionHandler(EmptyParameterException.class)
-    public ResponseEntity<?> handleBadRequestException(EmptyParameterException ex) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("BAD_REQUEST",StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "요청이 비어있습니다."));
-    }
-
-    // 400 Bad Request - 빈 값을 전달
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<?> handleBadRequestException(BadRequestException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("BAD_REQUEST",StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "잘못된 요청입니다. 요청을 다시 확인해 주세요."));
+    }
+
+    // 400 Bad Request - 잘못된 요청
+    @ExceptionHandler(EmptyParameterException.class)
+    public ResponseEntity<?> handleEmptyParameterException(EmptyParameterException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("BAD_REQUEST",StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "요청 값을 다시 확인해주세요"));
     }
 
     // 401 Unauthorized - 인증 실패
