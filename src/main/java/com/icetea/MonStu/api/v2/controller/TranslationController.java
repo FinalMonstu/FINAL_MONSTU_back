@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Translation API", description = "단어,문장 번역")
 public class TranslationController {
 
-    private final TranslationService translationService;
+    private final TranslationService translationSvc;
 
     @Operation(summary = "단어, 문장 번역", description = "전달받은 단어,문장을 번역 후 반환")
     @ApiResponses(value = {
@@ -33,7 +33,7 @@ public class TranslationController {
     })
     @PostMapping
     public ResponseEntity<TranslationResponse> translationTarget(@Valid @RequestBody TranslationRequest translationRequest){
-//        TranslationResponse response = translationService.translate( translationRequest );
+//        TranslationResponse response = translationSvc.translateText( translationRequest );
 //        return  response.getTranslatedText() != null
 //                ? new ResponseEntity<>(response, HttpStatus.OK)
 //                : new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

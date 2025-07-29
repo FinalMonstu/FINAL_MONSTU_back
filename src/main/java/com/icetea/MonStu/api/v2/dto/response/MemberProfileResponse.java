@@ -27,21 +27,21 @@ public class MemberProfileResponse {
     private Date updatedAt;
 
     private MemberStatus status;
-    private MemberRole role;
-    private CountryCode countryCode;
+    private MemberRole   role;
+    private CountryCode  countryCode;
 
 
     public static MemberProfileResponse toDto(Member m) {
         return builder()
-                .memberId(m.getId())
-                .email(m.getEmail())
-                .nickName(m.getNickName())
-                .phoneNumber(m.getPhoneNumber())
-                .createdAt(m.getCreatedAt())
-                .updatedAt(m.getUpdatedAt())
-                .status(m.getStatus())
-                .role(m.getRole())
-                .countryCode(m.getCountryCode())
+                .memberId    (m.getId())
+                .email       (m.getEmail())
+                .nickName    (m.getNickName())
+                .phoneNumber (m.getPhoneNumber())
+                .createdAt   (m.getCreatedAt())
+                .updatedAt   (m.getUpdatedAt())
+                .status      (m.getStatus())
+                .role        (m.getRole())
+                .countryCode (m.getCountryCode())
                 .build();
     }
 }

@@ -20,7 +20,7 @@ public record PostResponse(
         Boolean isPublic,   // 공개여부
 
         //Member Info
-        Long authorId, //사용자 id
+        Long authorId,      //사용자 id
         String nickName,
 
         //Post Log Info
@@ -33,20 +33,20 @@ public record PostResponse(
         PostLog log = e.getPostLog();
 
         PostResponse.PostResponseBuilder response = builder()
-                .id(e.getId())
-                .title(e.getTitle())
-                .content(e.getContent())
-                .createdAt(e.getCreatedAt())
-                .modifiedAt(e.getModifiedAt())
-                .isPublic(e.getIsPublic())
+                .id         (e.getId())
+                .title      (e.getTitle())
+                .content    (e.getContent())
+                .createdAt  (e.getCreatedAt())
+                .modifiedAt (e.getModifiedAt())
+                .isPublic   (e.getIsPublic())
 
-                .authorId(e.getMember().getId())
-                .nickName(e.getMember().getNickName());
+                .authorId (e.getMember().getId())
+                .nickName (e.getMember().getNickName());
 
         if (log != null) {
-            response.logId(log.getId())
-                    .viewCount(log.getViewCount())
-                    .lastViewedAt(log.getLastViewedAt());
+            response.logId          (log.getId())
+                    .viewCount      (log.getViewCount())
+                    .lastViewedAt   (log.getLastViewedAt());
         }
         return response.build();
     }

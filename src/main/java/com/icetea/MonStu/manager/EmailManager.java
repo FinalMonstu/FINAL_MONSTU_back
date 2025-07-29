@@ -20,11 +20,12 @@ public class EmailManager {
     private final JavaMailSender sender;
 
     //  이메일 인증 번호 전송
-    public String sendEmailCode(String email) {
-        HttpSession session = ((ServletRequestAttributes)(RequestContextHolder.currentRequestAttributes()))
-                .getRequest().getSession();
+    public String sendVerificationEmailCode(String email) {
+//        HttpSession session = ((ServletRequestAttributes)(RequestContextHolder.currentRequestAttributes()))
+//                .getRequest().getSession();
+
         String randomCode = getRandomText();
-        session.setAttribute("randomCode", randomCode);
+//        session.setAttribute("randomCode", randomCode);
 
         try {
             MimeMessage mimeMessage = sender.createMimeMessage();

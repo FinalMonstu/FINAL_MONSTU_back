@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Member API", description = "유저 관리")
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberService memberSvc;
 
 
     @Operation(summary = "회원탈퇴 취소", description = "")
@@ -34,10 +34,10 @@ public class MemberController {
     })
     @PatchMapping ("/me/activate")
     public ResponseEntity<MessageResponse> activateMember(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        memberService.updateStatus(userDetails.getId(), MemberStatus.ACTIVE);
+        memberSvc.updateMemberStatus(userDetails.getId(), MemberStatus.ACTIVE);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body( new MessageResponse("재활성화 성공") );
+                .body( new MessageResponse("활성화 되었습니다") );
     }
 
     @Operation(summary = "로그인 중인 회원의 정보 반환", description = "")
@@ -48,7 +48,7 @@ public class MemberController {
     })
     @GetMapping("/me")
     public ResponseEntity<MemberProfileResponse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        MemberProfileResponse memberResponse = memberService.getMemberSummaryById(userDetails.getId());
+        MemberProfileResponse memberResponse = memberSvc.getMemberSummaryById(userDetails.getId());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(memberResponse);

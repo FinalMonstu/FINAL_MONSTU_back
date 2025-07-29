@@ -7,6 +7,7 @@ import com.icetea.MonStu.enums.MemberStatus;
 import java.util.Date;
 
 public record FilterMemberRequest(
+
         String email,
         String nickname,
 
@@ -17,6 +18,4 @@ public record FilterMemberRequest(
         String dateOption,
         Date dateStart,
         Date dateEnd
-
-
 ) { }

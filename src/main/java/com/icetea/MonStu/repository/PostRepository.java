@@ -15,7 +15,7 @@ public interface PostRepository extends JpaRepository<Post,Long>, QuerydslPredic
     Page<Post> findByMember_Id(Long memberId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"member", "postLog"})
-    Optional<Post> findWithMemberAndLogById(Long id);
+    Optional<Post> findPostWithLogById(Long id);
 
     @EntityGraph(attributePaths = {"member"})
     Page<Post> findByIsPublicTrue(Pageable pageable);

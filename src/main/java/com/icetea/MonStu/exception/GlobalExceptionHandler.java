@@ -42,6 +42,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("BAD_REQUEST",StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "잘못된 요청입니다. 요청을 다시 확인해 주세요."));
     }
 
+    // 400 Bad Request - 잘못된 요청
+    @ExceptionHandler(EmptyParameterException.class)
+    public ResponseEntity<?> handleEmptyParameterException(EmptyParameterException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("BAD_REQUEST",StringUtils.hasText(ex.getMessage()) ? ex.getMessage() :  "요청 값을 다시 확인해주세요"));
+    }
 
     // 401 Unauthorized - 인증 실패
     @ExceptionHandler(UnauthorizedException.class)

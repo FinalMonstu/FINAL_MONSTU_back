@@ -28,50 +28,50 @@ import java.util.List;
 @RequestMapping("/api/v2/admin")
 public class AdminController {
 
-    private final MemberService memberService;
-    private final PostService postService;
+    private final MemberService memberSvc;
+    private final PostService postSvc;
 
     /*----------Member----------------------------------------------------------------*/
-    @Operation(summary = "관리자용 신규 회원 정보 저장", description = "회원가입과는 달리 status,role 데이터까지 저장")
+    @Operation(summary = "관리자용 : 신규 회원 정보 저장", description = "회원가입과는 달리 status,role 데이터까지 저장")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "저장 성공"),
             @ApiResponse(responseCode = "500", description = "저장 실패")
     })
     @PostMapping("/members")
     public ResponseEntity<MessageResponse> adminCreateMember(@Valid @RequestBody AdminCreateMemberRequest request) {
-        memberService.createMember(request);
+        memberSvc.createMember(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body( new MessageResponse("회원 추가 완료") );
+                .body( new MessageResponse("회원 추가 성공") );
     }
 
 
     @Operation(summary = "필터링된 회원 데이터 목록 반환", description = "페이지 정보와 필터링 정보를 이용 - 필터링된 회원 데이터 목록 반환")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "반환 성공"),
-            @ApiResponse(responseCode = "500", description = "반환 실패")
+            @ApiResponse(responseCode = "201", description = "조회 성공"),
+            @ApiResponse(responseCode = "500", description = "조회 실패")
     })
     @PostMapping("/members/search")
-    public ResponseEntity<CustomPageableResponse<AdminMemberResponse>> getMembersWithFilter(@RequestBody FilterMemberRequest filterMemberRequest, Pageable pageable) {
-        Page<AdminMemberResponse> page = memberService.filterMembers(filterMemberRequest,pageable);
-        CustomPageableResponse<AdminMemberResponse> result = CustomPageableResponse.mapper(page);
+    public ResponseEntity<CustomPageableResponse<AdminMemberResponse>> getMembersWithFilter( @RequestBody FilterMemberRequest filterMemberRequest, Pageable pageable ) {
+        Page<AdminMemberResponse> page = memberSvc.getPagedFilteredMembers(filterMemberRequest,pageable);
+        CustomPageableResponse<AdminMemberResponse> response = CustomPageableResponse.mapper(page);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(result);
+                .body(response);
     }
 
 
-    @Operation(summary = "회원 정보 상세 보기", description = "전달 받은 회원 ID를 이용, 회원 데이터 반환")
+    @Operation(summary = "회원 정보 상세 보기", description = "전달 받은 회원 ID를 이용, 회원 상세 데이터 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
             @ApiResponse(responseCode = "500", description = "반환 실패")
     })
     @GetMapping("/members/{id}")
     public ResponseEntity<AdminMemberResponse> getMember(@PathVariable Long id) {
-        AdminMemberResponse memberResponse = memberService.getById(id);
+        AdminMemberResponse response = memberSvc.getMemberById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(memberResponse);
+                .body(response);
     }
 
 
@@ -82,21 +82,21 @@ public class AdminController {
     })
     @PatchMapping("/members/{memberId}")
     public ResponseEntity<MessageResponse> updateMember(@PathVariable Long memberId,@RequestBody UpdateMemberRequest updateMemberRequest) {
-        memberService.updateMember(memberId,updateMemberRequest);
+        memberSvc.updateMember(memberId,updateMemberRequest);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( new MessageResponse("수정 성공") );
     }
 
 
-    @Operation(summary = "단일 회원 정보 삭제", description = "회원 정보 삭제")
+    @Operation(summary = "단일 회원 삭제", description = "회원 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "500", description = "삭제 실패")
     })
-    @DeleteMapping("/members/{id}")
-    public ResponseEntity<MessageResponse> deleteMember(@PathVariable Long id) {
-        memberService.deleteMembers(List.of(id));
+    @DeleteMapping("/members/{memberId}")
+    public ResponseEntity<MessageResponse> deleteMember(@PathVariable Long memberId) {
+        memberSvc.deleteMembers(List.of(memberId));
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( new MessageResponse("삭제 성공") );
@@ -106,26 +106,26 @@ public class AdminController {
     @Operation(summary = "다중 회원 데이터 삭제", description = "다중 회원 정보 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
-            @ApiResponse(responseCode = "500", description = "삭제_서버 오류 실패")
+            @ApiResponse(responseCode = "500", description = "실패 실패")
     })
     @DeleteMapping("/members")
     public ResponseEntity<MessageResponse> deleteMembers(@RequestParam("ids") List<Long> ids) {
-        memberService.deleteMembers(ids);
+        memberSvc.deleteMembers(ids);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( new MessageResponse("삭제 성공") );
     }
 
     /*----------Post----------------------------------------------------------------*/
-    @Operation(summary = "게시글과 로그 조회", description = "게시글 ID를 이용하여 게시물 & 로그 조회")
+    @Operation(summary = "게시글과 로그 조회", description = "게시글 ID를 이용, 게시물 & 로그 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
-    @GetMapping("/posts/{id}/logs")
-    public ResponseEntity<PostResponse> findWithPostsAndLog(@PathVariable Long id ){
-        PostResponse result = postService.findWithMemberAndLogById(id);
+    @GetMapping("/posts/{postsId}/logs")
+    public ResponseEntity<PostResponse> findWithPostsAndLog(@PathVariable Long postsId ){
+        PostResponse result = postSvc.findPostWithLogById(postsId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( result );
@@ -139,7 +139,7 @@ public class AdminController {
     })
     @DeleteMapping("/posts")
     public ResponseEntity<MessageResponse> deletePosts(@RequestParam("ids") List<Long> ids) {
-        postService.deletePosts(ids);
+        postSvc.deletePosts(ids);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( new MessageResponse("삭제 성공") );
@@ -153,7 +153,7 @@ public class AdminController {
     })
     @PatchMapping("/posts/{id}")
     public ResponseEntity<MessageResponse> updatePost(@Valid @RequestBody UpdatePostRequest updatePostRequest) {
-        postService.update(updatePostRequest);
+        postSvc.updatePost(updatePostRequest);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body( new MessageResponse("수정 성공") );

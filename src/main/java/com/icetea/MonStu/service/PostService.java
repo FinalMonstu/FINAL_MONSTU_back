@@ -7,6 +7,7 @@ import com.icetea.MonStu.api.v2.dto.response.PostResponse;
 import com.icetea.MonStu.api.v2.dto.response.PostSummaryResponse;
 import com.icetea.MonStu.api.v2.mapper.PostMapper;
 import com.icetea.MonStu.entity.Post;
+import com.icetea.MonStu.exception.EmptyParameterException;
 import com.icetea.MonStu.exception.NoSuchElementException;
 import com.icetea.MonStu.manager.FilterPredicateManager;
 import com.icetea.MonStu.repository.MemberRepository;
@@ -29,7 +30,7 @@ public class PostService {
 
 
     @Transactional
-    public PostResponse create(CreatePostRequest createPostRequest, Long userId) {
+    public PostResponse createPost(CreatePostRequest createPostRequest, Long userId) {
         return memberRps.findById( userId )
                 .map(member-> postRps.save(PostMapper.toEntity(createPostRequest,member)))
                 .map(PostResponse::toDto)
@@ -37,7 +38,7 @@ public class PostService {
     }
 
     // Pageable과 Id 이용, 회원이 작성한 모든 게시물 목록 반환
-    public Page<PostSummaryResponse> getMyPosts(Long userId, Pageable pageable) {
+    public Page<PostSummaryResponse> getMyPostSummaries(Long userId, Pageable pageable) {
         return postRps.findByMember_Id(userId, pageable)
                 .map(PostSummaryResponse::toDto);
     }
@@ -49,29 +50,29 @@ public class PostService {
     }
 
     // ID 사용, 게시물 반환
-    public PostResponse getById(Long id) {
-        return postRps.findById(id)
+    public PostResponse getPostById(Long postId) {
+        return postRps.findById(postId)
                 .map(PostResponse::toDto)
                 .orElseThrow(()-> new NoSuchElementException(null));
     }
 
     // Pageable과 전달 받은 필터 정보를 이용, 필터링된 게시물 목록 반환
-    public Page<PostResponse> filter(FilterPostRequest postFilter, Pageable pageable) {
+    public Page<PostResponse> getfilteredPosts(FilterPostRequest postFilter, Pageable pageable) {
         Predicate predicate = FilterPredicateManager.buildPostsFilterPredicate(postFilter);
         return postRps.findAll(predicate, pageable)
                 .map(PostResponse::toDto);
     }
 
     // 게시글 ID를 이용, 게시글 & 로그 정보 반환
-    public PostResponse findWithMemberAndLogById(Long id) {
-        return postRps.findWithMemberAndLogById(id)
+    public PostResponse findPostWithLogById(Long id) {
+        return postRps.findPostWithLogById(id)
                 .map(PostResponse::toDto)
                 .orElseThrow(()-> new NoSuchElementException(null));
     }
 
     // 게시글 ID 사용, 게시글 수정
     @Transactional
-    public void update(UpdatePostRequest updatePostRequest) {
+    public void updatePost(UpdatePostRequest updatePostRequest) {
         Post post = postRps.findById(updatePostRequest.id())
                 .orElseThrow(()-> new NoSuchElementException(null));
         PostMapper.updateFromDto(post, updatePostRequest);
@@ -80,6 +81,7 @@ public class PostService {
     // ID 사용, 게시물 삭제
     @Transactional
     public void deleteById(Long id) {
+        if (id == null)  throw new EmptyParameterException(null);
         Post post = postRps.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("게시물이 없습니다: " + id));
         postRps.delete(post);
@@ -87,7 +89,10 @@ public class PostService {
 
     // 게시글 ID 목록 사용, 여러 게시물 삭제
     @Transactional
-    public void deletePosts(List<Long> ids) { postRps.deleteAllByIdInBatch(ids); }
+    public void deletePosts(List<Long> ids) {
+        if (ids == null || ids.isEmpty())  throw new EmptyParameterException(null);
+        postRps.deleteAllByIdInBatch(ids);
+    }
 
 
 }

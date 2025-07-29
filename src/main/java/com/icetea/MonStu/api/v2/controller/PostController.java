@@ -39,9 +39,8 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("")
-    public ResponseEntity<PostResponse> savePost(@Valid @RequestBody CreatePostRequest createPostRequest, @AuthenticationPrincipal CustomUserDetails user){
-        System.out.println("createPostRequest: "+createPostRequest);
-        PostResponse postResponse = postSvc.create(createPostRequest,user.getId());
+    public ResponseEntity<PostResponse> createPost(@Valid @RequestBody CreatePostRequest createPostRequest, @AuthenticationPrincipal CustomUserDetails userDetails){
+        PostResponse postResponse = postSvc.createPost(createPostRequest,userDetails.getId());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(postResponse);
@@ -54,24 +53,24 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<MessageResponse> deletePost(@PathVariable Long id ){
-        postSvc.deleteById(id);
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<MessageResponse> deletePost(@PathVariable Long postId ){
+        postSvc.deleteById(postId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new MessageResponse("삭제 성공"));
     }
 
 
-    @Operation(summary = "게시글 조회", description = "게시글 ID를 이용하여 게시물 조회")
+    @Operation(summary = "게시글 조회", description = "게시글 ID를 이용, 게시물 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<PostResponse> getPost(@PathVariable Long id ){
-        PostResponse postResponse = postSvc.getById(id);
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostResponse> getPost(@PathVariable Long postId ){
+        PostResponse postResponse = postSvc.getPostById(postId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(postResponse);
@@ -84,12 +83,12 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("/me")
-    public ResponseEntity<CustomPageableResponse<PostSummaryResponse>> getMyPosts(@AuthenticationPrincipal CustomUserDetails user, Pageable pageable ){
-        Page<PostSummaryResponse> page = postSvc.getMyPosts(user.getId(),pageable);
-        CustomPageableResponse<PostSummaryResponse> result = CustomPageableResponse.mapper(page);
+    public ResponseEntity< CustomPageableResponse<PostSummaryResponse> > getMyPosts(@AuthenticationPrincipal CustomUserDetails user, Pageable pageable ){
+        Page<PostSummaryResponse> page = postSvc.getMyPostSummaries(user.getId(),pageable);
+        CustomPageableResponse<PostSummaryResponse> pagedPosts = CustomPageableResponse.mapper(page);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body( result );
+                .body( pagedPosts );
     }
 
 
@@ -100,12 +99,12 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("")
-    public ResponseEntity<CustomPageableResponse<PostSummaryResponse>> getPublicPosts( Pageable pageable ){
+    public ResponseEntity< CustomPageableResponse<PostSummaryResponse> > getPublicPosts( Pageable pageable ){
         Page<PostSummaryResponse> page = postSvc.getPublicPosts(pageable);
-        CustomPageableResponse<PostSummaryResponse> result = CustomPageableResponse.mapper(page);
+        CustomPageableResponse<PostSummaryResponse> pagedPosts = CustomPageableResponse.mapper(page);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body( result );
+                .body( pagedPosts );
     }
 
 
@@ -114,13 +113,13 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
             @ApiResponse(responseCode = "500", description = "반환 실패")
     })
-    @GetMapping("/search")  //search로 변경
-    public ResponseEntity<CustomPageableResponse<PostResponse>> getPostsWithfilter(@ModelAttribute FilterPostRequest postFilter, Pageable pageable) {
-        Page<PostResponse> page = postSvc.filter(postFilter,pageable);
-        CustomPageableResponse<PostResponse> result = CustomPageableResponse.mapper(page);
+    @GetMapping("/search")
+    public ResponseEntity< CustomPageableResponse<PostResponse> > getPostsWithfilter(@ModelAttribute FilterPostRequest postFilter, Pageable pageable) {
+        Page<PostResponse> page = postSvc.getfilteredPosts(postFilter,pageable);
+        CustomPageableResponse<PostResponse> pagedFilteredPosts = CustomPageableResponse.mapper(page);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(result);
+                .body( pagedFilteredPosts );
     }
 
 }
