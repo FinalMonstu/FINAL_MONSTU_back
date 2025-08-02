@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,11 +27,5 @@ public class NouncementImage {
     @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @JoinColumn(name = "image_id")
     private Image image;
-
-
-    public void setNouncement(Nouncement nouncement) {
-        this.nouncement = nouncement;
-        if(!nouncement.getNouncementImages().contains(this)) nouncement.getNouncementImages().add(this);
-    }
 
 }

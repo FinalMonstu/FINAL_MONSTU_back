@@ -7,9 +7,10 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
+import java.util.List;
 import java.util.Optional;
 
-public interface PostRepository extends JpaRepository<Post,Long>, QuerydslPredicateExecutor<Post> {
+public interface PostRepository extends JpaRepository<Post,Long>, QuerydslPredicateExecutor<Post>, PostRepositoryCustom  {
 
     @EntityGraph(attributePaths = {"member"})
     Page<Post> findByMember_Id(Long memberId, Pageable pageable);
@@ -19,4 +20,5 @@ public interface PostRepository extends JpaRepository<Post,Long>, QuerydslPredic
 
     @EntityGraph(attributePaths = {"member"})
     Page<Post> findByIsPublicTrue(Pageable pageable);
+
 }

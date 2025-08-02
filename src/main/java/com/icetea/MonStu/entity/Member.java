@@ -75,21 +75,21 @@ public class Member {
 
     public void addMemberLog(MemberLog memberLog){
         this.memberLogs.add(memberLog);
-        if(memberLog.getMember()!=this) memberLog.setMember(this);
+        if(memberLog != null && memberLog.getMember()!=this) memberLog.setMember(this);
     }
 
     public void removeMemberLog(MemberLog memberLog){
         memberLogs.remove(memberLog);
-        if(memberLog.getMember()==this) memberLog.setMember(null);
+        if(memberLog != null && memberLog.getMember()==this) memberLog.setMember(null);
     }
 
     public void addPosts(Post post){
         this.posts.add(post);
-        if(post.getMember()!=this) post.setMember(this);
+        if(post != null && post.getMember()!=this) post.setMember(this);
     }
 
     public void removePost(Post post){
         posts.remove(post);
-        if(post.getMember()==this) post.setMember(null);
+        if(post != null && post.getMember()==this) post.setMember(null);
     }
 }

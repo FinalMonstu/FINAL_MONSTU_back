@@ -53,12 +53,12 @@ public class Nouncement {
 
     public void addNouncementImage(NouncementImage nouncementImage) {
         this.nouncementImages.add(nouncementImage);
-        if (nouncementImage.getNouncement() != this) nouncementImage.setNouncement(this);
+        if (nouncementImage != null && nouncementImage.getNouncement() != this) nouncementImage.setNouncement(this);
     }
 
     public void removeNouncementImage(NouncementImage nouncementImage){
         nouncementImages.remove(nouncementImage);
-        if(nouncementImage.getNouncement()==this) nouncementImage.setNouncement(null);
+        if(nouncementImage != null && nouncementImage.getNouncement()==this) nouncementImage.setNouncement(null);
     }
 
 }

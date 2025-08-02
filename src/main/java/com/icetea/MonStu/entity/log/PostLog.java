@@ -20,7 +20,7 @@ public class PostLog {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId  // Post의 ID를 그대로 사용
+    @MapsId  // Post의 ID를 그대로 사용, 부모의 PK를 자신의 PK로 사용
     @JoinColumn(name = "post_id")
     private Post post;
 

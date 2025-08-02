@@ -115,7 +115,7 @@ public class PostController {
     })
     @GetMapping("/search")
     public ResponseEntity< CustomPageableResponse<PostResponse> > getPostsWithfilter(@ModelAttribute FilterPostRequest postFilter, Pageable pageable) {
-        Page<PostResponse> page = postSvc.getfilteredPosts(postFilter,pageable);
+        Page<PostResponse> page = postSvc.getFilteredPosts(postFilter,pageable);
         CustomPageableResponse<PostResponse> pagedFilteredPosts = CustomPageableResponse.mapper(page);
         return ResponseEntity
                 .status(HttpStatus.OK)

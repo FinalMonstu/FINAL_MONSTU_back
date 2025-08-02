@@ -3,6 +3,7 @@ package com.icetea.MonStu.service;
 import com.icetea.MonStu.api.v2.dto.request.CreatePostRequest;
 import com.icetea.MonStu.api.v2.dto.request.FilterPostRequest;
 import com.icetea.MonStu.api.v2.dto.request.UpdatePostRequest;
+import com.icetea.MonStu.api.v2.dto.response.CustomPageableResponse;
 import com.icetea.MonStu.api.v2.dto.response.PostResponse;
 import com.icetea.MonStu.api.v2.dto.response.PostSummaryResponse;
 import com.icetea.MonStu.api.v2.mapper.PostMapper;
@@ -15,10 +16,12 @@ import com.icetea.MonStu.repository.PostRepository;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -57,10 +60,18 @@ public class PostService {
     }
 
     // Pageable과 전달 받은 필터 정보를 이용, 필터링된 게시물 목록 반환
-    public Page<PostResponse> getfilteredPosts(FilterPostRequest postFilter, Pageable pageable) {
-        Predicate predicate = FilterPredicateManager.buildPostsFilterPredicate(postFilter);
-        return postRps.findAll(predicate, pageable)
-                .map(PostResponse::toDto);
+    public Page<PostResponse> getFilteredPosts(FilterPostRequest postFilter, Pageable pageable) {
+        List<Long> ids = postRps.findPostIdsByFilter(postFilter,pageable);
+        long total     = postRps.countPostsByFilter(postFilter);
+        List<Post> posts = ids.isEmpty()
+                ? Collections.emptyList()
+                : postRps.findPostsByIds(ids);
+
+        List<PostResponse> dtos = posts.stream()
+                .map(PostResponse::toDto)
+                .toList();
+
+        return new PageImpl<>(dtos, pageable, total);
     }
 
     // 게시글 ID를 이용, 게시글 & 로그 정보 반환

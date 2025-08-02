@@ -36,6 +36,6 @@ public class MemberLog {
 
     public void setMember(Member member) {
         this.member = member;
-        if(!member.getMemberLogs().contains(this)) member.getMemberLogs().add(this);
+        if(member != null && !member.getMemberLogs().contains(this)) member.getMemberLogs().add(this);
     }
 }
