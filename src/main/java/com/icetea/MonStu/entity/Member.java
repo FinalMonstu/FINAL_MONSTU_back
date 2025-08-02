@@ -73,8 +73,6 @@ public class Member {
     private List<MemberPostHistory> memberPostHistories = new ArrayList<>();
 
 
-
-
     public void addMemberLog(MemberLog memberLog){
         this.memberLogs.add(memberLog);
         if(memberLog.getMember()!=this) memberLog.setMember(this);
