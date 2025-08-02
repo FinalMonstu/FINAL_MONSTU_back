@@ -54,7 +54,7 @@ public class PostService {
 
     // ID 사용, 게시물 반환
     public PostResponse getPostById(Long postId) {
-        return postRps.findById(postId)
+        return postRps.findPostWithLogById(postId)
                 .map(PostResponse::toDto)
                 .orElseThrow(()-> new NoSuchElementException(null));
     }
