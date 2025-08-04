@@ -16,12 +16,12 @@ public class GoogleTranslateClient {
     @Value("${gcp.project-id}") private String projectId;
     @Value("${gcp.location}") private String location;
 
-    public String translateText(String text, String sourceLang, String targetLang) {
+    public String translateText(String text, LanguageCode sourceLang, LanguageCode targetLang) {
         LocationName parent = LocationName.of(projectId, location);
         TranslateTextRequest request = TranslateTextRequest.newBuilder()
                 .setParent(parent.toString())
                 .setMimeType("text/plain")
-                .setTargetLanguageCode( LanguageCode.getCode(targetLang).toString() )
+                .setTargetLanguageCode( targetLang.toString() )
                 .addContents( text )
                 .build();
 

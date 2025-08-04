@@ -1,21 +1,22 @@
 package com.icetea.MonStu.entity;
 
-import com.icetea.MonStu.entity.link.MemberPostHistory;
 import com.icetea.MonStu.enums.Genre;
 import com.icetea.MonStu.enums.LanguageCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"memberPostHistories"})
 @Entity
+@ToString(exclude = {"posts"})
 @Table(name="history")
 public class History {
 
@@ -23,18 +24,30 @@ public class History {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column @NotBlank
-    private String target;      // 단어 또는 문장
 
     @Column @NotBlank
-    @Enumerated(EnumType.STRING)
-    private Genre genre;        //장르
+    private String originalText;
 
     @Column @NotBlank
+    private String translatedText;
+
+
+    @Column @NotNull
     @Enumerated(EnumType.STRING)
-    private LanguageCode languageCode;
+    private LanguageCode sourceLang;
+
+    @Column @NotNull
+    @Enumerated(EnumType.STRING)
+    private LanguageCode targetLang;
+
+
+    @Column @NotNull
+    @Enumerated(EnumType.STRING)
+    private Genre genre;
+
 
     @Builder.Default
-    @OneToMany(mappedBy = "history", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MemberPostHistory> memberPostHistories = new ArrayList<>();;
+    @ManyToMany(mappedBy = "histories")
+    private Set<Post> posts = new HashSet<>();
+
 }

@@ -1,6 +1,4 @@
-package com.icetea.MonStu.util;
-
-import org.springframework.stereotype.Component;
+package com.icetea.MonStu.util.cache;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

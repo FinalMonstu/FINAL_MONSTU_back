@@ -4,9 +4,11 @@ import com.icetea.MonStu.api.v2.dto.MessageResponse;
 import com.icetea.MonStu.api.v2.dto.request.CreatePostRequest;
 import com.icetea.MonStu.api.v2.dto.request.FilterPostRequest;
 import com.icetea.MonStu.api.v2.dto.response.CustomPageableResponse;
+import com.icetea.MonStu.api.v2.dto.response.HistoryResponse;
 import com.icetea.MonStu.api.v2.dto.response.PostResponse;
 import com.icetea.MonStu.api.v2.dto.response.PostSummaryResponse;
 import com.icetea.MonStu.security.CustomUserDetails;
+import com.icetea.MonStu.service.HistoryService;
 import com.icetea.MonStu.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Slf4j
 @RestController("postControllerV2")
@@ -31,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postSvc;
+    private final HistoryService historySvc;
 
     @Operation(summary = "게시물 저장", description = "전달받은 게시물 정보 데이터베이스에 저장")
     @ApiResponses(value = {
@@ -74,6 +79,20 @@ public class PostController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(postResponse);
+    }
+
+    @Operation(summary = "번역 기록 조회", description = "게시글 ID를 이용, 번역 기록 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    })
+    @GetMapping("/{postId}/histories")
+    public ResponseEntity<List<HistoryResponse>> getPostWithHistories(@PathVariable Long postId ){
+        List<HistoryResponse> HistoryResponse = historySvc.getHistoriesByPost(postId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(HistoryResponse);
     }
 
 
@@ -121,5 +140,6 @@ public class PostController {
                 .status(HttpStatus.OK)
                 .body( pagedFilteredPosts );
     }
+
 
 }

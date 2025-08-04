@@ -1,6 +1,5 @@
 package com.icetea.MonStu.entity;
 
-import com.icetea.MonStu.entity.link.MemberPostHistory;
 import com.icetea.MonStu.entity.log.MemberLog;
 import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;
@@ -67,10 +66,6 @@ public class Member {
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<MemberPostHistory> memberPostHistories = new ArrayList<>();
 
 
     public void addMemberLog(MemberLog memberLog){

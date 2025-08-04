@@ -1,24 +1,23 @@
 package com.icetea.MonStu.entity;
 
-import com.icetea.MonStu.entity.link.MemberPostHistory;
 import com.icetea.MonStu.entity.log.PostLog;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"member","image"})
-@Entity
+@ToString(exclude = {"member","image","postLog"})
 @DynamicUpdate
+@Entity
 @Table(name="post")
 public class Post {
 
@@ -55,15 +54,18 @@ public class Post {
     @JoinColumn(name = "post_log_id")
     private PostLog postLog;
 
+    @ManyToMany
+    @JoinTable(
+            name = "post_history",
+            joinColumns        = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "history_id")
+    )
+    private Set<History> histories = new HashSet<>();
 
-    // 다대다 연관관계
-    @Builder.Default
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<MemberPostHistory> memberPostHistories = new ArrayList<>();
 
     public void setMember(Member member) {
         this.member = member;
-        if(!member.getPosts().contains(this)) member.getPosts().add(this);
+        if(member != null && !member.getPosts().contains(this)) member.getPosts().add(this);
     }
 
     public void setPostLog(PostLog postLog) {
@@ -77,4 +79,25 @@ public class Post {
             this.postLog = null;
         }
     }
+
+    public void addHistory(History history) {
+        if (history == null) return;
+        if (!this.histories.contains(history)) {
+            this.histories.add(history);
+            if (!history.getPosts().contains(this)) {
+                history.getPosts().add(this);
+            }
+        }
+    }
+
+    public void removeHistory(History history) {
+        if (history == null) return;
+        if (this.histories.contains(history)) {
+            this.histories.remove(history);
+            if (history.getPosts().contains(this)) {
+                history.getPosts().remove(this);
+            }
+        }
+    }
+
 }

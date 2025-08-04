@@ -4,8 +4,7 @@ import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.MemberStatus;
 import com.icetea.MonStu.exception.UnauthorizedException;
 import com.icetea.MonStu.repository.MemberRepository;
-import com.icetea.MonStu.util.CustomTTLCircleCache;
-import org.springframework.cache.annotation.Cacheable;
+import com.icetea.MonStu.util.cache.CustomTTLCircleCache;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
