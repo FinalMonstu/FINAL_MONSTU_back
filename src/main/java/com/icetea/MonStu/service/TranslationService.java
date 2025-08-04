@@ -25,6 +25,7 @@ public class TranslationService{
 
     private final CustomTTLCircleCache<HistoryCacheKey, History> historyCache;
 
+
     public TranslationResponse translateTextTerminal(TranslationRequest request){
         Genre genre             = request.getGenre();
         String originalText     = request.getOriginalText();
@@ -41,7 +42,7 @@ public class TranslationService{
         // 캐시 조회
         History cache = findFromCache(cacheKey);
         if(cache!=null){
-            System.out.println("번역 : 캐시 조회");
+//            System.out.println("번역 : 캐시 조회");
             return TranslationMapper.toTranslationResponse(cache);
         }
 
@@ -49,16 +50,16 @@ public class TranslationService{
         Optional<History> historyOpt = findFromDB(originalText, sourceLang, targetLang, genre);
         if (historyOpt.isPresent()){
             History history = historyOpt.get();
-            System.out.println("번역 : DB 조회");
+//            System.out.println("번역 : DB 조회");
 
             // DB에서 찾은 결과 캐시에 저장
             historyCache.putValue(cacheKey, history);
 
-            return TranslationMapper.toTranslationResponse(request, history.getTranslatedText());
+            return TranslationMapper.toTranslationResponse(history);
         }
 
         // 외부 번역 API 호출
-        System.out.println("번역 : 외부 API 조회");
+//        System.out.println("번역 : 외부 API 조회");
         History history = translateText(request);
 
         // 번역 결과 DB에 저장
@@ -73,7 +74,6 @@ public class TranslationService{
     protected History findFromCache(HistoryCacheKey cacheKey) {
         return historyCache.getValue(cacheKey);
     }
-
 
     private Optional<History> findFromDB(String originalText, LanguageCode sourceLang, LanguageCode targetLang, Genre genre) {
         return historyRps.findByOriginalTextAndSourceLangAndTargetLangAndGenre(originalText, sourceLang, targetLang, genre);

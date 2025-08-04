@@ -141,5 +141,15 @@ public class PostController {
                 .body( pagedFilteredPosts );
     }
 
-
+    /*-------------------------------------------Post_History-------------------------------------------------*/
+    @Operation(summary = "번역기록 삭제", description = "")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "저장 성공"),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    })
+    @DeleteMapping("/{postId}/histories/{historyId}")
+    public ResponseEntity<?> unlinkHistoryFromPost(@PathVariable Long historyId, @PathVariable Long postId){
+        historySvc.unlinkHistoryFromPost(historyId,postId);
+        return ResponseEntity.noContent().build();
+    }
 }

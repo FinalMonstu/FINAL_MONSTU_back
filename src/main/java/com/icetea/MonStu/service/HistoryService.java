@@ -1,5 +1,6 @@
 package com.icetea.MonStu.service;
 
+import com.icetea.MonStu.api.v2.dto.request.PostHistoryLinkRequest;
 import com.icetea.MonStu.api.v2.dto.request.TranslateTextHistoryRequest;
 import com.icetea.MonStu.api.v2.dto.response.HistoryResponse;
 import com.icetea.MonStu.entity.History;
@@ -24,14 +25,16 @@ public class HistoryService {
     private final HistoryRepository historyRps;
 
     @Transactional
-    public void saveTranslateTextHistory(TranslateTextHistoryRequest translateTextHistoryRequest) {
-        Post post = postRps.findById(translateTextHistoryRequest.postId())
+    public void linkPostWithHistories(PostHistoryLinkRequest postHistoryLinkRequest) {
+        Long       postId     = postHistoryLinkRequest.postId();
+        List<Long> historyIds = postHistoryLinkRequest.historyIds();
+
+        Post post = postRps.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다"));
 
-        List<History> histories      = translateTextHistoryRequest.historyList();
-        List<History> savedHistories = historyRps.saveAll(histories);
+        List<History> savedHistories = historyRps.findAllById(historyIds);
 
-        for (History history : savedHistories) { post.addHistory(history); }
+        savedHistories.forEach(post::addHistory);
     }
 
     public List<HistoryResponse> getHistoriesByPost(Long postId) {
@@ -43,4 +46,14 @@ public class HistoryService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void unlinkHistoryFromPost(Long historyId, Long postId) {
+        Post post = postRps.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+
+        History history = historyRps.findById(historyId)
+                .orElseThrow(() -> new IllegalArgumentException("History not found"));
+
+        post.removeHistory(history);
+    }
 }
