@@ -2,24 +2,26 @@ package com.icetea.MonStu.manager;
 
 import com.icetea.MonStu.api.v2.dto.request.FilterMemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.FilterPostRequest;
+import com.icetea.MonStu.api.v2.dto.response.PostResponse;
 import com.icetea.MonStu.entity.QMember;
 import com.icetea.MonStu.entity.QPost;
+import com.icetea.MonStu.repository.PostRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPQLQuery;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.util.List;
 
 import static com.querydsl.core.types.dsl.Expressions.allOf;
 
 @Component
 @RequiredArgsConstructor
 public class FilterPredicateManager {
+
+    private final PostRepository postRepository;
 
     /*---------------------------------------------------------Member----------------------------------------------------------------------------*/
 
@@ -57,5 +59,53 @@ public class FilterPredicateManager {
         return builder;
     }
 
+    /*---------------------------------------------------------Post----------------------------------------------------------------------------*/
+
+    // PostFilterRequest 이용, 조건식 쿼리 작성-반환
+    public static Predicate buildPostsFilterPredicate(FilterPostRequest filterDTO) {
+        QPost post = QPost.post;
+
+        BooleanExpression predicate = allOf(
+                filterDTO.isPublic() != null
+                        ? post.isPublic.eq(filterDTO.isPublic())
+                        : null,
+                StringUtils.hasText(filterDTO.title())
+                        ? post.title.containsIgnoreCase(filterDTO.title())
+                        : null,
+                filterDTO.authorId() != null
+                        ? post.member.id.eq(filterDTO.authorId())
+                        : null
+        );
+
+        BooleanBuilder builder = new BooleanBuilder(predicate);
+
+        if (StringUtils.hasText(filterDTO.dateOption()) && filterDTO.dateStart() != null && filterDTO.dateEnd() != null) {
+            switch (filterDTO.dateOption()) {
+                case "createdAt" -> builder
+                        .and(post.createdAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
+                case "modifiedAt" -> builder
+                        .and(post.modifiedAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
+                case "lastViewedAt" -> builder
+                        .and(post.postLog.lastViewedAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
+            }
+        }
+
+        if (filterDTO.viewCount() != null && filterDTO.viewCountOption() != null) {
+            switch (filterDTO.viewCountOption()) {
+                case "more" -> builder
+                        .and(post.postLog.viewCount.goe(filterDTO.viewCount()));
+                case "less" -> builder
+                        .and(post.postLog.viewCount.loe(filterDTO.viewCount()));
+            }
+        }
+        return builder;
+    }
+
+    // Pageable과 전달 받은 필터 정보를 이용, 필터링된 게시물 목록 반환
+    public Page<PostResponse> getPagedFilteredPosts(FilterPostRequest postFilter, Pageable pageable) {
+        Predicate predicate = buildPostsFilterPredicate(postFilter);
+        return postRepository.findAll(predicate, pageable)
+                .map(PostResponse::toDto);
+    }
 
 }

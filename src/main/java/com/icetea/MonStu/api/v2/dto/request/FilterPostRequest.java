@@ -1,6 +1,8 @@
 package com.icetea.MonStu.api.v2.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -12,7 +14,11 @@ public record FilterPostRequest(
         Long    authorId,   //작성자 id
 
         String dateOption,
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         Date   dateStart,
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         Date   dateEnd,
 
         Long   viewCount,

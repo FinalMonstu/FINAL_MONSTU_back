@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController("adminControllerV2")
 @RequiredArgsConstructor
 @RequestMapping("/api/v2/admin")
@@ -54,6 +56,7 @@ public class AdminController {
     })
     @PostMapping("/members/search")
     public ResponseEntity<CustomPageableResponse<AdminMemberResponse>> getMembersWithFilter( @RequestBody FilterMemberRequest filterMemberRequest, Pageable pageable ) {
+        log.info("filterMemberRequest : {}",filterMemberRequest);
         Page<AdminMemberResponse> page = memberSvc.getPagedFilteredMembers(filterMemberRequest,pageable);
         CustomPageableResponse<AdminMemberResponse> response = CustomPageableResponse.mapper(page);
         return ResponseEntity
