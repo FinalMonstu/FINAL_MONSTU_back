@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -24,8 +25,8 @@ public class AdminMemberResponse implements MemberSummaryResponse {
     private String nickName;
     private String phoneNumber;
 
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDate createdAt;
+    private LocalDate updatedAt;
 
     private MemberStatus status;
     private MemberRole role;

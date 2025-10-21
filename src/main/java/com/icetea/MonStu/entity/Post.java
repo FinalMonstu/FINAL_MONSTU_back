@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,10 +33,10 @@ public class Post {
     private String content;
 
     @Column
-    private Date createdAt;
+    private LocalDate createdAt;
 
     @Column
-    private Date modifiedAt;
+    private LocalDate modifiedAt;
 
     @Column(nullable = false)
     private Boolean isPublic;   // 공개여부
