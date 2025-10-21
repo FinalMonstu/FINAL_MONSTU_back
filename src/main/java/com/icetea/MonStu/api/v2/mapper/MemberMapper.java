@@ -8,6 +8,7 @@ import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public final class MemberMapper {
@@ -19,8 +20,8 @@ public final class MemberMapper {
                 .password(encoder.encode(request.password()))
                 .nickName(request.nickName())
                 .phoneNumber(request.phoneNumber()) // 암호화된 값 저장
-                .createdAt(new Date())
-                .updatedAt(new Date())
+                .createdAt(LocalDate.now())
+                .updatedAt(LocalDate.now())
                 .countryCode(request.country())
                 .status(request.status() != null ? request.status() : MemberStatus.ACTIVE)
                 .role(request.role()   != null ? request.role()   : MemberRole.MEMBER);
@@ -28,7 +29,7 @@ public final class MemberMapper {
     }
 
     public static void updateFromDto(Member m, ResetPasswordRequest req, PasswordEncoder encoder){
-        m.setUpdatedAt(new Date());
+        m.setUpdatedAt(LocalDate.now());
         m.setPassword(encoder.encode(req.password()));
     }
 
@@ -36,7 +37,7 @@ public final class MemberMapper {
         m.setEmail(req.email());
         m.setNickName(req.nickName());
         m.setPhoneNumber(req.phoneNumber());
-        m.setUpdatedAt(new Date());
+        m.setUpdatedAt(LocalDate.now());
         m.setStatus(req.status());
         m.setRole(req.role());
         m.setCountryCode(req.country());

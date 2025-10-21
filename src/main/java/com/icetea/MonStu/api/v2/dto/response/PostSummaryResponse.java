@@ -3,6 +3,7 @@ package com.icetea.MonStu.api.v2.dto.response;
 import com.icetea.MonStu.entity.Post;
 import lombok.Builder;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Builder
@@ -11,8 +12,8 @@ public record PostSummaryResponse(
          Long id,
          String title,
 
-         Date createdAt,
-         Date modifiedAt,
+         LocalDate createdAt,
+         LocalDate modifiedAt,
 
          Boolean isPublic,   // 공개여부
 

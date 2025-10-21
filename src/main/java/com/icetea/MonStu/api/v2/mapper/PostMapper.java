@@ -5,6 +5,7 @@ import com.icetea.MonStu.api.v2.dto.request.UpdatePostRequest;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.entity.Post;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public final class PostMapper {
@@ -18,7 +19,7 @@ public final class PostMapper {
                 .title(request.title())
                 .content(request.content())
                 .isPublic(request.isPublic())
-                .createdAt(new Date())
+                .createdAt(LocalDate.now())
 //                .authorId( (request.authorId()!=null) ? request.authorId() : member.getId() )
                 .member(member)
                 .build();
@@ -28,7 +29,7 @@ public final class PostMapper {
         post.setTitle(req.title());
         post.setContent(req.content());
         post.setIsPublic(req.isPublic());
-        post.setModifiedAt(new Date());
+        post.setModifiedAt(LocalDate.now());
     }
 
 }

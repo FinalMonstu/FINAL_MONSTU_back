@@ -4,6 +4,7 @@ import com.icetea.MonStu.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Setter
@@ -28,7 +29,7 @@ public class PostLog {
     private Long viewCount;
 
     @Column
-    private Date lastViewedAt;
+    private LocalDate lastViewedAt;
 
     public void setPost(Post post) {
         this.post = post;

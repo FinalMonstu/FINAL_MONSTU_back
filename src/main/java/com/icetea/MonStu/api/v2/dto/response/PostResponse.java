@@ -4,6 +4,7 @@ import com.icetea.MonStu.entity.Post;
 import com.icetea.MonStu.entity.log.PostLog;
 import lombok.Builder;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Builder
@@ -14,8 +15,8 @@ public record PostResponse(
         String title,
         String content,
 
-        Date createdAt,
-        Date modifiedAt,
+        LocalDate createdAt,
+        LocalDate modifiedAt,
 
         Boolean isPublic,   // 공개여부
 
@@ -27,7 +28,7 @@ public record PostResponse(
         Long logId,
         Long viewCount,
 
-        Date lastViewedAt
+        LocalDate lastViewedAt
 ) {
     public static PostResponse toDto(Post e) {
         PostLog log = e.getPostLog();

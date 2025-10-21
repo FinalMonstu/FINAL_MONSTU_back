@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,10 +43,10 @@ public class Member {
     private String phoneNumber;
 
     @Column
-    private Date createdAt;
+    private LocalDate createdAt;
 
     @Column
-    private Date updatedAt;
+    private LocalDate updatedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,10 +31,10 @@ public class Nouncement {
     private String content;
 
     @Column
-    private Date createdAt;
+    private LocalDate createdAt;
 
     @Column
-    private Date modifiedAt;
+    private LocalDate modifiedAt;
 
     @Column(nullable = false)
     private Boolean isPublic;   // 공개 여부

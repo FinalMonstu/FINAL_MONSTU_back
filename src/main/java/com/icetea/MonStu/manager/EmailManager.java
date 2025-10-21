@@ -32,7 +32,7 @@ public class EmailManager {
             mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
             mimeMessage.setSubject("MonStu 이메일 인증");
             mimeMessage.setContent(
-                    "<div>MonStu 이메일 인증 번호</div><h3>" + randomCode + "</h3><div>회원가입 페이지에서 이메일 인증번호 입력에 입력해주세요</div>",
+                    "<div>MonStu 이메일 인증 번호</div><h3>" + randomCode + "</h3><div>사이트로 이동해주세요</div>",
                     "text/html;charset=utf-8"
             );
             sender.send(mimeMessage);
