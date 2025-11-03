@@ -40,3 +40,5 @@ out/
 src/main/resources/credentials.properties
 src/main/resources/certs/
 src/test/resources/
+
+src/main/java/*.txt
