@@ -26,6 +26,7 @@ public class TranslationService {
     private final GoogleTranslateClient translateClient;
     private final CustomTTLCircleCache<HistoryCacheKey, History> historyCache;
     private final Semaphore translatePermits;
+    private final ExecutorService ioExecutor;
 
     private final ConcurrentMap<HistoryCacheKey, CompletableFuture<TranslationResponse>> inFlightRequests = new ConcurrentHashMap<>();
 
@@ -33,11 +34,13 @@ public class TranslationService {
     public TranslationService(HistoryRepository historyRps,
                               GoogleTranslateClient translateClient,
                               CustomTTLCircleCache<HistoryCacheKey, History> historyCache,
-                              @Qualifier("translatePermits") Semaphore translatePermits) {
+                              @Qualifier("translatePermits") Semaphore translatePermits,
+                              @Qualifier("ioExecutor") ExecutorService ioExecutor) {
         this.historyRps = historyRps;
         this.translateClient = translateClient;
         this.historyCache = historyCache;
         this.translatePermits = translatePermits;
+        this.ioExecutor = ioExecutor;
     }
 
     public TranslationResponse translateTextTerminal(TranslationRequest request) {
@@ -56,13 +59,13 @@ public class TranslationService {
                 .genre(genre)
                 .build();
 
-        // 1) 캐시 확인 (변경 없음)
+        // 1) 캐시 확인
         Optional<History> cacheOpt = findFromCache(cacheKey);
         if (cacheOpt.isPresent()) {
             return TranslationMapper.toTranslationResponse(cacheOpt.get());
         }
 
-        // 2) DB 확인 (변경 없음)
+        // 2) DB 확인
         Optional<History> dbOpt = findFromDB(originalText, sourceLang, targetLang, genre);
         if (dbOpt.isPresent()) {
             History history = dbOpt.get();
@@ -76,7 +79,7 @@ public class TranslationService {
             return CompletableFuture.supplyAsync(() -> {
                         log.debug("Google API run. key: {}", key);
                         return translateSaveAndCache(request, key);
-                    })
+                    },ioExecutor)
                     .orTimeout(10, TimeUnit.SECONDS)
                     .whenComplete((response, ex) -> {
                         inFlightRequests.remove(key);
