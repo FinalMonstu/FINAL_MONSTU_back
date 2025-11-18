@@ -11,14 +11,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CacheConfig {
 
-    @Bean
+    @Bean   //유저 정보 저장 캐시
     public CustomTTLCircleCache<String, CustomUserDetails> customUserDetailsCache(){
         return new CustomTTLCircleCache<>(100,1000*50*10); // 10분, 100명
     }
 
-    @Bean
+    @Bean   //번역 기록 저장 캐시
     public CustomTTLCircleCache<HistoryCacheKey, History> customHistoryCache(){
         return new CustomTTLCircleCache<>(100,1000*50*10); // 10분, 100개
     }
-
 }

@@ -2,34 +2,23 @@ package com.icetea.MonStu.manager;
 
 import com.icetea.MonStu.api.v2.dto.request.FilterMemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.FilterPostRequest;
-import com.icetea.MonStu.api.v2.dto.response.PostResponse;
 import com.icetea.MonStu.entity.QMember;
 import com.icetea.MonStu.entity.QPost;
-import com.icetea.MonStu.repository.PostRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import static com.querydsl.core.types.dsl.Expressions.allOf;
 
 @Component
-@RequiredArgsConstructor
 public class FilterPredicateManager {
-
-    private final PostRepository postRepository;
 
     /*---------------------------------------------------------Member----------------------------------------------------------------------------*/
 
     // MemberFilterRequest를 이용, 조건식 쿼리 작성-반환
-    public static Predicate buildMembersFilterPredicate(FilterMemberRequest filterDTO) {
+    public Predicate buildMembersFilterPredicate(FilterMemberRequest filterDTO) {
         QMember member = QMember.member;
 
         BooleanExpression predicate = allOf(
@@ -65,7 +54,7 @@ public class FilterPredicateManager {
     /*---------------------------------------------------------Post----------------------------------------------------------------------------*/
 
     // PostFilterRequest 이용, 조건식 쿼리 작성-반환
-    public static Predicate buildPostsFilterPredicate(FilterPostRequest filterDTO) {
+    public Predicate buildPostsFilterPredicate(FilterPostRequest filterDTO) {
         QPost post = QPost.post;
 
         BooleanExpression predicate = allOf(
@@ -103,12 +92,4 @@ public class FilterPredicateManager {
         }
         return builder;
     }
-
-    // Pageable과 전달 받은 필터 정보를 이용, 필터링된 게시물 목록 반환
-    public Page<PostResponse> getPagedFilteredPosts(FilterPostRequest postFilter, Pageable pageable) {
-        Predicate predicate = buildPostsFilterPredicate(postFilter);
-        return postRepository.findAll(predicate, pageable)
-                .map(PostResponse::toDto);
-    }
-
 }

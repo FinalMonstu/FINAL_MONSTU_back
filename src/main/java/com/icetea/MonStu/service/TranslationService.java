@@ -99,17 +99,17 @@ public class TranslationService {
     private TranslationResponse translateSaveAndCache(TranslationRequest request, HistoryCacheKey cacheKey) {
         String translated;
         try {
-            translatePermits.acquire();
+            translatePermits.acquire(); //세마포어 획득
             log.debug("Acquired API permit for key: {}", cacheKey);
 
             translated = translateClient.translateText(request.getOriginalText(), request.getSourceLang(), request.getTargetLang());
 
         } catch (InterruptedException e) {
             log.warn("API call interrupted while waiting for permit: {}", e.toString());
-            Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt(); // 스레드 플래스 활성화-상위 메소드에 전달하기 위해 ( 예외에 의해 플래그가 켜지면 JVM이 자동으로 플래그 내림)
             throw new RuntimeException("Translation API permit acquisition interrupted", e);
         } finally {
-            translatePermits.release(); // 반드시 반납
+            translatePermits.release(); // 세마포어 반드시 반납
             log.debug("Released API permit for key: {}", cacheKey);
         }
 

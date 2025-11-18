@@ -19,10 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 
-import static com.icetea.MonStu.manager.FilterPredicateManager.buildPostsFilterPredicate;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +28,7 @@ public class PostService {
 
     private final PostRepository postRps;
     private final MemberRepository memberRps;
-
+    private final FilterPredicateManager filterPredicateManager;
 
     @Transactional
     public PostResponse createPost(CreatePostRequest createPostRequest, Long userId) {
@@ -61,7 +59,7 @@ public class PostService {
 
     // Pageable과 전달 받은 필터 정보를 이용, 필터링된 게시물 목록 반환
     public Page<PostResponse> getFilteredPosts(FilterPostRequest postFilter, Pageable pageable) {
-        Predicate predicate = FilterPredicateManager.buildPostsFilterPredicate(postFilter);
+        Predicate predicate = filterPredicateManager.buildPostsFilterPredicate(postFilter);
         return postRps.findAll(predicate, pageable)
                 .map(PostResponse::toDto);
     }
