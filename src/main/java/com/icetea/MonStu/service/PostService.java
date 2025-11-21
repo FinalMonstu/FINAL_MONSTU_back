@@ -59,9 +59,8 @@ public class PostService {
 
     // Pageable과 전달 받은 필터 정보를 이용, 필터링된 게시물 목록 반환
     public Page<PostResponse> getFilteredPosts(FilterPostRequest postFilter, Pageable pageable) {
-        Predicate predicate = filterPredicateManager.buildPostsFilterPredicate(postFilter);
-        return postRps.findAll(predicate, pageable)
-                .map(PostResponse::toDto);
+        Page<Post> postPage = postRps.findAllByFilter(postFilter, pageable);
+        return postPage.map(PostResponse::toDto);
     }
 
     // 게시글 ID를 이용, 게시글 & 로그 정보 반환

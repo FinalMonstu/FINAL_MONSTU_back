@@ -2,28 +2,27 @@ package com.icetea.MonStu.manager;
 
 import com.icetea.MonStu.api.v2.dto.request.FilterMemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.FilterPostRequest;
+import com.icetea.MonStu.entity.QMember;
+import com.icetea.MonStu.entity.QPost;
+import com.icetea.MonStu.entity.log.QPostLog;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import static com.icetea.MonStu.entity.QMember.member;
-import static com.icetea.MonStu.entity.QPost.post;
-import static com.icetea.MonStu.entity.log.QPostLog.postLog;
 
 import static com.querydsl.core.types.dsl.Expressions.allOf;
 
 @Component
-public class FilterPredicateManager {
+public class Old_FilterPredicateManager {
 
     /*---------------------------------------------------------Member----------------------------------------------------------------------------*/
 
     // MemberFilterRequest를 이용, 조건식 쿼리 작성-반환
     public Predicate buildMembersFilterPredicate(FilterMemberRequest filterDTO) {
+        QMember member = QMember.member;
 
-        BooleanBuilder builder = new BooleanBuilder();
-
-        builder.and(allOf(
+        BooleanExpression predicate = allOf(
                 StringUtils.hasText(filterDTO.email())
                         ? member.email.containsIgnoreCase(filterDTO.email())
                         : null,
@@ -39,8 +38,9 @@ public class FilterPredicateManager {
                 filterDTO.status() != null
                         ? member.status.eq(filterDTO.status())
                         : null
-        ));
+        );
 
+        BooleanBuilder builder = new BooleanBuilder(predicate);
         if (StringUtils.hasText(filterDTO.dateOption()) && filterDTO.dateStart() != null && filterDTO.dateEnd() != null) {
             switch (filterDTO.dateOption()) {
                 case "createdAt" -> builder
@@ -57,9 +57,10 @@ public class FilterPredicateManager {
     // PostFilterRequest 이용, 조건식 쿼리 작성-반환
     public Predicate buildPostsFilterPredicate(FilterPostRequest filterDTO) {
 
-        BooleanBuilder builder = new BooleanBuilder();
+        QPost post = QPost.post;
+        QPostLog postLog = QPostLog.postLog;
 
-        builder.and(allOf(
+        BooleanExpression predicate = allOf(
                 filterDTO.isPublic() != null
                         ? post.isPublic.eq(filterDTO.isPublic())
                         : null,
@@ -69,7 +70,9 @@ public class FilterPredicateManager {
                 filterDTO.authorId() != null
                         ? post.member.id.eq(filterDTO.authorId())
                         : null
-        ));
+        );
+
+        BooleanBuilder builder = new BooleanBuilder(predicate);
 
         if (StringUtils.hasText(filterDTO.dateOption()) && filterDTO.dateStart() != null && filterDTO.dateEnd() != null) {
             switch (filterDTO.dateOption()) {
@@ -78,16 +81,16 @@ public class FilterPredicateManager {
                 case "modifiedAt" -> builder
                         .and(post.modifiedAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
                 case "lastViewedAt" -> builder
-                        .and(postLog.lastViewedAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
+                        .and(post.postLog.lastViewedAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
             }
         }
 
         if (filterDTO.viewCount() != null && filterDTO.viewCountOption() != null) {
             switch (filterDTO.viewCountOption()) {
                 case "more" -> builder
-                        .and(postLog.viewCount.goe(filterDTO.viewCount()));
+                        .and(post.postLog.viewCount.goe(filterDTO.viewCount()));
                 case "less" -> builder
-                        .and(postLog.viewCount.loe(filterDTO.viewCount()));
+                        .and(post.postLog.viewCount.loe(filterDTO.viewCount()));
             }
         }
         return builder;

@@ -112,8 +112,7 @@ public class MemberService {
 
     // Pageable과 전달 받은 필터링 값을 이용, 필터링된 멤버 목록 반환
     public Page<AdminMemberResponse> getPagedFilteredMembers(FilterMemberRequest filterMemberRequest, Pageable pageable) {
-        Predicate predicate = filterPredicateManager.buildMembersFilterPredicate(filterMemberRequest);
-        return memberRps.findAll(predicate, pageable)
+        return memberRps.findAllByFilter(filterMemberRequest, pageable)
             .map(AdminMemberResponse::toDto);
     }
 
