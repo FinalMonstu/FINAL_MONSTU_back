@@ -1,23 +1,20 @@
 package com.icetea.MonStu.api.v2.dto.response;
 
-import com.icetea.MonStu.api.v2.dto.MemberSummaryResponse;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;
 import com.icetea.MonStu.enums.MemberStatus;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Getter
 @Setter
 @Builder
 @ToString
-public class AdminMemberResponse implements MemberSummaryResponse {
+@NoArgsConstructor
+@AllArgsConstructor
+public class MemberSummaryResponse {
     private Long memberId;
 
     private String email;
@@ -33,7 +30,7 @@ public class AdminMemberResponse implements MemberSummaryResponse {
     private CountryCode countryCode;
 
 
-    public static AdminMemberResponse toDto(Member m) {
+    public static MemberSummaryResponse toDto(Member m) {
         return builder()
                 .memberId       (m.getId())
                 .email          (m.getEmail())

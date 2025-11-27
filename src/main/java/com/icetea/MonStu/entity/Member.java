@@ -1,5 +1,6 @@
 package com.icetea.MonStu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.icetea.MonStu.entity.log.MemberLog;
 import com.icetea.MonStu.enums.CountryCode;
 import com.icetea.MonStu.enums.MemberRole;
@@ -33,7 +34,7 @@ public class Member {
     @Column(unique = true)
     private String email;
 
-    @Column @NotBlank
+    @Column @NotBlank @JsonIgnore
     private String password;
 
     @Column @NotBlank

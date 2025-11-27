@@ -2,9 +2,8 @@ package com.icetea.MonStu.service;
 
 import com.icetea.MonStu.api.v2.dto.MemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.*;
-import com.icetea.MonStu.api.v2.dto.response.AdminMemberResponse;
 import com.icetea.MonStu.api.v2.dto.response.FindEmailResponse;
-import com.icetea.MonStu.api.v2.dto.response.MemberProfileResponse;
+import com.icetea.MonStu.api.v2.dto.response.MemberSummaryResponse;
 import com.icetea.MonStu.api.v2.mapper.MemberMapper;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.MemberStatus;
@@ -57,21 +56,18 @@ public class MemberService {
     // 이메일 찾기
     public FindEmailResponse findEmail(FindEmailRequest request) {
         return memberRps.findByPhoneNumberAndNickName( request.phoneNumber() ,request.nickName())
-                .map(member -> new FindEmailResponse(member.getEmail()))
-                .orElseThrow(()->new NoSuchElementException(null));
+                .orElseThrow(()->new NoSuchElementException("일치하는 회원이 없습니다."));
     }
 
     // ADMIN 전용, 회원 데이터 반환
-    public AdminMemberResponse getMemberById(Long id) {
-        return memberRps.findById(id)
-                .map(AdminMemberResponse::toDto)
-                .orElseThrow(()->new NoSuchElementException(null));
+    public MemberSummaryResponse getMemberById(Long id) {
+        return memberRps.findMemberDtoById(id)
+                .orElseThrow(() -> new NoSuchElementException("회원이 없습니다."));
     }
 
     // 회원 간단 정보 반환
-    public MemberProfileResponse getMemberSummaryById(Long id) {
-        return memberRps.findById(id)
-                .map(MemberProfileResponse::toDto)
+    public MemberSummaryResponse getMemberSummaryById(Long id) {
+        return memberRps.findMemberDtoById(id)
                 .orElseThrow(()->new NoSuchElementException(null));
     }
 
@@ -111,9 +107,8 @@ public class MemberService {
     }
 
     // Pageable과 전달 받은 필터링 값을 이용, 필터링된 멤버 목록 반환
-    public Page<AdminMemberResponse> getPagedFilteredMembers(FilterMemberRequest filterMemberRequest, Pageable pageable) {
-        return memberRps.findAllByFilter(filterMemberRequest, pageable)
-            .map(AdminMemberResponse::toDto);
+    public Page<MemberSummaryResponse> getPagedFilteredMembers(FilterMemberRequest filterMemberRequest, Pageable pageable) {
+        return memberRps.findAllByFilter(filterMemberRequest, pageable);
     }
 
 }

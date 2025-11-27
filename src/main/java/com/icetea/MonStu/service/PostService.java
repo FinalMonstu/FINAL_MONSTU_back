@@ -40,14 +40,12 @@ public class PostService {
 
     // Pageable과 Id 이용, 회원이 작성한 모든 게시물 목록 반환
     public Page<PostSummaryResponse> getMyPostSummaries(Long userId, Pageable pageable) {
-        return postRps.findByMember_Id(userId, pageable)
-                .map(PostSummaryResponse::toDto);
+        return postRps.findMyPostSummaries(userId, pageable);
     }
 
     // Pageable 이용, 모든 공개 게시물 반환
     public Page<PostSummaryResponse> getPublicPosts(Pageable pageable) {
-        return postRps.findByIsPublicTrue(pageable)
-                .map( PostSummaryResponse::toDto );
+        return postRps.findPublicPostSummaries(pageable);
     }
 
     // ID 사용, 게시물 반환

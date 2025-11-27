@@ -5,8 +5,8 @@ import com.icetea.MonStu.api.v2.dto.request.AdminCreateMemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.FilterMemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.UpdateMemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.UpdatePostRequest;
-import com.icetea.MonStu.api.v2.dto.response.AdminMemberResponse;
 import com.icetea.MonStu.api.v2.dto.response.CustomPageableResponse;
+import com.icetea.MonStu.api.v2.dto.response.MemberSummaryResponse;
 import com.icetea.MonStu.api.v2.dto.response.PostResponse;
 import com.icetea.MonStu.service.MemberService;
 import com.icetea.MonStu.service.PostService;
@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -55,10 +54,9 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "조회 실패")
     })
     @PostMapping("/members/search")
-    public ResponseEntity<CustomPageableResponse<AdminMemberResponse>> getMembersWithFilter( @RequestBody FilterMemberRequest filterMemberRequest, Pageable pageable ) {
-        log.info("filterMemberRequest : {}",filterMemberRequest);
-        Page<AdminMemberResponse> page = memberSvc.getPagedFilteredMembers(filterMemberRequest,pageable);
-        CustomPageableResponse<AdminMemberResponse> response = CustomPageableResponse.mapper(page);
+    public ResponseEntity<CustomPageableResponse<MemberSummaryResponse>> getMembersWithFilter( @RequestBody FilterMemberRequest filterMemberRequest, Pageable pageable ) {
+        Page<MemberSummaryResponse> page = memberSvc.getPagedFilteredMembers(filterMemberRequest,pageable);
+        CustomPageableResponse<MemberSummaryResponse> response = CustomPageableResponse.mapper(page);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
@@ -71,8 +69,8 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "반환 실패")
     })
     @GetMapping("/members/{id}")
-    public ResponseEntity<AdminMemberResponse> getMember(@PathVariable Long id) {
-        AdminMemberResponse response = memberSvc.getMemberById(id);
+    public ResponseEntity<MemberSummaryResponse> getMember(@PathVariable Long id) {
+        MemberSummaryResponse response = memberSvc.getMemberById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);

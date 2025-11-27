@@ -1,7 +1,7 @@
 package com.icetea.MonStu.api.v2.controller;
 
 import com.icetea.MonStu.api.v2.dto.MessageResponse;
-import com.icetea.MonStu.api.v2.dto.response.MemberProfileResponse;
+import com.icetea.MonStu.api.v2.dto.response.MemberSummaryResponse;
 import com.icetea.MonStu.enums.MemberStatus;
 import com.icetea.MonStu.security.CustomUserDetails;
 import com.icetea.MonStu.service.MemberService;
@@ -47,8 +47,8 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/me")
-    public ResponseEntity<MemberProfileResponse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        MemberProfileResponse memberResponse = memberSvc.getMemberSummaryById(userDetails.getId());
+    public ResponseEntity<MemberSummaryResponse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        MemberSummaryResponse memberResponse = memberSvc.getMemberSummaryById(userDetails.getId());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(memberResponse);

@@ -1,5 +1,6 @@
 package com.icetea.MonStu.repository;
 
+import com.icetea.MonStu.api.v2.dto.response.FindEmailResponse;
 import com.icetea.MonStu.entity.Member;
 import com.icetea.MonStu.enums.MemberStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,10 +20,8 @@ public interface MemberRepository extends JpaRepository<Member,Long>, QuerydslPr
 
     Optional<Member> findByEmail(String email);
 
-    Optional<Member> findByPhoneNumberAndNickName(String phoneNumber, String nickName);
-
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE Member m SET m.status = :status WHERE m.id IN :ids")
+    @Query("UPDATE Member m SET m.status = :status, m.updatedAt = CURRENT_DATE WHERE m.id IN :ids")
     void updateStatusByIds( @Param("ids") List<Long> ids, @Param("status") MemberStatus status);
 
     // Status가 'DELETE'인 모든 멤버 삭제
@@ -30,4 +29,5 @@ public interface MemberRepository extends JpaRepository<Member,Long>, QuerydslPr
     @Query("DELETE FROM Member m WHERE m.status = 'DELETED'")
     void deleteAllByStatus();
 
+    Optional<FindEmailResponse> findByPhoneNumberAndNickName(String phoneNumber, String nickName);
 }

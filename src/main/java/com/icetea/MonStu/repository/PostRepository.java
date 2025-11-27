@@ -1,5 +1,6 @@
 package com.icetea.MonStu.repository;
 
+import com.icetea.MonStu.api.v2.dto.response.PostSummaryResponse;
 import com.icetea.MonStu.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,8 +14,9 @@ import java.util.Optional;
 @Repository
 public interface PostRepository extends JpaRepository<Post,Long>, QuerydslPredicateExecutor<Post>, PostRepositoryCustom  {
 
-    @EntityGraph(attributePaths = {"member"})
-    Page<Post> findByMember_Id(Long memberId, Pageable pageable);
+//    @EntityGraph(attributePaths = {"member"})
+//    Page<Post> findByMember_Id(Long memberId, Pageable pageable);
+
 
     @EntityGraph(attributePaths = {"member", "postLog"})
     Optional<Post> findPostWithLogById(Long id);

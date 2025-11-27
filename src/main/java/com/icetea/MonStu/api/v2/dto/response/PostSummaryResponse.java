@@ -4,7 +4,6 @@ import com.icetea.MonStu.entity.Post;
 import lombok.Builder;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Builder
 public record PostSummaryResponse(
