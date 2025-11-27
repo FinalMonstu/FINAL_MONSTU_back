@@ -2,15 +2,17 @@ package com.icetea.MonStu.manager;
 
 import com.icetea.MonStu.api.v2.dto.request.FilterMemberRequest;
 import com.icetea.MonStu.api.v2.dto.request.FilterPostRequest;
-import com.querydsl.core.BooleanBuilder;
+import com.icetea.MonStu.enums.*;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import java.time.LocalDate;
 
 import static com.icetea.MonStu.entity.QMember.member;
 import static com.icetea.MonStu.entity.QPost.post;
 import static com.icetea.MonStu.entity.log.QPostLog.postLog;
-
 import static com.querydsl.core.types.dsl.Expressions.allOf;
 
 @Component
@@ -18,78 +20,90 @@ public class FilterPredicateManager {
 
     /*---------------------------------------------------------Member----------------------------------------------------------------------------*/
 
-    // MemberFilterRequest를 이용, 조건식 쿼리 작성-반환
     public Predicate buildMembersFilterPredicate(FilterMemberRequest filterDTO) {
+        return allOf(
+                containsMemberEmail(filterDTO.email()),
+                containsMemberNickname(filterDTO.nickname()),
+                eqMemberCountryCode(filterDTO.countryCode()),
+                eqMemberRole(filterDTO.role()),
+                eqMemberStatus(filterDTO.status()),
+                betweenMemberDate(filterDTO.dateOption(), filterDTO.dateStart(), filterDTO.dateEnd())
+        );
+    }
 
-        BooleanBuilder builder = new BooleanBuilder();
+    // --- Member 조건 메서드  ---
 
-        builder.and(allOf(
-                StringUtils.hasText(filterDTO.email())
-                        ? member.email.containsIgnoreCase(filterDTO.email())
-                        : null,
-                StringUtils.hasText(filterDTO.nickname())
-                        ? member.nickName.containsIgnoreCase(filterDTO.nickname())
-                        : null,
-                filterDTO.countryCode() != null
-                        ? member.countryCode.eq(filterDTO.countryCode())
-                        : null,
-                filterDTO.role() != null
-                        ? member.role.eq(filterDTO.role())
-                        : null,
-                filterDTO.status() != null
-                        ? member.status.eq(filterDTO.status())
-                        : null
-        ));
+    private BooleanExpression containsMemberEmail(String email) {
+        return StringUtils.hasText(email) ? member.email.containsIgnoreCase(email) : null;
+    }
 
-        if (StringUtils.hasText(filterDTO.dateOption()) && filterDTO.dateStart() != null && filterDTO.dateEnd() != null) {
-            switch (filterDTO.dateOption()) {
-                case "createdAt" -> builder
-                        .and(member.createdAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
-                case "updatedAt" -> builder
-                        .and(member.updatedAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
-            }
-        }
-        return builder;
+    private BooleanExpression containsMemberNickname(String nickname) {
+        return StringUtils.hasText(nickname) ? member.nickName.containsIgnoreCase(nickname) : null;
+    }
+
+    private BooleanExpression eqMemberCountryCode(CountryCode countryCode) {
+        return countryCode != null ? member.countryCode.eq(countryCode) : null;
+    }
+
+    private BooleanExpression eqMemberRole(MemberRole role) {
+        return role != null ? member.role.eq(role) : null;
+    }
+
+    private BooleanExpression eqMemberStatus(MemberStatus status) {
+        return status != null ? member.status.eq(status) : null;
+    }
+
+    private BooleanExpression betweenMemberDate(MemberDateOption option, LocalDate start, LocalDate end) {
+        if (option == null || start == null || end == null) return null;
+
+        return switch (option) {
+            case CREATED_AT -> member.createdAt.between(start, end);
+            case UPDATED_AT -> member.updatedAt.between(start, end);
+        };
     }
 
     /*---------------------------------------------------------Post----------------------------------------------------------------------------*/
 
-    // PostFilterRequest 이용, 조건식 쿼리 작성-반환
     public Predicate buildPostsFilterPredicate(FilterPostRequest filterDTO) {
+        return allOf(
+                eqPostIsPublic(filterDTO.isPublic()),
+                containsPostTitle(filterDTO.title()),
+                eqPostAuthorId(filterDTO.authorId()),
+                betweenPostDate(filterDTO.dateOption(), filterDTO.dateStart(), filterDTO.dateEnd()),
+                comparePostViewCount(filterDTO.viewCount(), filterDTO.viewCountOption())
+        );
+    }
 
-        BooleanBuilder builder = new BooleanBuilder();
+    // --- Post 조건 메서드  ---
 
-        builder.and(allOf(
-                filterDTO.isPublic() != null
-                        ? post.isPublic.eq(filterDTO.isPublic())
-                        : null,
-                StringUtils.hasText(filterDTO.title())
-                        ? post.title.containsIgnoreCase(filterDTO.title())
-                        : null,
-                filterDTO.authorId() != null
-                        ? post.member.id.eq(filterDTO.authorId())
-                        : null
-        ));
+    private BooleanExpression eqPostIsPublic(Boolean isPublic) {
+        return isPublic != null ? post.isPublic.eq(isPublic) : null;
+    }
 
-        if (StringUtils.hasText(filterDTO.dateOption()) && filterDTO.dateStart() != null && filterDTO.dateEnd() != null) {
-            switch (filterDTO.dateOption()) {
-                case "createdAt" -> builder
-                        .and(post.createdAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
-                case "modifiedAt" -> builder
-                        .and(post.modifiedAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
-                case "lastViewedAt" -> builder
-                        .and(postLog.lastViewedAt.between(filterDTO.dateStart(), filterDTO.dateEnd()));
-            }
-        }
+    private BooleanExpression containsPostTitle(String title) {
+        return StringUtils.hasText(title) ? post.title.containsIgnoreCase(title) : null;
+    }
 
-        if (filterDTO.viewCount() != null && filterDTO.viewCountOption() != null) {
-            switch (filterDTO.viewCountOption()) {
-                case "more" -> builder
-                        .and(postLog.viewCount.goe(filterDTO.viewCount()));
-                case "less" -> builder
-                        .and(postLog.viewCount.loe(filterDTO.viewCount()));
-            }
-        }
-        return builder;
+    private BooleanExpression eqPostAuthorId(Long authorId) {
+        return authorId != null ? post.member.id.eq(authorId) : null;
+    }
+
+    private BooleanExpression betweenPostDate(PostDateOption option, LocalDate start, LocalDate end) {
+        if (option == null || start == null || end == null)  return null;
+
+        return switch (option) {
+            case CREATED_AT -> post.createdAt.between(start, end);
+            case MODIFIED_AT -> post.modifiedAt.between(start, end);
+            case LAST_VIEWED_AT -> postLog.lastViewedAt.between(start, end);
+        };
+    }
+
+    private BooleanExpression comparePostViewCount(Long count, ViewCountOption option) {
+        if (count == null || option == null)  return null;
+
+        return switch (option) {
+            case MORE -> postLog.viewCount.goe(count);
+            case LESS -> postLog.viewCount.loe(count);
+        };
     }
 }
