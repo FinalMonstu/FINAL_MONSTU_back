@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 public enum CountryCode {
     AUS("Australia", "AUS"),
@@ -57,4 +59,16 @@ public enum CountryCode {
                 .map(CountryCode::getCountryName)
                 .toList();
     }
+
+//    @Component
+//    public static class StringToCountryCodeConverter implements Converter<String, CountryCode> {
+//        @Override
+//        public CountryCode convert(String source) {
+//            if (source.isEmpty()) {
+//                return null;
+//            }
+//            // fromCountryName 재사용 (Canada -> CAN 찾기)
+//            return CountryCode.fromCountryName(source);
+//        }
+//    }
 }
