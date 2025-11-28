@@ -1,8 +1,8 @@
 package com.icetea.MonStu;
 
 import com.icetea.MonStu.api.v1.infra.TranslationClient;
-import com.icetea.MonStu.security.JwtAuthenticationFilter;
-import com.icetea.MonStu.security.JwtService;
+import com.icetea.MonStu.shared.security.jwt.JwtAuthenticationFilter;
+import com.icetea.MonStu.shared.security.jwt.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
