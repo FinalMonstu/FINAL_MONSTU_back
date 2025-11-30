@@ -83,10 +83,10 @@ public class AuthController {
     })
     @PostMapping("/email-code/verify")
     public ResponseEntity<MessageResponse> verifyEmailCode(@Valid @RequestBody VerifyEmailCodeRequest verifyEmailCodeRequest) {
-        boolean success = authSvc.verifyEmailCode(verifyEmailCodeRequest);
-        return success
-                ? ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("인증되었습니다"))
-                : ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new MessageResponse("인증 코드가 만료되었거나 일치하지 않습니다"));
+        authSvc.verifyEmailCode(verifyEmailCodeRequest);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new MessageResponse("인증되었습니다"));
     }
 
 
@@ -95,9 +95,9 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "이메일 사용 가능"),
             @ApiResponse(responseCode = "409", description = "이메일 중복")
     })
-    @GetMapping("/email-avail")
+    @GetMapping("/check-email")
     public ResponseEntity<MessageResponse> checkEmailDuplicate(@Valid @ModelAttribute EmailRequest emailRequest) {
-        memberSvc.existsByEmail(emailRequest.email());
+        memberSvc.validateEmailDuplication(emailRequest.email());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new MessageResponse("사용할 수 있는 이메일입니다"));
@@ -138,8 +138,8 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "오류_존재하지 않는 이메일"),
             @ApiResponse(responseCode = "500", description = "탈퇴 실패")
     })
-    @PostMapping("/signout")
-    public ResponseEntity<MessageResponse> signOut(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    @PostMapping("/withdraw")
+    public ResponseEntity<MessageResponse> withdrawMember(@AuthenticationPrincipal CustomUserDetails userDetails) {
         memberSvc.updateMemberStatus(userDetails.getId(), MemberStatus.DELETED);
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -22,7 +22,7 @@ public class HistoryResponse {
 
     private Genre genre;
 
-    // 엔티티 -> DTO 변환용 정적 팩토리 메서드
+
     public static HistoryResponse toDto(History history) {
         return HistoryResponse.builder()
                 .id             (history.getId())

@@ -12,10 +12,10 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post,Long>, QuerydslPredicateExecutor<Post>, PostRepositoryCustom  {
 
 //    @EntityGraph(attributePaths = {"member"})
-//    Page<Post> findByIsPublicTrue(Pageable pageable);
+//    Page<Post> readByIsPublicTrue(Pageable pageable);
 
     @EntityGraph(attributePaths = {"member", "postLog"})
-    Optional<Post> findPostWithLogById(Long id);
+    Optional<Post> readPostWithLogById(Long id);
 
 
 }

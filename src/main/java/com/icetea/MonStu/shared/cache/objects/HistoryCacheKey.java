@@ -3,9 +3,13 @@ package com.icetea.MonStu.shared.cache.objects;
 import com.icetea.MonStu.shared.common.enums.Genre;
 import com.icetea.MonStu.shared.common.enums.LanguageCode;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Objects;
 
+@ToString
+@Getter
 @Builder
 public class HistoryCacheKey {
 

@@ -18,11 +18,8 @@ public class EmailManager {
 
     //  이메일 인증 번호 전송
     public String sendVerificationEmailCode(String email) {
-//        HttpSession session = ((ServletRequestAttributes)(RequestContextHolder.currentRequestAttributes()))
-//                .getRequest().getSession();
 
         String randomCode = getRandomText();
-//        session.setAttribute("randomCode", randomCode);
 
         try {
             MimeMessage mimeMessage = sender.createMimeMessage();

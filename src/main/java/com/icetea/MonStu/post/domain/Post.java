@@ -4,45 +4,53 @@ import com.icetea.MonStu.history.domain.History;
 import com.icetea.MonStu.image.domain.Image;
 import com.icetea.MonStu.member.domain.Member;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Setter
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = {"member","image","postLog"})
 @DynamicUpdate
 @Entity
 @Table(name="post")
+@EntityListeners(AuditingEntityListener.class)
 public class Post {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column @NotBlank
+    @Column(nullable = false)
     private String title;
 
-    @NotBlank
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT",nullable = false)
     private String content;
 
-    @Column
+    @CreatedDate
+    @Column(updatable = false)
     private LocalDate createdAt;
 
-    @Column
+    @LastModifiedDate
     private LocalDate modifiedAt;
 
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean isPublic;   // 공개여부
+    private Boolean isPublic = false;   // 공개여부
 
+
+    /*-----------------------------------연관관계-------------------------------------------*/
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id")
@@ -64,6 +72,8 @@ public class Post {
     )
     private Set<History> histories = new HashSet<>();
 
+
+    /*-----------------------------------편의 메소드-------------------------------------------*/
 
     public void setMember(Member member) {
         this.member = member;
@@ -102,4 +112,20 @@ public class Post {
         }
     }
 
+
+    /*-----------------------------------Update 메소드-------------------------------------------*/
+
+    public void update(String title, String content, Boolean isPublic) {
+        if (StringUtils.hasText(title))   this.title = title;
+        if (StringUtils.hasText(content)) this.content = content;
+        if (isPublic != null)             this.isPublic = isPublic;
+    }
+
+
+    /*-----------------------------------검증 메소드-------------------------------------------*/
+
+    public boolean isOwner(Long userId) {
+        if (userId == null) return false;
+        return Objects.equals(this.member.getId(), userId);
+    }
 }

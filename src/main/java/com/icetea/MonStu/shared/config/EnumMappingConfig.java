@@ -30,25 +30,30 @@ public class EnumMappingConfig implements WebMvcConfigurer {
 
         @Override
         public T convert(String source) {
-            if (source.isEmpty()) {
-                return null;
-            }
+            if (source.isEmpty())  return null;
 
             String sourceTrimmed = source.trim();
 
             try {
                 return Enum.valueOf(enumType, sourceTrimmed.toUpperCase());
             } catch (IllegalArgumentException e) {
-                for (T enumConstant : enumType.getEnumConstants()) {
-                    String enumNameClean = enumConstant.name().replace("_", "");
-                    String sourceClean = sourceTrimmed.replace("_", "").replace("-", "");
+                String cleanSource = toCleanKey(sourceTrimmed);
 
-                    if (enumNameClean.equalsIgnoreCase(sourceClean)) {
+                for (T enumConstant : enumType.getEnumConstants()) {
+                    if (toCleanKey(enumConstant.name()).equals(cleanSource)) {
                         return enumConstant;
                     }
                 }
+                // 끝까지 못 찾으면 원래 에러 던짐
                 throw e;
             }
         }
+    }
+
+    private static String toCleanKey(String key) {
+        return key.toUpperCase()
+                .replace("_", "")
+                .replace("-", "")
+                .replace(" ", "");
     }
 }

@@ -2,6 +2,7 @@ package com.icetea.MonStu.verification.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +25,7 @@ public class VerifiCode {
     @Column(nullable = false)
     private String code;
 
-    @Column
+    @Column(updatable = false) @CreatedDate
     private LocalDateTime createdAt;
 
     @Column
@@ -39,6 +40,14 @@ public class VerifiCode {
     @Column
     private LocalDateTime failedAt;
 
+
+    // 재전송 시, 코드와 만료시간 업데이트
+    public void renewCode(String newCode, int expirationMinutes) {
+        this.code = newCode;
+        this.expiresAt = LocalDateTime.now().plusMinutes(expirationMinutes);
+        this.verified = false;
+        this.failedCount = 0;
+    }
 
     // 유효기간 검증
     public boolean isExpired() {
@@ -67,4 +76,6 @@ public class VerifiCode {
         this.failedCount = (byte)((failedCount == null ? 0 : failedCount) + 1);
         this.failedAt    = LocalDateTime.now();
     }
+
+
 }

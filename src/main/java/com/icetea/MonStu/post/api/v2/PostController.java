@@ -10,6 +10,7 @@ import com.icetea.MonStu.post.dto.v2.response.PostSummaryResponse;
 import com.icetea.MonStu.shared.security.details.CustomUserDetails;
 import com.icetea.MonStu.history.application.HistoryService;
 import com.icetea.MonStu.post.application.PostService;
+import com.icetea.MonStu.shared.util.UriUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -24,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -39,15 +41,18 @@ public class PostController {
 
     @Operation(summary = "게시물 저장", description = "전달받은 게시물 정보 데이터베이스에 저장")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "저장 성공"),
+            @ApiResponse(responseCode = "201", description = "저장 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("")
     public ResponseEntity<PostResponse> createPost(@Valid @RequestBody CreatePostRequest createPostRequest, @AuthenticationPrincipal CustomUserDetails userDetails){
         PostResponse postResponse = postSvc.createPost(createPostRequest,userDetails.getId());
+
+        URI location = UriUtil.create("/{id}", postResponse.id());
+
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
+                .location(location)
                 .body(postResponse);
     }
 
@@ -55,14 +60,15 @@ public class PostController {
     @Operation(summary = "게시물 삭제", description = "게시물 ID 이용, 데이터 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "삭제 성공"),
+            @ApiResponse(responseCode = "403", description = "본인 확인 실패"),
             @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @DeleteMapping("/{postId}")
-    public ResponseEntity<MessageResponse> deletePost(@PathVariable Long postId ){
-        postSvc.deleteById(postId);
+    public ResponseEntity<MessageResponse> deletePost(@PathVariable Long postId,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails){
+        postSvc.deleteById(postId, userDetails.getId());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.NO_CONTENT)
                 .body(new MessageResponse("삭제 성공"));
     }
 
@@ -71,11 +77,10 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponse> getPost(@PathVariable Long postId ){
-        PostResponse postResponse = postSvc.getPostById(postId);
+        PostResponse postResponse = postSvc.findPostWithLogById(postId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(postResponse);
@@ -85,7 +90,6 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("/{postId}/histories")
     public ResponseEntity<List<HistoryResponse>> getPostWithHistories(@PathVariable Long postId ){
@@ -99,7 +103,6 @@ public class PostController {
     @Operation(summary = "로그인한 사용자의 게시물 목록 반환", description = "회원의 게시물 목록을 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("/me")
     public ResponseEntity< CustomPageableResponse<PostSummaryResponse> > getMyPosts(@AuthenticationPrincipal CustomUserDetails user, Pageable pageable ){
@@ -115,7 +118,6 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "일치하는 게시물 없음"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("")
     public ResponseEntity< CustomPageableResponse<PostSummaryResponse> > getPublicPosts( Pageable pageable ){
@@ -130,11 +132,9 @@ public class PostController {
     @Operation(summary = "필터링된 게시물 데이터 목록 반환", description = "페이지 정보와 필터링 정보를 이용, 필터링된 게시물 데이터 목록 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "반환 성공"),
-            @ApiResponse(responseCode = "500", description = "반환 실패")
     })
     @GetMapping("/search")
     public ResponseEntity< CustomPageableResponse<PostResponse> > getPostsWithfilter(@ModelAttribute FilterPostRequest postFilter, Pageable pageable) {
-        log.info(postFilter.toString());
         Page<PostResponse> page = postSvc.getFilteredPosts(postFilter,pageable);
         CustomPageableResponse<PostResponse> pagedFilteredPosts = CustomPageableResponse.mapper(page);
         return ResponseEntity
@@ -143,14 +143,17 @@ public class PostController {
     }
 
     /*-------------------------------------------Post_History-------------------------------------------------*/
-    @Operation(summary = "번역기록 삭제", description = "")
+    @Operation(summary = "번역기록 삭제", description = "작성자만 가능")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "저장 성공"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+            @ApiResponse(responseCode = "403", description = "본인 확인 실패"),
     })
     @DeleteMapping("/{postId}/histories/{historyId}")
-    public ResponseEntity<?> unlinkHistoryFromPost(@PathVariable Long historyId, @PathVariable Long postId){
-        historySvc.unlinkHistoryFromPost(historyId,postId);
+    public ResponseEntity<?> unlinkHistoryFromPost(
+            @PathVariable Long historyId,
+            @PathVariable Long postId,
+            @AuthenticationPrincipal CustomUserDetails userDetails){
+        historySvc.unlinkHistoryFromPost(historyId, postId, userDetails.getId());
         return ResponseEntity.noContent().build();
     }
 }

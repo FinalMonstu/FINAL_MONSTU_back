@@ -1,6 +1,6 @@
 package com.icetea.MonStu.history.api.v2;
 
-import com.icetea.MonStu.post.dto.v2.request.PostHistoryLinkRequest;
+import com.icetea.MonStu.history.dto.v2.request.PostHistoryLinkRequest;
 import com.icetea.MonStu.history.application.HistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,9 @@ public class HistoryController {
     @PostMapping("")
     public ResponseEntity<?> linkPostWithHistories(@Valid @RequestBody PostHistoryLinkRequest postHistoryLinkRequest){
         historySvc.linkPostWithHistories(postHistoryLinkRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .build();
     }
 
 }

@@ -26,14 +26,14 @@ public enum LanguageCode {
 
 
     // 코드(ES 등)를 반환 ex) LanguageCode.getCode("KO") -> Korean
-    public static LanguageCode getCode(String code) {
-        for (LanguageCode lang : values()) {
-            if (lang.languageName.equalsIgnoreCase(code)) {
-                return lang;
-            }
-        }
-        throw new IllegalArgumentException("Invalid code: " + code);
-    }
+//    public static LanguageCode getCode(String code) {
+//        for (LanguageCode lang : values()) {
+//            if (lang.languageName.equalsIgnoreCase(code)) {
+//                return lang;
+//            }
+//        }
+//        throw new IllegalArgumentException("Invalid code: " + code);
+//    }
 
     public static List<String> getLanguageList() {
         return Arrays.stream(LanguageCode.values())

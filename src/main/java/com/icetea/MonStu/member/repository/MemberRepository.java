@@ -20,14 +20,10 @@ public interface MemberRepository extends JpaRepository<Member,Long>, QuerydslPr
 
     Optional<Member> findByEmail(String email);
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE Member m SET m.status = :status, m.updatedAt = CURRENT_DATE WHERE m.id IN :ids")
-    void updateStatusByIds( @Param("ids") List<Long> ids, @Param("status") MemberStatus status);
-
     // Status가 'DELETE'인 모든 멤버 삭제
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("DELETE FROM Member m WHERE m.status = 'DELETED'")
-    void deleteAllByStatus();
+    @Query("DELETE FROM Member m WHERE m.status = :status")
+    void deleteAllByStatus(MemberStatus status);
 
     Optional<FindEmailResponse> findByPhoneNumberAndNickName(String phoneNumber, String nickName);
 }

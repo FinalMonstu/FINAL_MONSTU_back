@@ -15,9 +15,13 @@ import java.time.LocalDate;
 import static com.icetea.MonStu.member.domain.QMember.member;
 import static com.querydsl.core.types.dsl.Expressions.allOf;
 
+/* 기능 : Member 필터링을 위한 Predicate 생성기능을 제공하는 클래스
+*
+* */
 @Component
 public class MemberPredicateFactory {
 
+    /*--------------------------------------Member 필터링 Predicate 생성 메서드-------------------------------------------------*/
     public Predicate buildMembersFilterPredicate(FilterMemberRequest filterDTO) {
         return allOf(
                 containsMemberEmail(filterDTO.email()),
@@ -29,7 +33,7 @@ public class MemberPredicateFactory {
         );
     }
 
-    // --- Member 조건 메서드  ---
+    /*--------------------------------------Member 조건 메서드-------------------------------------------------*/
 
     private BooleanExpression containsMemberEmail(String email) {
         return StringUtils.hasText(email) ? member.email.containsIgnoreCase(email) : null;

@@ -27,18 +27,4 @@ public final class MemberMapper {
         return b.build();
     }
 
-    public static void updateFromDto(Member m, ResetPasswordRequest req, PasswordEncoder encoder){
-        m.setUpdatedAt(LocalDate.now());
-        m.setPassword(encoder.encode(req.password()));
-    }
-
-    public static void updateFromDto(Member m, UpdateMemberRequest req){
-        m.setEmail(req.email());
-        m.setNickName(req.nickName());
-        m.setPhoneNumber(req.phoneNumber());
-        m.setUpdatedAt(LocalDate.now());
-        m.setStatus(req.status());
-        m.setRole(req.role());
-        m.setCountryCode(req.country());
-    }
 }

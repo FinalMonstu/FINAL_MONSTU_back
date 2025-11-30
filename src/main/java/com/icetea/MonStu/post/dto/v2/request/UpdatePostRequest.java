@@ -7,8 +7,6 @@ import lombok.Builder;
 @Builder
 public record UpdatePostRequest(
 
-        @NotNull Long id,
-
         @NotBlank(message = "{PostRequest.title.NotBlank}")
         String title,
 

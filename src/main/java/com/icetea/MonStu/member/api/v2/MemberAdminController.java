@@ -7,6 +7,8 @@ import com.icetea.MonStu.member.dto.v2.request.UpdateMemberRequest;
 import com.icetea.MonStu.member.dto.v2.response.MemberSummaryResponse;
 import com.icetea.MonStu.shared.dto.response.CustomPageableResponse;
 import com.icetea.MonStu.shared.dto.response.MessageResponse;
+import com.icetea.MonStu.shared.security.annotation.RequireAdmin;
+import com.icetea.MonStu.shared.util.UriUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,12 +21,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
+
 
 @RestController("memberAdminControllerV2")
 @RequiredArgsConstructor
 @RequestMapping("/api/v2/admin/members")
 @Tag(name = "Admin Member API", description = "관리자용 회원 관리 API")
+@RequireAdmin
 public class MemberAdminController {
 
     private final MemberService memberSvc;
@@ -37,9 +42,13 @@ public class MemberAdminController {
     })
     @PostMapping("")
     public ResponseEntity<MessageResponse> createMember(@Valid @RequestBody AdminCreateMemberRequest request) {
-        memberSvc.createMember(request);
+        Long createdId = memberSvc.createMember(request);
+
+        URI location = UriUtil.create("/{id}", createdId);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .location(location)
                 .body( new MessageResponse("회원 추가 성공") );
     }
 
@@ -66,7 +75,7 @@ public class MemberAdminController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<MemberSummaryResponse> getMember(@PathVariable Long id) {
-        MemberSummaryResponse response = memberSvc.getMemberById(id);
+        MemberSummaryResponse response = memberSvc.getMemberSummaryById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
@@ -79,7 +88,8 @@ public class MemberAdminController {
             @ApiResponse(responseCode = "500", description = "수정 실패")
     })
     @PatchMapping("/{memberId}")
-    public ResponseEntity<MessageResponse> updateMember(@PathVariable Long memberId,@RequestBody UpdateMemberRequest updateMemberRequest) {
+    public ResponseEntity<MessageResponse> updateMember(@PathVariable Long memberId,
+                                                        @RequestBody @Valid UpdateMemberRequest updateMemberRequest) {
         memberSvc.updateMember(memberId,updateMemberRequest);
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -29,34 +29,52 @@ public class AuthService {
     private final VerifiCodeRepository verifiCodeRps;
     private final EmailManager emailMng;
 
-    /* 기능 : 이메일 인증 코드 전송
-     * 비고 : 인증 코드 재전송 시 전달 받은 ID로 DB에 새로운 인증정보 삽입 (새로운 행 생성 X),
-     * 인증 제한 시간 : 3분 */
+    // 이메일 인증코드 생성 및 전송
     @Transactional
     public EmailVerifyResponse sendVerificationEmailCode(EmailVerifyRequest request) {
+        // 코드 생성 및 이메일로 전송
         String code = emailMng.sendVerificationEmailCode(request.email());
-        VerifiCode entity = request.toEntity(code);
-        VerifiCode savedCode = verifiCodeRps.save(entity);
+
+        // 이메일에 대해, 기존에 생성된 코드가 있으면 갱신, 없으면 새로 생성
+        VerifiCode verifiCode = verifiCodeRps.findByEmail(request.email())
+                .orElse(VerifiCode.builder()
+                        .email(request.email())
+                        .build());
+
+        verifiCode.renewCode(code, 3);
+
+        VerifiCode savedCode = verifiCodeRps.save(verifiCode);
         return EmailVerifyResponse.toDto(savedCode);
     }
 
     // 이메일 인증코드 인증
     @Transactional
-    public boolean verifyEmailCode(VerifyEmailCodeRequest request) {
-        VerifiCode vc = verifiCodeRps.findById(request.id())
+    public void verifyEmailCode(VerifyEmailCodeRequest request) {
+        VerifiCode code = verifiCodeRps.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("인증 코드가 만료되었습니다."));
-        return vc.verify(request.code());
+
+        if (code.getFailedCount() != null && code.getFailedCount() >= 5) {
+            throw new IllegalArgumentException("인증 실패 횟수를 초과했습니다. 다시 코드를 발급받아주세요.");
+        }
+
+        if (code.isExpired()) {
+            throw new IllegalArgumentException("인증 코드가 만료되었습니다. 다시 발급받아주세요.");
+        }
+
+        if (!code.verify(request.code())) {
+            throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+        }
     }
 
 
     /* 기능 : 특정 시간마다 불필요한 데이터 삭제
     *  비고 : scheduledVerifiCode.class에서 사용 */
     @Transactional
-    public void cleanupVerificationCodes(int expiresTime, int failedTime) {
+    public void cleanupVerificationCodes(int expiresTime, int cleanupVerificationCodes) {
         LocalDateTime now = LocalDateTime.now();
 
         verifiCodeRps.deleteByExpiresAtBefore( now.minusMinutes(expiresTime) );
-        verifiCodeRps.deleteByFailedCountGreaterThanEqualAndFailedAtBefore((byte) 5, now.minusMinutes(failedTime) );
+        verifiCodeRps.deleteByFailedCountGreaterThanEqualAndFailedAtBefore((byte) 5, now.minusMinutes(cleanupVerificationCodes) );
     }
 
     @Transactional

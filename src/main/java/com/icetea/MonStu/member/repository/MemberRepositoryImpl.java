@@ -3,13 +3,17 @@ package com.icetea.MonStu.member.repository;
 import com.icetea.MonStu.member.dto.v2.request.FilterMemberRequest;
 import com.icetea.MonStu.member.dto.v2.response.MemberSummaryResponse;
 import com.icetea.MonStu.member.repository.support.MemberPredicateFactory;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
@@ -29,11 +33,13 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
         Predicate searchCondition = memberPredicateFactory.buildMembersFilterPredicate(filterDTO);
 
-        List<MemberSummaryResponse> content = getMemberBaseQuery()
+        JPAQuery<MemberSummaryResponse> query = getMemberBaseQuery()
                 .where(searchCondition)
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+                .limit(pageable.getPageSize());
+
+
+        List<MemberSummaryResponse> content = query.fetch();
 
         JPAQuery<Long> countQuery = queryFactory
                 .select(member.count())

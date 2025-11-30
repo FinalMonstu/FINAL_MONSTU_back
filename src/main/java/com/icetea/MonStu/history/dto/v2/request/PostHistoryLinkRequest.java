@@ -1,4 +1,4 @@
-package com.icetea.MonStu.post.dto.v2.request;
+package com.icetea.MonStu.history.dto.v2.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

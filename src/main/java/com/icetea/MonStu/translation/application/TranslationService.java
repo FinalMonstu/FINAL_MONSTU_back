@@ -1,5 +1,6 @@
 package com.icetea.MonStu.translation.application;
 
+import com.icetea.MonStu.shared.async.SemaphoreUtils;
 import com.icetea.MonStu.translation.dto.v2.TranslationRequest;
 import com.icetea.MonStu.translation.dto.v2.TranslationResponse;
 import com.icetea.MonStu.translation.GoogleTranslateClient;
@@ -11,7 +12,9 @@ import com.icetea.MonStu.shared.cache.CustomTTLCircleCache;
 import com.icetea.MonStu.shared.cache.objects.HistoryCacheKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.concurrent.*;
@@ -25,7 +28,7 @@ public class TranslationService {
     private final GoogleTranslateClient translateClient;
     private final CustomTTLCircleCache<HistoryCacheKey, History> historyCache;
     private final Semaphore translatePermits;
-    private final ExecutorService ioExecutor;
+    private final AsyncTaskExecutor ioExecutor;
 
     private final ConcurrentMap<HistoryCacheKey, CompletableFuture<TranslationResponse>> inFlightRequests = new ConcurrentHashMap<>();
 
@@ -34,7 +37,7 @@ public class TranslationService {
                               GoogleTranslateClient translateClient,
                               CustomTTLCircleCache<HistoryCacheKey, History> historyCache,
                               @Qualifier("translatePermits") Semaphore translatePermits,
-                              @Qualifier("ioExecutor") ExecutorService ioExecutor) {
+                              @Qualifier("ioExecutor") AsyncTaskExecutor ioExecutor) {
         this.historyRps = historyRps;
         this.translateClient = translateClient;
         this.historyCache = historyCache;
@@ -72,50 +75,40 @@ public class TranslationService {
             return TranslationMapper.toTranslationResponse(history);
         }
 
-        // 3) "Key별 락"을 사용하여 API 호출 ---
-        CompletableFuture<TranslationResponse> future = inFlightRequests.computeIfAbsent(cacheKey, key -> {
-
-            return CompletableFuture.supplyAsync(() -> {
-                        log.debug("Google API run. key: {}", key);
-                        return translateSaveAndCache(request, key);
-                    },ioExecutor)
-                    .orTimeout(10, TimeUnit.SECONDS)
-                    .whenComplete((response, ex) -> {
-                        inFlightRequests.remove(key);
-                    });
-        });
-
-        // 4) 결과 대기
+        // 3) API 호출
         try {
-            return future.get();
+            return getOrComputeFuture(request, cacheKey).get(); // 결과 대기
         } catch (InterruptedException | ExecutionException e) {
-            log.error("Failed to get translation result from in-flight future: {}", e.getMessage(), e);
-            throw new RuntimeException("Translation task failed", e);
+            log.error("Translation task failed for key: {}", cacheKey, e);
+            throw new RuntimeException("Translation failed", e);
         }
     }
 
+    // 중복 요청 방지
+    private CompletableFuture<TranslationResponse> getOrComputeFuture(TranslationRequest request, HistoryCacheKey cacheKey) {
+        return inFlightRequests.computeIfAbsent(cacheKey, key ->
+                CompletableFuture.supplyAsync(() -> translateSaveAndCache(request, key), ioExecutor)
+                        .orTimeout(10, TimeUnit.SECONDS)
+                        .whenComplete((res, ex) -> inFlightRequests.remove(key))
+        );
+    }
 
+    // 실제 API 호출 및 저장
     private TranslationResponse translateSaveAndCache(TranslationRequest request, HistoryCacheKey cacheKey) {
-        String translated;
-        try {
-            translatePermits.acquire(); //세마포어 획득
-            log.debug("Acquired API permit for key: {}", cacheKey);
+        String translated = SemaphoreUtils.withPermit(() -> {
 
-            translated = translateClient.translateText(request.getOriginalText(), request.getSourceLang(), request.getTargetLang());
-
-        } catch (InterruptedException e) {
-            log.warn("API call interrupted while waiting for permit: {}", e.toString());
-            Thread.currentThread().interrupt(); // 스레드 플래스 활성화-상위 메소드에 전달하기 위해 ( 예외에 의해 플래그가 켜지면 JVM이 자동으로 플래그 내림)
-            throw new RuntimeException("Translation API permit acquisition interrupted", e);
-        } finally {
-            translatePermits.release(); // 세마포어 반드시 반납
-            log.debug("Released API permit for key: {}", cacheKey);
-        }
+            return translateClient.translateText(
+                    request.getOriginalText(),
+                    request.getSourceLang(),
+                    request.getTargetLang()
+            );
+        }, translatePermits);
 
         History toSave = TranslationMapper.toEntity(request, translated);
-
         History saved = historyRps.save(toSave);
+
         historyCache.putValue(cacheKey, saved);
+
         return TranslationMapper.toTranslationResponse(saved);
     }
 
@@ -123,8 +116,9 @@ public class TranslationService {
         return Optional.ofNullable(historyCache.getValue(cacheKey));
     }
 
-    private Optional<History> findFromDB(String originalText, LanguageCode sourceLang, LanguageCode targetLang, Genre genre) {
-        return historyRps.findByOriginalTextAndSourceLangAndTargetLangAndGenre(originalText, sourceLang, targetLang, genre);
+    @Transactional(readOnly = true)
+    protected Optional<History> findFromDB(String originalText, LanguageCode sourceLang, LanguageCode targetLang, Genre genre) {
+        return historyRps.findExisting(originalText, sourceLang, targetLang, genre);
     }
 
 }

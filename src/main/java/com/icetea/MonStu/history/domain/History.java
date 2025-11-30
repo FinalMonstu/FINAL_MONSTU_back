@@ -15,10 +15,12 @@ import java.util.Set;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @ToString(exclude = {"posts"})
-@Table(name="history")
+@Table(name = "history", indexes = {
+        @Index(name = "idx_history_lookup", columnList = "original_text, source_lang, target_lang, genre")
+})
 public class History {
 
     @Id
