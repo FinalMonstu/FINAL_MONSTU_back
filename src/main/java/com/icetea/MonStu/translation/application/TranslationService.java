@@ -45,7 +45,7 @@ public class TranslationService {
         this.ioExecutor = ioExecutor;
     }
 
-    public TranslationResponse translateTextTerminal(TranslationRequest request) {
+    public CompletableFuture<TranslationResponse> translateTextAsync(TranslationRequest request) {
         Genre genre = request.getGenre();
         String originalText = request.getOriginalText();
         LanguageCode sourceLang = request.getSourceLang();
@@ -64,7 +64,9 @@ public class TranslationService {
         // 1) 캐시 확인
         Optional<History> cacheOpt = findFromCache(cacheKey);
         if (cacheOpt.isPresent()) {
-            return TranslationMapper.toTranslationResponse(cacheOpt.get());
+            TranslationResponse response = TranslationMapper.toTranslationResponse(cacheOpt.get());
+
+            return CompletableFuture.completedFuture(response);
         }
 
         // 2) DB 확인
@@ -72,16 +74,19 @@ public class TranslationService {
         if (dbOpt.isPresent()) {
             History history = dbOpt.get();
             historyCache.putValue(cacheKey, history); // DB 히트 시 캐시에 저장
-            return TranslationMapper.toTranslationResponse(history);
+            TranslationResponse response = TranslationMapper.toTranslationResponse(history);
+
+            return CompletableFuture.completedFuture(response);
         }
 
         // 3) API 호출
-        try {
-            return getOrComputeFuture(request, cacheKey).get(); // 결과 대기
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("Translation task failed for key: {}", cacheKey, e);
-            throw new RuntimeException("Translation failed", e);
-        }
+        return getOrComputeFuture(request, cacheKey);
+//        try {
+//            return getOrComputeFuture(request, cacheKey).get(); // 결과 대기
+//        } catch (InterruptedException | ExecutionException e) {
+//            log.error("Translation task failed for key: {}", cacheKey, e);
+//            throw new RuntimeException("Translation failed", e);
+//        }
     }
 
     // 중복 요청 방지

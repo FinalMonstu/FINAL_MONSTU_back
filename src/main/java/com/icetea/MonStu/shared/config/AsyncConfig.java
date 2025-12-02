@@ -42,7 +42,7 @@ public class AsyncConfig {
         ex.setAwaitTerminationSeconds(10);
 
         ex.setTaskDecorator(mdc);
-        ex.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        ex.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
         ex.initialize();
         return ex;
     }

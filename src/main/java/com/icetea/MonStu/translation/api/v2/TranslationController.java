@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.CompletableFuture;
+
+@Slf4j
 @RestController("translationControllerV2")
 @RequiredArgsConstructor
 @RequestMapping("/api/v2/translate")
@@ -31,11 +35,9 @@ public class TranslationController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping
-    public ResponseEntity<TranslationResponse> translationTarget(@Valid @RequestBody TranslationRequest translationRequest){
+    public CompletableFuture<ResponseEntity<TranslationResponse>> translationTarget(@Valid @RequestBody TranslationRequest translationRequest){
         System.out.println(translationRequest.toString());
-        TranslationResponse response = translationSvc.translateTextTerminal( translationRequest );
-        return  response.getTranslatedText() != null
-                ? new ResponseEntity<>(response, HttpStatus.OK)
-                : new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return translationSvc.translateTextAsync(translationRequest)
+                .thenApply(ResponseEntity::ok);
     }
 }
