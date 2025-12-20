@@ -52,6 +52,16 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()     // Preflight 요청(OPTIONS)은 무조건 허용(CORS 에러 방지)
 
+                        .requestMatchers(
+                                "/",                // 메인 도메인 (monstu.win)
+                                "/index.html",      // 인덱스 페이지
+                                "/static/**",       // 정적 폴더 (JS, CSS 등)
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/favicon.ico"      // 파비콘(아이콘)
+                        ).permitAll()
+
                         // [Public - ALL]
                         .requestMatchers(
                                 "/api/v2/auth/**",
@@ -70,13 +80,6 @@ public class SecurityConfig {
                                 "/api/v2/posts",
                                 "/api/v2/translate"
                         ).permitAll()
-
-//                        // [User]
-//                        .requestMatchers(
-//                                "/api/v2/histories",
-//                                "/api/v2/members/**",
-//                                "/api/v2/posts/**"
-//                        ).authenticated()
 
                         // [Admin]
                         .requestMatchers(
@@ -97,7 +100,9 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
-                "https://localhost:3000"
+                "https://localhost:3000",
+                "https://monstu.win",
+                "https://www.monstu.win"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

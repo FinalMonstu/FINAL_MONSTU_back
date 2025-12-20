@@ -39,6 +39,9 @@ out/
 ##custom##
 src/main/resources/credentials.properties
 src/main/resources/certs/
-src/test/resources/
+src/test/resources/static/
 
 src/main/java/*.txt
+
+docker-compose.yml
+docker-volumes/

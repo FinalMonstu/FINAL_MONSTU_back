@@ -17,5 +17,6 @@ public interface PostRepository extends JpaRepository<Post,Long>, QuerydslPredic
     @EntityGraph(attributePaths = {"member", "postLog"})
     Optional<Post> readPostWithLogById(Long id);
 
-
+    @EntityGraph(attributePaths = {"member"})
+    Optional<Post> readPostWithMemberById(Long id);
 }

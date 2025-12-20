@@ -10,6 +10,6 @@ public record PostHistoryLinkRequest(
         Long postId,
 
         @NotEmpty
-        List<Long> historyIds
+        List<String> historyIds
 ) {
 }

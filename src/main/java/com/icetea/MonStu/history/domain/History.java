@@ -1,56 +1,29 @@
 package com.icetea.MonStu.history.domain;
 
-import com.icetea.MonStu.post.domain.Post;
 import com.icetea.MonStu.shared.common.enums.Genre;
 import com.icetea.MonStu.shared.common.enums.LanguageCode;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.Id;
 import lombok.*;
-
-import java.util.HashSet;
-import java.util.Set;
-
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
-@ToString(exclude = {"posts"})
-@Table(name = "history", indexes = {
-        @Index(name = "idx_history_lookup", columnList = "original_text, source_lang, target_lang, genre")
-})
+@Document(collection = "history")
+@CompoundIndex(name = "idx_history_lookup", def = "{'originalText': 1, 'sourceLang': 1, 'targetLang': 1, 'genre': 1}")
 public class History {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
 
-
-    @Column @NotBlank
     private String originalText;
-
-    @Column @NotBlank
     private String translatedText;
 
-
-    @Column @NotNull
-    @Enumerated(EnumType.STRING)
     private LanguageCode sourceLang;
-
-    @Column @NotNull
-    @Enumerated(EnumType.STRING)
     private LanguageCode targetLang;
 
-
-    @Column @NotNull
-    @Enumerated(EnumType.STRING)
     private Genre genre;
-
-
-    @Builder.Default
-    @ManyToMany(mappedBy = "histories")
-    private Set<Post> posts = new HashSet<>();
 
 }

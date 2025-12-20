@@ -1,6 +1,7 @@
 package com.icetea.MonStu.shared.exception;
 
 import com.icetea.MonStu.shared.dto.response.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +12,25 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.RejectedExecutionException;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // CompletableFuture 내부 예외
+//    @ExceptionHandler(CompletionException.class)
+//    public ResponseEntity<ErrorResponse> handleAsyncException(CompletionException e) {
+//        Throwable cause = e.getCause();
+//
+//        if (cause instanceof RejectedExecutionException) {
+//            return ResponseEntity.status(503).body(new ErrorResponse("TOO_MANY_REQUESTS","서버가 바쁩니다. 잠시 후 다시 시도해주세요."));
+//        }
+//
+//        log.error("비동기 에러 발생:", cause);
+//        return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_SERVER_ERROR","서버 에러"));
+//    }
 
     // @Vaild 실패 예외 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)

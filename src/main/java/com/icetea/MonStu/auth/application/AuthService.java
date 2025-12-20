@@ -74,7 +74,7 @@ public class AuthService {
         LocalDateTime now = LocalDateTime.now();
 
         verifiCodeRps.deleteByExpiresAtBefore( now.minusMinutes(expiresTime) );
-        verifiCodeRps.deleteByFailedCountGreaterThanEqualAndFailedAtBefore((byte) 5, now.minusMinutes(cleanupVerificationCodes) );
+        verifiCodeRps.deleteByFailedCountAndDate((byte) 5, now.minusMinutes(cleanupVerificationCodes) );
     }
 
     @Transactional

@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 public class HistoryResponse {
 
-    private Long id;
+    private String id;
 
     private String originalText;
     private String translatedText;

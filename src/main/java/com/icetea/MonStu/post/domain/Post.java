@@ -64,13 +64,15 @@ public class Post {
     @JoinColumn(name = "post_log_id")
     private PostLog postLog;
 
-    @ManyToMany
-    @JoinTable(
-            name = "post_history",
-            joinColumns        = @JoinColumn(name = "post_id"),
-            inverseJoinColumns = @JoinColumn(name = "history_id")
+    // MongonDB History 참조 ID 목록
+    @ElementCollection
+    @CollectionTable(
+            name = "post_history_mapping",
+            joinColumns = @JoinColumn(name = "post_id")
     )
-    private Set<History> histories = new HashSet<>();
+    @Column(name = "history_id")
+    @Builder.Default
+    private Set<String> historyIds = new HashSet<>();
 
 
     /*-----------------------------------편의 메소드-------------------------------------------*/
@@ -92,26 +94,14 @@ public class Post {
         }
     }
 
-    public void addHistory(History history) {
-        if (history == null) return;
-        if (!this.histories.contains(history)) {
-            this.histories.add(history);
-            if (!history.getPosts().contains(this)) {
-                history.getPosts().add(this);
-            }
-        }
+    public void addHistory(String historyId) {
+        if (historyId == null) return;
+        this.historyIds.add(historyId);
     }
 
-    public void removeHistory(History history) {
-        if (history == null) return;
-        if (this.histories.contains(history)) {
-            this.histories.remove(history);
-            if (history.getPosts().contains(this)) {
-                history.getPosts().remove(this);
-            }
-        }
+    public void removeHistory(String historyId) {
+        this.historyIds.remove(historyId);
     }
-
 
     /*-----------------------------------Update 메소드-------------------------------------------*/
 

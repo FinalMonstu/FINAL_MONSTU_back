@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 
 @Slf4j
@@ -150,7 +151,7 @@ public class PostController {
     })
     @DeleteMapping("/{postId}/histories/{historyId}")
     public ResponseEntity<?> unlinkHistoryFromPost(
-            @PathVariable Long historyId,
+            @PathVariable String historyId,
             @PathVariable Long postId,
             @AuthenticationPrincipal CustomUserDetails userDetails){
         historySvc.unlinkHistoryFromPost(historyId, postId, userDetails.getId());

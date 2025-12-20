@@ -47,14 +47,19 @@ dependencies {
 	/* jasypt 암호화 */
 //	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
 
-	/* DB */
+	/* Mysql */
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	/* MongoDB */
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	/* JPA */
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
+	/* QueryDSL */
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
 	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
 	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+	/* Redis */
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	/* LomBok */
 	compileOnly 'org.projectlombok:lombok'
@@ -67,7 +72,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 	/* Google Translate API */
-//	implementation 'com.google.cloud:google-cloud-translate:2.60.0'
 	implementation platform("com.google.cloud:libraries-bom:26.60.0")
 	implementation "com.google.cloud:google-cloud-translate"
 	implementation "com.google.cloud:google-cloud-storage"

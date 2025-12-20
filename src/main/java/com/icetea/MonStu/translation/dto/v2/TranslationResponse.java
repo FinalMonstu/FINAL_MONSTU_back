@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 public class TranslationResponse {
 
-    private Long id;
+    private String id;
 
     private String originalText;  // 번역할 단어 또는 문장
 

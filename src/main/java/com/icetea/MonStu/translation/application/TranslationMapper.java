@@ -9,15 +9,6 @@ public final class TranslationMapper {
     private TranslationMapper() {}
 
     /*------------------------------------------------TranslationResponse-----------------------------------------*/
-//    public static TranslationResponse toTranslationResponse(TranslationRequest req, String translatedText) {
-//        return TranslationResponse.builder()
-//                .originalText(req.getOriginalText())
-//                .translatedText( translatedText )
-//                .sourceLang(req.getSourceLang())
-//                .targetLang(req.getTargetLang())
-//                .genre(req.getGenre())
-//                .build();
-//    }
 
     public static TranslationResponse toTranslationResponse(History h) {
         return TranslationResponse.builder()

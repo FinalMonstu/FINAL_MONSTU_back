@@ -36,7 +36,6 @@ public class TranslationController {
     })
     @PostMapping
     public CompletableFuture<ResponseEntity<TranslationResponse>> translationTarget(@Valid @RequestBody TranslationRequest translationRequest){
-        System.out.println(translationRequest.toString());
         return translationSvc.translateTextAsync(translationRequest)
                 .thenApply(ResponseEntity::ok);
     }

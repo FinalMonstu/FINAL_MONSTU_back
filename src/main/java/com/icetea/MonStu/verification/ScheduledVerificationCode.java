@@ -2,11 +2,9 @@ package com.icetea.MonStu.verification;
 
 import com.icetea.MonStu.auth.application.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.lang.annotation.Aspect;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-@Aspect
 @RequiredArgsConstructor
 @Component
 public class ScheduledVerificationCode {
